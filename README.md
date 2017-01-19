@@ -1,0 +1,2 @@
+# MiStrAn
+Minimalistic structural analysis
