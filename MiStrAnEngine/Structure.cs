@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MiStrAnEngine
 {
-    class Class1
+    public class Structure
     {
     }
 }
