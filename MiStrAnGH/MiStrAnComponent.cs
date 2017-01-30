@@ -16,7 +16,7 @@ namespace MiStrAn
         /// new tabs/panels will automatically be created.
         /// </summary>
         public MiStrAnComponent()
-          : base("MiStrAn", "Nickname",
+          : base("MiStrAn", "TeamOlsson",
               "Description",
               "Category", "Subcategory")
         {
