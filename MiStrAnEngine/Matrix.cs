@@ -69,7 +69,6 @@ public class Matrix
     }
 
 
-    // OBS 1-based indices!!
     public Matrix this[int[] iRows, int[] iCols]      // Access sub array
     {
         get
@@ -80,7 +79,7 @@ public class Matrix
             {
                 for (int j = 0; j < iCols.Length; j++)
                 {
-                    subMat[i+1, j+1] = mat[iRows[i]-1, iCols[j]-1];
+                    subMat[i, j] = mat[iRows[i], iCols[j]];
                 }
             }
 
@@ -93,7 +92,7 @@ public class Matrix
             {
                 for (int j = 0; j < iCols.Length; j++)
                 {
-                    mat[iRows[i]-1, iCols[j]-1] = value[i+1, j+1]; 
+                    mat[iRows[i], iCols[j]] = value[i, j]; 
                 }
             }
         }
@@ -124,11 +123,10 @@ public class Matrix
     }
 
 
-    // OBS 1-based indices!!
     public double this[int iRow, int iCol]      // Access this matrix as a 2D array
     {
-        get { return mat[iRow-1, iCol-1]; }
-        set { mat[iRow-1, iCol-1] = value; }
+        get { return mat[iRow, iCol]; }
+        set { mat[iRow, iCol] = value; }
     }
 
     public Matrix GetCol(int k)
