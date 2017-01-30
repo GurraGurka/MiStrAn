@@ -1,2 +1,0 @@
-String intro = "Hello MiStrAn";
-print(intro);
