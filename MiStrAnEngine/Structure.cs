@@ -8,5 +8,9 @@ namespace MiStrAnEngine
 {
     public class Structure
     {
+        List<Node> nodes;
+        List<ShellElement> elements;
+
+
     }
 }
