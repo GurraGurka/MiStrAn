@@ -14,7 +14,7 @@ namespace MiStrAnGH
         {
             // 1 skapa  en lista med noder för alla points i meshen
 
-            // 2 Skapa element for varje mesh, jag löser en konstruktor för detta under tiden
+            // 2 Skapa element for varje face, jag löser en konstruktor för detta under tiden
 
             // 3 Skapa en structure med dessa element
 
