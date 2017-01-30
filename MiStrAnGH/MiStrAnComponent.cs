@@ -27,6 +27,7 @@ namespace MiStrAn
         /// </summary>
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {
+            pManager.AddGeometryParameter("Mesh", "Mesh", "Mesh to analyze", GH_ParamAccess.list);
         }
 
         /// <summary>
@@ -43,6 +44,18 @@ namespace MiStrAn
         /// to store data in output parameters.</param>
         protected override void SolveInstance(IGH_DataAccess DA)
         {
+            List<Mesh> meshes = new List<Mesh>();
+
+            if (!DA.GetDataList(0, meshes)) { return;  }
+
+            foreach(Mesh m in meshes)
+            {
+
+                //TRIANGULATE, FOR NOW IT CAN BE DONE EASYLY BEFOREHAND
+
+              //Generate coordinates, and the edges of a triangular mesh,
+                //m.
+            }
         }
 
         /// <summary>
