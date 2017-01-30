@@ -12,7 +12,7 @@ namespace MiStrAnGH
     {
         public static MiStrAnEngine.Structure ConvertGHMeshToStructure(Mesh m)
         {
-
+            int a = 1;
             return new MiStrAnEngine.Structure();
         }
 
