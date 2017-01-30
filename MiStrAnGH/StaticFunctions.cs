@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Grasshopper.Kernel;
 using Rhino.Geometry;
+using Rhino.Geometry.Collections;
 
 namespace MiStrAnGH
 {
@@ -12,14 +13,42 @@ namespace MiStrAnGH
     {
         public static MiStrAnEngine.Structure ConvertGHMeshToStructure(Mesh m)
         {
-            // 1 skapa  en lista med noder för alla points i meshen
+            List<MiStrAnEngine.Node> mistranNodes = new List<MiStrAnEngine.Node>();
+            List<MiStrAnEngine.ShellElement> mistranShells = new List<MiStrAnEngine.ShellElement>();
 
-            // 2 Skapa element for varje face, jag löser en konstruktor för detta under tiden
+            MeshVertexList meshPts = m.Vertices;
 
-            // 3 Skapa en structure med dessa element
+            //Create mistran nodes from all the mesh points. Add them to one list
+            for(int i=0;i<m.Vertices.Count;i++)
+            {
+                Point3f mPt = m.Vertices[i];
+                MiStrAnEngine.Node mistNode = new MiStrAnEngine.Node(mPt.X, mPt.Y, mPt.Z, i);
+                mistranNodes.Add(mistNode);
+            }
+              
+            //Create shellelements from all the meshfaces. Add tgem to one list
+            for(int i=0; i< m.Faces.Count;i++)
+            {
+                List<MiStrAnEngine.Node> shellNodes = new List<MiStrAnEngine.Node>();
+                int[] faceIndexDup =m.Faces.GetTopologicalVertices(i);
+
+                //If face is triangular, the duplicate is removed
+                int[] faceIndex = faceIndexDup.Distinct().ToArray();
+                foreach (int index in faceIndex )
+                {
 
 
-            return new MiStrAnEngine.Structure();
+                    shellNodes.Add(mistranNodes[index]);
+                    MiStrAnEngine.ShellElement mistShell = new MiStrAnEngine.ShellElement(shellNodes, index);
+                    mistranShells.Add(mistShell);
+                }
+            }
+
+
+            MiStrAnEngine.Structure mistStruc = new MiStrAnEngine.Structure(mistranNodes, mistranShells);
+
+
+            return mistStruc;
         }
 
     }

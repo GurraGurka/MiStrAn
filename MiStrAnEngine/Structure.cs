@@ -6,10 +6,16 @@ using System.Threading.Tasks;
 
 namespace MiStrAnEngine
 {
-    public class Structure
+    public class Structure 
     {
         List<Node> nodes;
         List<ShellElement> elements;
+
+        public Structure(List<Node> _nodes, List<ShellElement> _elements)
+        {
+            nodes = _nodes;
+            elements = _elements;
+        }
 
 
     }

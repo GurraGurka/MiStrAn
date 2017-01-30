@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Grasshopper.Kernel;
 using Rhino.Geometry;
 
-namespace MiStrAn
+namespace MiStrAnGH
 {
     public class MiStrAnComponent : GH_Component
     {
@@ -50,11 +50,10 @@ namespace MiStrAn
 
             foreach(Mesh m in meshes)
             {
-
-                //TRIANGULATE, FOR NOW IT CAN BE DONE EASYLY BEFOREHAND
-
-              //Generate coordinates, and the edges of a triangular mesh,
-                //m.
+                int a = 5;
+                int trtr = a + 3;
+                // MiStrAnEngine.Structure mistStruc= StaticFunctions.ConvertGHMeshToStructure(m);
+                StaticFunctions.ConvertGHMeshToStructure(m);
             }
         }
 
