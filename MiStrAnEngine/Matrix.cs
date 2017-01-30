@@ -35,6 +35,7 @@
 
 using System;
 using System.Text.RegularExpressions;
+using System.Linq;
 
 
 public class Matrix
@@ -55,8 +56,9 @@ public class Matrix
         mat = new double[rows, cols];
     }
 
-    // Gustavs Addition
-    public Matrix(double[,] _mat) : this(_mat.GetLength(1), _mat.GetLength(2))       // Matrix Class constructor
+    // Added by Gustav 2017-01-30
+    // Constructor for predefined mat values
+    public Matrix(double[,] _mat) : this(_mat.GetLength(0), _mat.GetLength(1))       // Matrix Class constructor
     {
         mat = _mat;
     }
@@ -66,10 +68,67 @@ public class Matrix
         return (rows == cols);
     }
 
+
+    // OBS 1-based indices!!
+    public Matrix this[int[] iRows, int[] iCols]      // Access sub array
+    {
+        get
+        {
+            Matrix subMat = new Matrix(iRows.Length, iCols.Length);
+
+            for (int i = 0; i < iRows.Length; i++)
+            {
+                for (int j = 0; j < iCols.Length; j++)
+                {
+                    subMat[i+1, j+1] = mat[iRows[i]-1, iCols[j]-1];
+                }
+            }
+
+            return subMat;
+
+        }
+        set
+        {
+            for (int i = 0; i < iRows.Length; i++)
+            {
+                for (int j = 0; j < iCols.Length; j++)
+                {
+                    mat[iRows[i]-1, iCols[j]-1] = value[i+1, j+1]; 
+                }
+            }
+        }
+    }
+
+    public Matrix this[string iRowsString, string iColsString]      // Access sub array
+    {
+        get
+        {
+            string[] RowRng = iRowsString.Split(':');
+            string[] ColRng = iColsString.Split(':');
+
+            int[] iRows =  Enumerable.Range(Convert.ToInt32(RowRng[0]), Convert.ToInt32(RowRng[1])).ToArray();
+            int[] iCols = Enumerable.Range(Convert.ToInt32(ColRng[0]), Convert.ToInt32(ColRng[1])).ToArray();
+
+            return this[iRows,iCols];
+        }
+        set
+        {
+            string[] RowRng = iRowsString.Split(':');
+            string[] ColRng = iColsString.Split(':');
+
+            int[] iRows = Enumerable.Range(Convert.ToInt32(RowRng[0]), Convert.ToInt32(RowRng[1])).ToArray();
+            int[] iCols = Enumerable.Range(Convert.ToInt32(ColRng[0]), Convert.ToInt32(ColRng[1])).ToArray();
+
+            this[iRows, iCols] = value;
+        }
+    }
+
+
+    // OBS 1-based indices!!
     public double this[int iRow, int iCol]      // Access this matrix as a 2D array
     {
-        get { return mat[iRow, iCol]; }
-        set { mat[iRow, iCol] = value; }
+        get { return mat[iRow-1, iCol-1]; }
+        set { mat[iRow-1, iCol-1] = value; }
     }
 
     public Matrix GetCol(int k)
