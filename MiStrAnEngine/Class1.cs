@@ -6,8 +6,7 @@ using System.Threading.Tasks;
 
 namespace MiStrAnEngine
 {
-    public class Node
+    class Class1
     {
-        public double i;
     }
 }
