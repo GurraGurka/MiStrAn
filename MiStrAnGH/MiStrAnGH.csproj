@@ -52,6 +52,13 @@
     <Compile Include="MiStrAnComponent.cs" />
     <Compile Include="MiStrAnInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="StaticFunctions.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MiStrAnEngine\MiStrAnEngine.csproj">
+      <Project>{b11be1e7-4a79-4ff9-a4cb-a9a991c5c3c1}</Project>
+      <Name>MiStrAnEngine</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
