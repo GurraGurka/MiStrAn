@@ -11,6 +11,16 @@ namespace MiStrAnEngine
         List<Node> nodes;
         List<ShellElement> elements;
 
+        public Structure(List<Node> _nodes, List<ShellElement> _elements)
+        {
+            nodes = _nodes;
+            elements = _elements;
+        }
 
+        public Matrix GenerateK()
+        {
+            Matrix K = StaticFunctions.GenerateK(nodes, elements);
+            return K;
+        }
     }
 }

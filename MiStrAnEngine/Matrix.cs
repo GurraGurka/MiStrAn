@@ -55,6 +55,12 @@ public class Matrix
         mat = new double[rows, cols];
     }
 
+    // Gustavs Addition
+    public Matrix(double[,] _mat) : this(_mat.GetLength(1), _mat.GetLength(2))       // Matrix Class constructor
+    {
+        mat = _mat;
+    }
+
     public Boolean IsSquare()
     {
         return (rows == cols);

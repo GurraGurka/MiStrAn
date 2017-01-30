@@ -19,5 +19,15 @@ namespace MiStrAnEngine
             Id = _id;
         }
 
+        public bool GenerateKefe(out Matrix Ke, out Matrix fe)
+        {
+            Ke = Matrix.ZeroMatrix(20, 20);
+            fe = Matrix.ZeroMatrix(20, 1);
+
+            Matrix dofPlan = new Matrix(new double[,] { { 1, 2, 6, 7, 11, 12, 16, 17 } });
+
+            return true;
+        }
+
     }
 }
