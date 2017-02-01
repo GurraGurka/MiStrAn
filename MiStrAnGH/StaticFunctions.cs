@@ -11,6 +11,7 @@ namespace MiStrAnGH
 {
     public static class StaticFunctions
     {
+        
         public static MiStrAnEngine.Structure ConvertGHMeshToStructure(Mesh m)
         {
             List<MiStrAnEngine.Node> mistranNodes = new List<MiStrAnEngine.Node>();

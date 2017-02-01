@@ -98,29 +98,30 @@ public class Matrix
         }
     }
 
-    public Matrix this[string iRowsString, string iColsString]      // Access sub array
+    public Matrix this[int iRow, int[] iCols]      // Access sub array
     {
         get
         {
-            string[] RowRng = iRowsString.Split(':');
-            string[] ColRng = iColsString.Split(':');
-
-            int[] iRows =  Enumerable.Range(Convert.ToInt32(RowRng[0]), Convert.ToInt32(RowRng[1])).ToArray();
-            int[] iCols = Enumerable.Range(Convert.ToInt32(ColRng[0]), Convert.ToInt32(ColRng[1])).ToArray();
-
-            return this[iRows,iCols];
+            return this[new int[] { iRow }, iCols];
         }
         set
         {
-            string[] RowRng = iRowsString.Split(':');
-            string[] ColRng = iColsString.Split(':');
-
-            int[] iRows = Enumerable.Range(Convert.ToInt32(RowRng[0]), Convert.ToInt32(RowRng[1])).ToArray();
-            int[] iCols = Enumerable.Range(Convert.ToInt32(ColRng[0]), Convert.ToInt32(ColRng[1])).ToArray();
-
-            this[iRows, iCols] = value;
+            this[new int[] { iRow }, iCols] = value;
         }
     }
+
+    public Matrix this[int[] iRows, int iCol]      // Access sub array
+    {
+        get
+        {
+            return this[iRows, new int[] { iCol }];
+        }
+        set
+        {
+            this[iRows, new int[] { iCol }] = value;
+        }
+    }
+
 
 
     public double this[int iRow, int iCol]      // Access this matrix as a 2D array
@@ -288,6 +289,32 @@ public class Matrix
             for (int j = 0; j < iCols; j++)
                 matrix[i, j] = 0;
         return matrix;
+    }
+
+    // Replicating MATLABS diag function
+    //
+    //  /Gustav
+    public static Matrix Diag(Matrix M)
+    {
+        if (M.rows == 1 && M.cols == 1)
+            return M;
+
+        if (M.IsSquare())
+        {
+            Matrix A = new Matrix(M.rows, 1);
+
+            for (int i = 0; i < M.rows; i++)
+                A[i, 0] = M[i, i];
+
+            return A;
+        }
+
+        Matrix B = Matrix.ZeroMatrix(M.rows, M.rows);
+        for (int i = 0; i < M.rows; i++)
+            B[i, i] = M[i, 0];
+
+        return B;
+
     }
 
     public static Matrix IdentityMatrix(int iRows, int iCols)   // Function generates the identity matrix
@@ -654,6 +681,16 @@ public class Matrix
         Matrix H = MergeHorizontal(G, F);
 
         return H;
+    }
+
+    public static Matrix MergeHorizontal(Matrix A, Matrix B, Matrix C, Matrix D, Matrix E, Matrix F, Matrix G,
+        Matrix H, Matrix I, Matrix J, Matrix K, Matrix L)
+    {
+        Matrix M = MergeHorizontal(A, B, C, D, E,F);
+        Matrix N = MergeHorizontal(G,H,I,J,K,L);
+        Matrix O = MergeHorizontal(M, N);
+
+        return O;
     }
 
     public static string NormalizeMatrixString(string matStr)	// From Andy - thank you! :)
