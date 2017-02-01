@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MiStrAnEngine", "MiStrAnEng
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MiStrAnGH", "MiStrAnGH\MiStrAnGH.csproj", "{F3AFD935-5668-4FCC-916F-24DC61CBC8C9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sandbox", "Sandbox\Sandbox.csproj", "{A9C3F185-A1C0-4363-BA4A-DBC1A5E8624A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -26,6 +28,12 @@ Global
 		{F3AFD935-5668-4FCC-916F-24DC61CBC8C9}.Debug64|Any CPU.Build.0 = Debug64|Any CPU
 		{F3AFD935-5668-4FCC-916F-24DC61CBC8C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F3AFD935-5668-4FCC-916F-24DC61CBC8C9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A9C3F185-A1C0-4363-BA4A-DBC1A5E8624A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A9C3F185-A1C0-4363-BA4A-DBC1A5E8624A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A9C3F185-A1C0-4363-BA4A-DBC1A5E8624A}.Debug64|Any CPU.ActiveCfg = Debug|Any CPU
+		{A9C3F185-A1C0-4363-BA4A-DBC1A5E8624A}.Debug64|Any CPU.Build.0 = Debug|Any CPU
+		{A9C3F185-A1C0-4363-BA4A-DBC1A5E8624A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A9C3F185-A1C0-4363-BA4A-DBC1A5E8624A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

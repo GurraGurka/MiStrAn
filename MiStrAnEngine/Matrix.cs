@@ -35,6 +35,7 @@
 
 using System;
 using System.Text.RegularExpressions;
+using System.Linq;
 
 
 public class Matrix
@@ -55,10 +56,72 @@ public class Matrix
         mat = new double[rows, cols];
     }
 
+    // Added by Gustav 2017-01-30
+    // Constructor for predefined mat values
+    public Matrix(double[,] _mat) : this(_mat.GetLength(0), _mat.GetLength(1))       // Matrix Class constructor
+    {
+        mat = _mat;
+    }
+
     public Boolean IsSquare()
     {
         return (rows == cols);
     }
+
+
+    public Matrix this[int[] iRows, int[] iCols]      // Access sub array
+    {
+        get
+        {
+            Matrix subMat = new Matrix(iRows.Length, iCols.Length);
+
+            for (int i = 0; i < iRows.Length; i++)
+            {
+                for (int j = 0; j < iCols.Length; j++)
+                {
+                    subMat[i, j] = mat[iRows[i], iCols[j]];
+                }
+            }
+
+            return subMat;
+
+        }
+        set
+        {
+            for (int i = 0; i < iRows.Length; i++)
+            {
+                for (int j = 0; j < iCols.Length; j++)
+                {
+                    mat[iRows[i], iCols[j]] = value[i, j]; 
+                }
+            }
+        }
+    }
+
+    public Matrix this[string iRowsString, string iColsString]      // Access sub array
+    {
+        get
+        {
+            string[] RowRng = iRowsString.Split(':');
+            string[] ColRng = iColsString.Split(':');
+
+            int[] iRows =  Enumerable.Range(Convert.ToInt32(RowRng[0]), Convert.ToInt32(RowRng[1])).ToArray();
+            int[] iCols = Enumerable.Range(Convert.ToInt32(ColRng[0]), Convert.ToInt32(ColRng[1])).ToArray();
+
+            return this[iRows,iCols];
+        }
+        set
+        {
+            string[] RowRng = iRowsString.Split(':');
+            string[] ColRng = iColsString.Split(':');
+
+            int[] iRows = Enumerable.Range(Convert.ToInt32(RowRng[0]), Convert.ToInt32(RowRng[1])).ToArray();
+            int[] iCols = Enumerable.Range(Convert.ToInt32(ColRng[0]), Convert.ToInt32(ColRng[1])).ToArray();
+
+            this[iRows, iCols] = value;
+        }
+    }
+
 
     public double this[int iRow, int iCol]      // Access this matrix as a 2D array
     {
