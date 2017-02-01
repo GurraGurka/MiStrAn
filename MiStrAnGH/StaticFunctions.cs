@@ -15,6 +15,7 @@ namespace MiStrAnGH
         {
             List<MiStrAnEngine.Node> mistranNodes = new List<MiStrAnEngine.Node>();
             List<MiStrAnEngine.ShellElement> mistranShells = new List<MiStrAnEngine.ShellElement>();
+            List<MiStrAnEngine.BC> mistranBCs = new List<MiStrAnEngine.BC>();
 
             MeshVertexList meshPts = m.Vertices;
 
@@ -45,7 +46,24 @@ namespace MiStrAnGH
             }
 
 
-            MiStrAnEngine.Structure mistStruc = new MiStrAnEngine.Structure(mistranNodes, mistranShells);
+            //TEMPORARY BCS, ALWAYS SET THE FIRST 1/20 of the nodes
+            int maxValue = Math.Ceiling((mistranNodes.Count / 20));
+            for (int i =0;i< maxValue; i++)
+            {
+                MiStrAnEngine.BC bc = new MiStrAnEngine.BC(mistranNodes[i]);
+                mistranBCs.Add(bc);
+            }
+
+            //TEMPORARY ADD LOADS. THE LAST 1/20 of the nodes, all direction downwards. Amplitude of 1000 
+            for (int i = 0; i < maxValue; i++)
+            {
+                int loadDof = maxValue - i FORTSÄTT HÄR
+              //  MiStrAnEngine.BC bc = new MiStrAnEngine.BC(mistranNodes[i]);
+              //  mistranBCs.Add(bc);
+            }
+
+
+            MiStrAnEngine.Structure mistStruc = new MiStrAnEngine.Structure(mistranNodes, mistranShells,mistranBCs);
 
 
             return mistStruc;
