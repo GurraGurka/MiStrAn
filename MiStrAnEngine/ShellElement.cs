@@ -33,7 +33,7 @@ namespace MiStrAnEngine
 
 
         // Direct copy of CALFEM's planre
-        private void planre(out Matrix Ke, out Matrix fe)
+        private void platre(out Matrix Ke, out Matrix fe)
         {
             // #TODO index måste uppdateras!! Dessa är 1-based från matlab, våra matriser är 0-based
 
