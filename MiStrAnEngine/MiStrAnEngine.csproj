@@ -47,7 +47,8 @@
     <Compile Include="Node.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ShellElement.cs" />
-    <Compile Include="StaticFunctions.cs" />
+    <Compile Include="solveq.cs" />
+    <Compile Include="StiffnessMatrix.cs" />
     <Compile Include="Structure.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
