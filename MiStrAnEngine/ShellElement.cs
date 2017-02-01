@@ -35,6 +35,7 @@ namespace MiStrAnEngine
         // Direct copy of CALFEM's planre
         private void planre(out Matrix Ke, out Matrix fe)
         {
+            // #TODO index måste uppdateras!! Dessa är 1-based från matlab, våra matriser är 0-based
 
             double Lx = nodes[2].x - nodes[0].x; double Ly = nodes[2].y - nodes[0].y;
 

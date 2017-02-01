@@ -604,6 +604,58 @@ public class Matrix
         return r;
     }
 
+    // Gustavs addition
+    public static Matrix MergeHorizontal(Matrix A, Matrix B)
+    {
+       
+
+        if(A.rows != B.rows)
+            throw new System.ArgumentException("Matrices must have same number of rows", "original");
+
+        Matrix C = new Matrix(A.rows, A.cols + B.cols);
+
+        for (int i = 0; i < A.cols; i++)
+            C.SetCol(A.GetCol(i), i);
+
+        for (int i = 0; i < B.cols; i++)
+            C.SetCol(B.GetCol(i), A.cols+i);
+
+        return C;
+    }
+
+    public static Matrix MergeHorizontal(Matrix A, Matrix B, Matrix C)
+    {
+        Matrix D = MergeHorizontal(A, B);
+        Matrix E = MergeHorizontal(D, C);
+
+        return E;
+    }
+
+    public static Matrix MergeHorizontal(Matrix A, Matrix B, Matrix C, Matrix D)
+    {
+        Matrix E = MergeHorizontal(A, B);
+        Matrix F = MergeHorizontal(C, D);
+        Matrix G = MergeHorizontal(E, F);
+
+        return G;
+    }
+
+    public static Matrix MergeHorizontal(Matrix A, Matrix B, Matrix C, Matrix D, Matrix E)
+    {
+        Matrix F = MergeHorizontal(A, B, C, D);
+        Matrix G = MergeHorizontal(F, E);
+
+        return G;
+    }
+
+    public static Matrix MergeHorizontal(Matrix A, Matrix B, Matrix C, Matrix D, Matrix E, Matrix F)
+    {
+        Matrix G = MergeHorizontal(A, B, C, D, E);
+        Matrix H = MergeHorizontal(G, F);
+
+        return H;
+    }
+
     public static string NormalizeMatrixString(string matStr)	// From Andy - thank you! :)
     {
         // Remove any multiple spaces
