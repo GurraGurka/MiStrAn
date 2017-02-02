@@ -30,5 +30,37 @@ namespace MiStrAnEngine
         }
 
 
+        // Direct copy of CALFEM's solveq
+        // FÄRDIG OCH TESTAD 2017-02-02
+        public static bool solveq(Matrix K, Matrix f, Matrix bc, out Matrix d, out Matrix Q)
+        {
+
+            int nd = K.cols;
+            int[] fdof = intSrs(0, nd - 1);
+            int[] pdof = new int[bc.rows];
+
+            for (int i = 0; i < bc.rows; i++)
+                pdof[i] = Convert.ToInt32(bc[i, 1]);
+
+            fdof = fdof.Except(pdof).ToArray();
+
+            d = Matrix.ZeroMatrix(nd, 1);
+            Q = Matrix.ZeroMatrix(nd, 1);
+
+            Matrix dp = bc.GetCol(1);
+
+            Matrix s = K[fdof, fdof].SolveWith(f[fdof, 0] - K[fdof, pdof] * dp);
+
+            d[pdof, 0] = dp;
+            d[fdof, 0] = s;
+
+            Q = (K * d) - f;
+
+            return true;
+    }
+
+
+
+
     }
 }

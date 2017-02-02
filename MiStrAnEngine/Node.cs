@@ -37,12 +37,12 @@ namespace MiStrAnEngine
             set
             {
                 id = value;
-                dofX = id * 6 - 5;
-                dofY = id * 6 - 4;
-                dofZ = id * 6 - 3;
-                dofXX = id * 6 - 2;
-                dofYY = id * 6 - 1;
-                dofZZ = id * 6;
+                dofX = (id + 1) * 6 - 6;
+                dofX = (id + 1) * 6 - 5;
+                dofX = (id + 1) * 6 - 4;
+                dofX = (id + 1) * 6 - 3;
+                dofX = (id + 1) * 6 - 2;
+                dofX = (id + 1) * 6 - 1;
             }
         }
 
