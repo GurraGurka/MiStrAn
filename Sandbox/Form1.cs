@@ -33,7 +33,7 @@ namespace Sandbox
 
             element.D = new Matrix(new double[,] { { 1, 2, 3 }, { 2, 2, 2 }, { 3, 2, 1 } });
             element.t = 2;
-            element.eq = 5;
+            element.eq = new Matrix(new double[,] { { 5,5,5} });
 
 
             Matrix Ke;

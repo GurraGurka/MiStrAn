@@ -58,7 +58,7 @@ namespace MiStrAnGH
             //TEMPORARY ADD LOADS. THE LAST 1/20 of the nodes, all direction downwards. Amplitude of 1000 
             for (int i = 0; i < maxValue; i++)
             {
-                int loadDof = maxValue - i FORTSÄTT HÄR
+               // int loadDof = maxValue - i FORTSÄTT HÄR
               //  MiStrAnEngine.BC bc = new MiStrAnEngine.BC(mistranNodes[i]);
               //  mistranBCs.Add(bc);
             }

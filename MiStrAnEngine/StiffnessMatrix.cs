@@ -26,6 +26,8 @@ namespace MiStrAnEngine
                 //GÖR EN KONTROLL SÅ ATT DET VERKLIGEN BARA ÄR 4 (3 I FRAMTIDEN) NODER I DENNA LISTA
 
                 //Det är konstigt att bara punkt 1 och 3 är med, men alla punkter används sen i Kirchoff och det baseras på rektangulära element
+                // svar: Detta element förutsätter "element edges parallell to axis" - Gustav
+
                 double a = (shellNodes[2].x - shellNodes[0].x) / 2;
                 double b = (shellNodes[2].y - shellNodes[0].y) / 2;
 

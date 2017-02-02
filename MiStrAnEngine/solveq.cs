@@ -36,21 +36,21 @@ namespace MiStrAnEngine
             //DETTA SKA TYP IN I GENERATE K
 
 
-            //Global K- and F matrix
-            int nbDofs = 0; //HÄMTA FRÅN EDOF
-            Matrix K = Matrix.ZeroMatrix(nbDofs, nbDofs);
+            ////Global K- and F matrix
+            //int nbDofs = 0; //HÄMTA FRÅN EDOF
+            //Matrix K = Matrix.ZeroMatrix(nbDofs, nbDofs);
 
-            List<ShellElement> shells = struc.Shells;
-            double[] ep = new double[3] { thickness, irb, irs };
+            //List<ShellElement> shells = struc.Shells;
+            //double[] ep = new double[3] { thickness, irb, irs };
 
-            foreach (ShellElement shell in shells)
-            {
-                Matrix KeFe = shell2re(shell, ep, D, G, qz);
-                //LÄGG IN KeFe i K och f mha Edof               
-            }
+            //foreach (ShellElement shell in shells)
+            //{
+            //    Matrix KeFe = shell2re(shell, ep, D, G, qz);
+            //    //LÄGG IN KeFe i K och f mha Edof               
+            //}
 
-            Matrix m = new Matrix(3, 3);
-            //Här ska K och f skickas tillbaka
+            //Matrix m = new Matrix(3, 3);
+            ////Här ska K och f skickas tillbaka
             return new Matrix(1, 1);
         }
 
