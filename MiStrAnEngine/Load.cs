@@ -7,7 +7,7 @@ namespace MiStrAnEngine
 {
     public class Load
     {
-        Node node;
+        public Node node;
 
         // Field variables
         public double loadAmplitude;

@@ -27,6 +27,7 @@ namespace MiStrAnGH
         /// </summary>
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {
+            pManager.AddBooleanParameter("Run", "Run", "Run calcs", GH_ParamAccess.item, false);
             pManager.AddGeometryParameter("Mesh", "Mesh", "Mesh to analyze", GH_ParamAccess.list);
             pManager.AddGeometryParameter("BC", "BC", "Zero displacement nodes", GH_ParamAccess.list);
             pManager.AddGeometryParameter("Load", "Load", "Just nodes for loads", GH_ParamAccess.list);
@@ -37,6 +38,8 @@ namespace MiStrAnGH
         /// </summary>
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
         {
+            pManager.AddNumberParameter("displacements", "a", "solved displacements", GH_ParamAccess.item);
+            pManager.AddNumberParameter("reactions", "r", "solved reactions", GH_ParamAccess.item);
         }
 
         /// <summary>
@@ -49,18 +52,31 @@ namespace MiStrAnGH
             List<Mesh> meshes = new List<Mesh>();
             List<Point3d> bcNodes = new List<Point3d>();
             List<Point3d> bcLoads = new List<Point3d>();
+            bool run = false;
 
-            if (!DA.GetDataList(0, meshes)) { return;  }
-            if (!DA.GetDataList(1, bcNodes)) { return; }
-            if (!DA.GetDataList(2, bcLoads)) { return; }
+            if (!DA.GetDataList(1, meshes)) { return;  }
+            if (!DA.GetDataList(2, bcNodes)) { return; }
+            if (!DA.GetDataList(3, bcLoads)) { return; }
+            DA.GetData(0, ref run);
+           
 
-            foreach (Mesh m in meshes)
-            {
-                int a = 5;
-                int trtr = a + 3;
+            //foreach (Mesh m in meshes)
+            //{
+            //    int a = 5;
+            //    int trtr = a + 3;
                 // MiStrAnEngine.Structure mistStruc= StaticFunctions.ConvertGHMeshToStructure(m);
-                StaticFunctions.ConvertGHMeshToStructure(m, bcNodes,bcLoads);
+                MiStrAnEngine.Structure s = StaticFunctions.ConvertGHMeshToStructure(meshes[0], bcNodes,bcLoads);
+            //}
+
+            if (run)
+            {
+                Matrix a, r;
+                s.Analyze(out a, out r);
+
+                DA.SetData(0, a.mat);
+                DA.SetData(0, r.mat);
             }
+
         }
 
         /// <summary>

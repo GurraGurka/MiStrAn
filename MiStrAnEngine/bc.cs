@@ -7,7 +7,7 @@ namespace MiStrAnEngine
 {
     public class BC
     {
-        Node node;
+        public Node node;
 
         public BC(Node _node)
         {
