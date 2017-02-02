@@ -28,6 +28,8 @@ namespace MiStrAnGH
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {
             pManager.AddGeometryParameter("Mesh", "Mesh", "Mesh to analyze", GH_ParamAccess.list);
+            pManager.AddGeometryParameter("BC", "BC", "Zero displacement nodes", GH_ParamAccess.list);
+            pManager.AddGeometryParameter("Load", "Load", "Just nodes for loads", GH_ParamAccess.list);
         }
 
         /// <summary>
@@ -45,15 +47,19 @@ namespace MiStrAnGH
         protected override void SolveInstance(IGH_DataAccess DA)
         {
             List<Mesh> meshes = new List<Mesh>();
+            List<Point3d> bcNodes = new List<Point3d>();
+            List<Point3d> bcLoads = new List<Point3d>();
 
             if (!DA.GetDataList(0, meshes)) { return;  }
+            if (!DA.GetDataList(1, bcNodes)) { return; }
+            if (!DA.GetDataList(2, bcLoads)) { return; }
 
-            foreach(Mesh m in meshes)
+            foreach (Mesh m in meshes)
             {
                 int a = 5;
                 int trtr = a + 3;
                 // MiStrAnEngine.Structure mistStruc= StaticFunctions.ConvertGHMeshToStructure(m);
-                StaticFunctions.ConvertGHMeshToStructure(m);
+                StaticFunctions.ConvertGHMeshToStructure(m, bcNodes,bcLoads);
             }
         }
 

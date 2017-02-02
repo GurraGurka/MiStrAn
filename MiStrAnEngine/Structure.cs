@@ -11,12 +11,14 @@ namespace MiStrAnEngine
         List<Node> nodes;
         List<ShellElement> elements;
         List<BC> bcs;
+        List<Load> loads;
 
-        public Structure(List<Node> _nodes, List<ShellElement> _elements, List<BC> _bcs)
+        public Structure(List<Node> _nodes, List<ShellElement> _elements, List<BC> _bcs, List<Load> _loads)
         {
             nodes = _nodes;
             elements = _elements;
             bcs = _bcs;
+            loads = _loads;
         }
 
         public Structure(List<Node> _nodes, List<ShellElement> _elements)
