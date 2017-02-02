@@ -23,12 +23,36 @@ namespace MiStrAnEngine
 
         public bool GenerateKefe(out Matrix Ke, out Matrix fe)
         {
-            planre(out Ke, out fe);
+            Ke = Matrix.ZeroMatrix(20, 20);
+            fe = Matrix.ZeroMatrix(20, 1);
 
-            Matrix dofPlan = new Matrix(new double[,] { { 1, 2, 6, 7, 11, 12, 16, 17 } });
-            Matrix dofPlate = new Matrix(new double[,] { { 3, 4, 5, 8, 9, 10, 13, 14, 15, 18, 19, 20 } });
+            int[] dofPlan = new int[] { 0, 1, 5, 6, 10, 11, 15, 16 };
+            int[] dofPlate = new int[] { 2, 3, 4, 7, 8, 9, 12, 13, 14, 17, 18, 19 };
+
+            Matrix KeMelosh, feMelosh, KeKirchoff, feKirchoff;
+
+            this.planre(out KeMelosh, out feMelosh);
+            this.platre(out KeKirchoff, out feKirchoff);
+
+            Ke[dofPlan, dofPlan] = KeMelosh;
+            fe[dofPlan, 0] = feMelosh;
+
+            Ke[dofPlate, dofPlate] = KeKirchoff;
+            fe[dofPlate, 0] = feKirchoff;
+
 
             return true;
+        }
+
+        public int[] GetElementDofs()
+        {
+            int[] dofs = new int[] 
+           {nodes[0].dofX, nodes[0].dofY, nodes[0].dofZ, nodes[0].dofXX, nodes[0].dofYY, nodes[0].dofZZ,
+            nodes[1].dofX, nodes[1].dofY, nodes[1].dofZ, nodes[1].dofXX, nodes[1].dofYY, nodes[1].dofZZ,
+            nodes[2].dofX, nodes[2].dofY, nodes[2].dofZ, nodes[2].dofXX, nodes[2].dofYY, nodes[2].dofZZ,
+            nodes[3].dofX, nodes[3].dofY, nodes[3].dofZ, nodes[3].dofXX, nodes[3].dofYY, nodes[3].dofZZ};
+
+            return dofs;
         }
 
 
@@ -97,7 +121,8 @@ namespace MiStrAnEngine
             Ke = Keq;
         }
 
-        // Direct copy of CALFEMS planre
+        // Direct copy of CALFEM's planre
+        // FÄRDIG OCH TESTAD 2017-02-02 11:30
         private void planre(out Matrix Ke, out Matrix fe)
         {
            

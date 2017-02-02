@@ -25,10 +25,19 @@ namespace MiStrAnEngine
             elements = _elements;
         }
 
-        public Matrix GenerateK()
+        public Matrix AssembleKf()
         {
-            Matrix K = StaticFunctions.GenerateK(nodes, elements);
-            return K;
+            int nDofs = nodes.Count * 6;
+            
+
+            Matrix K = Matrix.ZeroMatrix(nDofs, nDofs);
+            Matrix f = Matrix.ZeroMatrix(nDofs, nDofs);
+
+            
+
+
+
+            return new Matrix(1, 1);
         }
     }
 }
