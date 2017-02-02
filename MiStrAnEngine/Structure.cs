@@ -32,7 +32,7 @@ namespace MiStrAnEngine
 
         public void AssembleKfbc()
         {
-            int nDofs = nodes.Count * 6;
+            int nDofs = nodes.Count * 5;
             K = Matrix.ZeroMatrix(nDofs, nDofs);
             f = Matrix.ZeroMatrix(nDofs, 1);
 
@@ -50,31 +50,28 @@ namespace MiStrAnEngine
             foreach (Load load in loads)
             {
                 int loadDof = load.node.dofZ;
-                f[loadDof, 0] = load.loadAmplitude;
+                f[loadDof, 0] = f[loadDof, 0] + load.loadAmplitude;
             }
 
             // #TODO make it possible to have other bc's than fully fixed
-            bc = Matrix.ZeroMatrix(bcs.Count * 6, 2);
+            bc = Matrix.ZeroMatrix(bcs.Count * 5, 2);
 
             for (int i = 0; i < bcs.Count; i++)
             {
-                bc[(i + 1) * 6 - 6, 0] = bcs[i].node.dofX;
-                bc[(i + 1) * 6 - 6, 1] = 0;
+                bc[(i + 1) * 5 - 5, 0] = bcs[i].node.dofX;
+                bc[(i + 1) * 5 - 5, 1] = 0;
 
-                bc[(i + 1) * 6 - 5, 0] = bcs[i].node.dofY;
-                bc[(i + 1) * 6 - 5, 1] = 0;
+                bc[(i + 1) * 5 - 4, 0] = bcs[i].node.dofY;
+                bc[(i + 1) * 5 - 4, 1] = 0;
 
-                bc[(i + 1) * 6 - 4, 0] = bcs[i].node.dofZ;
-                bc[(i + 1) * 6 - 4, 1] = 0;
+                bc[(i + 1) * 5 - 3, 0] = bcs[i].node.dofZ;
+                bc[(i + 1) * 5 - 3, 1] = 0;
 
-                bc[(i + 1) * 6 - 3, 0] = bcs[i].node.dofXX;
-                bc[(i + 1) * 6 - 3, 1] = 0;
+                bc[(i + 1) * 5 - 2, 0] = bcs[i].node.dofXX;
+                bc[(i + 1) * 5 - 2, 1] = 0;
 
-                bc[(i + 1) * 6 - 2, 0] = bcs[i].node.dofYY;
-                bc[(i + 1) * 6 - 2, 1] = 0;
-
-                bc[(i + 1) * 6 - 1, 0] = bcs[i].node.dofZZ;
-                bc[(i + 1) * 6 - 1, 1] = 0;
+                bc[(i + 1) * 5 - 1, 0] = bcs[i].node.dofYY;
+                bc[(i + 1) * 5 - 1, 1] = 0;
             }
         }
 

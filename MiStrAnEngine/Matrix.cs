@@ -193,6 +193,13 @@ public class Matrix
         }
     }
 
+    // #TODO add this
+    public void MakeLUSymmetric()
+    {
+
+
+    }
+
 
     public Matrix SolveWith(Matrix v)                        // Function solves Ax = v in confirmity with solution vector "v"
     {
@@ -443,6 +450,7 @@ public class Matrix
             for (int j = 0; j < size; j++) C[i, j] = A[ya + i, xa + j];
     }
 
+    // den här suuuuuuuuuuuuuuuuuuuuuuuuuger
     private static Matrix StrassenMultiply(Matrix A, Matrix B)                // Smart matrix multiplication
     {
         if (A.cols != B.rows) throw new MException("Wrong dimension of matrix!");
@@ -726,7 +734,7 @@ public class Matrix
     { return Matrix.Add(m1, -m2); }
 
     public static Matrix operator *(Matrix m1, Matrix m2)
-    { return Matrix.StrassenMultiply(m1, m2); }
+    { return Matrix.StupidMultiply(m1, m2); }
 
     public static Matrix operator *(double n, Matrix m)
     { return Matrix.Multiply(n, m); }

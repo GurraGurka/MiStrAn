@@ -40,7 +40,7 @@ namespace MiStrAnEngine
             int[] pdof = new int[bc.rows];
 
             for (int i = 0; i < bc.rows; i++)
-                pdof[i] = Convert.ToInt32(bc[i, 1]);
+                pdof[i] = Convert.ToInt32(bc[i, 0]);
 
             fdof = fdof.Except(pdof).ToArray();
 

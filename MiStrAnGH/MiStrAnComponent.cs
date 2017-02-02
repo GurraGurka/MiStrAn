@@ -38,8 +38,8 @@ namespace MiStrAnGH
         /// </summary>
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
         {
-            pManager.AddNumberParameter("displacements", "a", "solved displacements", GH_ParamAccess.item);
-            pManager.AddNumberParameter("reactions", "r", "solved reactions", GH_ParamAccess.item);
+            pManager.AddNumberParameter("displacements", "a", "solved displacements", GH_ParamAccess.list);
+            pManager.AddNumberParameter("reactions", "r", "solved reactions", GH_ParamAccess.list);
         }
 
         /// <summary>
@@ -73,8 +73,18 @@ namespace MiStrAnGH
                 Matrix a, r;
                 s.Analyze(out a, out r);
 
-                DA.SetData(0, a.mat);
-                DA.SetData(0, r.mat);
+                List<double> aList = new List<double>();
+                List<double> rList = new List<double>();
+
+                for (int i = 0; i < a.rows; i++)
+                {
+                    aList.Add(a[i, 0]);
+                    rList.Add(r[i, 0]);
+                }
+
+
+                DA.SetDataList(0, aList);
+                DA.SetDataList(1, rList);
             }
 
         }

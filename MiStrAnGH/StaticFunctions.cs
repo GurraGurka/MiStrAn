@@ -43,7 +43,7 @@ namespace MiStrAnGH
                 {
                     Point3d closePt = mPt;
                     if (closePt.DistanceTo(loads[j]) < 0.001)
-                        mistranLoads.Add(new MiStrAnEngine.Load(mistranNodes[i],-1000,0)); //TEMP JUST 1000 
+                        mistranLoads.Add(new MiStrAnEngine.Load(mistranNodes[i],0,0)); //TEMP JUST 1000 
                 }
             }
               
@@ -59,6 +59,18 @@ namespace MiStrAnGH
                     shellNodes.Add(mistranNodes[index]);
 
                 MiStrAnEngine.ShellElement mistShell = new MiStrAnEngine.ShellElement(shellNodes, i);
+
+                // TEMPORARY FOR TEST CASE
+                mistShell.D = new Matrix(new double[,] { { 2.307692307692308,0.692307692307692,0},
+                    { 0.692307692307692,   2.307692307692308,                   0},
+                    { 0 ,                  0 ,  0.807692307692308} });
+
+                mistShell.D = 1e11 * mistShell.D;
+                mistShell.t = 0.008;
+                mistShell.eq = new Matrix(new double[,] { {0,0,1e3 } });
+
+
+
                 mistranShells.Add(mistShell);
             }
 
