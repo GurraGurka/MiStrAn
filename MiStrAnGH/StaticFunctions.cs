@@ -51,7 +51,7 @@ namespace MiStrAnGH
             for(int i=0; i< m.Faces.Count;i++)
             {
                 List<MiStrAnEngine.Node> shellNodes = new List<MiStrAnEngine.Node>();
-                int[] faceIndexDup =m.Faces.GetTopologicalVertices(i);
+                int[] faceIndexDup = new int[] { m.Faces[i].A, m.Faces[i].B, m.Faces[i].C, m.Faces[i].D };
 
                 //If face is triangular, the duplicate is removed
                 int[] faceIndex = faceIndexDup.Distinct().ToArray();

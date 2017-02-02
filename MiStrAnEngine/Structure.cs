@@ -12,6 +12,9 @@ namespace MiStrAnEngine
         List<ShellElement> elements;
         List<BC> bcs;
         List<Load> loads;
+        public Matrix K;
+        public Matrix f;
+        public Matrix bc;
 
         public Structure(List<Node> _nodes, List<ShellElement> _elements, List<BC> _bcs, List<Load> _loads)
         {
@@ -27,19 +30,22 @@ namespace MiStrAnEngine
             elements = _elements;
         }
 
-        public Matrix AssembleKf()
+        public void AssembleKf()
         {
             int nDofs = nodes.Count * 6;
-            
+            K = Matrix.ZeroMatrix(nDofs, nDofs);
+            f = Matrix.ZeroMatrix(nDofs, 1);
 
-            Matrix K = Matrix.ZeroMatrix(nDofs, nDofs);
-            Matrix f = Matrix.ZeroMatrix(nDofs, nDofs);
+            foreach (ShellElement elem in elements)
+            {
+                int[] dofs = elem.GetElementDofs();
+                Matrix Ke, fe;
+                elem.GenerateKefe(out Ke, out fe);
 
-            
-
-
-
-            return new Matrix(1, 1);
+                K[dofs, dofs] = K[dofs, dofs] + Ke;
+                f[dofs, 0] = f[dofs, 0] + fe;
+            }
+          
         }
     }
 }

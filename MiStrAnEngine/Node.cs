@@ -38,11 +38,11 @@ namespace MiStrAnEngine
             {
                 id = value;
                 dofX = (id + 1) * 6 - 6;
-                dofX = (id + 1) * 6 - 5;
-                dofX = (id + 1) * 6 - 4;
-                dofX = (id + 1) * 6 - 3;
-                dofX = (id + 1) * 6 - 2;
-                dofX = (id + 1) * 6 - 1;
+                dofY = (id + 1) * 6 - 5;
+                dofZ = (id + 1) * 6 - 4;
+                dofXX = (id + 1) * 6 - 3;
+                dofYY = (id + 1) * 6 - 2;
+                dofZZ = (id + 1) * 6 - 1;
             }
         }
 
@@ -53,7 +53,7 @@ namespace MiStrAnEngine
             y = _y;
             z = _z;
 
-            id = _id;
+            Id = _id;
         }
 
 
