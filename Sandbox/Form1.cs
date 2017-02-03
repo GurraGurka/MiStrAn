@@ -67,8 +67,9 @@ namespace Sandbox
             double E2 = 2; //GPA
             double G12 = 0.672; //GPa
             double v12 = 0.32;
-            double angle = 90;
-            mat.eqModulus(E1, E2, G12, v12, angle);
+            double angle = 0;
+            double laminaThickness = 0.004; 
+            mat.eqModulus(E1, E2, G12, v12, angle, laminaThickness);
         }
     }
 }
