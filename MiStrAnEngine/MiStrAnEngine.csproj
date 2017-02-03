@@ -43,6 +43,7 @@
   <ItemGroup>
     <Compile Include="BC.cs" />
     <Compile Include="Load.cs" />
+    <Compile Include="Materials.cs" />
     <Compile Include="Matrix.cs" />
     <Compile Include="Node.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

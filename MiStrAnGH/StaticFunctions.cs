@@ -74,22 +74,7 @@ namespace MiStrAnGH
                 mistranShells.Add(mistShell);
             }
 
-
-            
-
-            //TEMPORARY ADD LOADS. THE LAST 1/20 of the nodes, all direction downwards. Amplitude of 1000 
-            for (int i = 0; i < 10; i++)
-            {
-               // int loadDof = maxValue - i FORTSÄTT HÄR
-              //  MiStrAnEngine.BC bc = new MiStrAnEngine.BC(mistranNodes[i]);
-              //  mistranBCs.Add(bc);
-            }
-
-
-            MiStrAnEngine.Structure mistStruc = new MiStrAnEngine.Structure(mistranNodes, mistranShells,mistranBCs, mistranLoads);
-
-
-            return mistStruc;
+            return new MiStrAnEngine.Structure(mistranNodes, mistranShells, mistranBCs, mistranLoads);
         }
 
     }
