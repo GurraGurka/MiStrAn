@@ -21,6 +21,26 @@ namespace MiStrAnEngine
             Id = _id;
         }
 
+        //private Matrix GetVn(int i)
+        //{
+        //    Matrix a = new Matrix(new double[,] { })
+
+        //}
+
+        public bool TestingShell(out Matrix Ke, out Matrix fe)
+        {
+            double r = 0, s = 0;
+
+            double h1 = 1 - r - s;
+            double h2 = r;
+            double h3 = s;
+
+            Ke = Matrix.ZeroMatrix(1, 1);
+            fe = Matrix.ZeroMatrix(1, 1);
+
+            return false;
+        }
+
         public bool GenerateKefe(out Matrix Ke, out Matrix fe)
         {
             Ke = Matrix.ZeroMatrix(20, 20);

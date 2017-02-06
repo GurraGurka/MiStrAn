@@ -52,6 +52,7 @@
     <Compile Include="StaticFunctions.cs" />
     <Compile Include="StiffnessMatrix.cs" />
     <Compile Include="Structure.cs" />
+    <Compile Include="Vector.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
