@@ -60,6 +60,12 @@ namespace MiStrAnEngine
             return dofs;
         }
 
+        public Matrix GetL()
+        {
+
+            return Matrix.ZeroMatrix(1, 1);
+        }
+
 
         // Direct copy of CALFEM's platre
         // FÄRDIG OCH TESTAD 2017-02-01 18:06

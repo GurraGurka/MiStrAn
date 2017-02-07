@@ -98,6 +98,29 @@ public class Matrix
         }
     }
 
+    public double this[int i]
+    {
+        get
+        {
+            if (cols == 1)
+                return mat[i, 0];
+            else if (rows == 1)
+                return mat[0, i];
+            else
+                throw new MException("Operator for 1D matrix used. Matrix is multidimensional");
+        }
+
+        set
+        {
+            if (cols == 1)
+                mat[i, 0] = value;
+            else if (rows == 1)
+                mat[0, i] = value;
+            else
+               throw new MException("Operator for 1D matrix used. Matrix is multidimensional");
+        }
+    }
+
     public Matrix this[int iRow, int[] iCols]      // Access sub array
     {
         get
