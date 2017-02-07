@@ -67,11 +67,11 @@ namespace Sandbox
 
         private void button2_Click(object sender, EventArgs e)
         {
-            double E1 = 6.3; //GPa
-            double E2 = 2; //GPA
-            double G12 = 0.672; //GPa
-            double v12 = 0.32;
-            double angle = 0;
+            double E1 = 33.18; //GPa
+            double E2 = 7.74; //GPA
+            double G12 = 2.91; //GPa
+            double v12 = 0.267;
+            double[] angle = new double[4] { 45,30, 30, 45};
             double laminaThickness = 0.004; 
             mat.eqModulus(E1, E2, G12, v12, angle, laminaThickness);
         }
