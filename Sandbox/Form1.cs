@@ -22,15 +22,19 @@ namespace Sandbox
 
         private void button1_Click(object sender, EventArgs e)
         {
-            //// Platre test case
-            //Node node1 = new Node(0, 0, 0);
-            //Node node2 = new Node(2, 0, 0);
-            //Node node3 = new Node(2, 1, 0);
-            //Node node4 = new Node(0, 1, 0);
+            // shell
+            Node node1 = new Node(2, 2, 0);
+            Node node2 = new Node(6, 3, 0);
+            Node node3 = new Node(5, 5, 0);
 
-            //List<Node> nodeList = new List<Node>() { node1, node2, node3, node4 };
+            List<Node> nodeList = new List<Node>() { node1, node2, node3 };
 
-            //ShellElement element = new ShellElement(nodeList, 1);
+            ShellElement element = new ShellElement(nodeList, 1);
+            element.thickness = 1;
+
+            Matrix Ke, fe;
+
+            //element.TestingShell2();
 
             //element.D = new Matrix(new double[,] { { 1, 2, 3 }, { 2, 2, 2 }, { 3, 2, 1 } });
             //element.t = 2;
@@ -46,13 +50,13 @@ namespace Sandbox
 
             //Solveq test case
 
-            Matrix K = new Matrix(new double[,] { { 2, -1 }, { -1, 2 } });
-            Matrix f = new Matrix(new double[,] { { 0}, { 10 } });
-            Matrix bc = new Matrix(new double[,] { { 0 , 0 } });
+            //Matrix K = new Matrix(new double[,] { { 2, -1 }, { -1, 2 } });
+            //Matrix f = new Matrix(new double[,] { { 0}, { 10 } });
+            //Matrix bc = new Matrix(new double[,] { { 0 , 0 } });
 
-            Matrix d, Q;
+            //Matrix d, Q;
 
-            SF.solveq(K, f, bc, out d, out Q);
+            //SF.solveq(K, f, bc, out d, out Q);
 
         }
 

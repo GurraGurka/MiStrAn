@@ -57,7 +57,20 @@ namespace MiStrAnEngine
         public double Length
         { get { return Math.Sqrt(Math.Pow(this.X, 2) + Math.Pow(this.Y, 2) + Math.Pow(this.Z, 2)); } }
 
+        public static Vector e1
+        {
+            get { return new Vector(1, 0, 0); }
+        }
 
+        public static Vector e2
+        {
+            get { return new Vector(0, 1, 0); }
+        }
+
+        public static Vector e3
+        {
+            get { return new Vector(0, 0, 1); }
+        }
 
 
 

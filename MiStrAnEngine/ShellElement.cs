@@ -11,9 +11,12 @@ namespace MiStrAnEngine
     {
         public List<Node> nodes;
         public int Id;
-        public double t;
+        public double thickness;
         public Matrix eq; // [eqx eqy eqz]
         public Matrix D;
+
+        private Vector Vn1, Vn2, Vn3,V11,V21,V12,V22,V13,V23,x1,x2,x3;
+        double a;
 
         public ShellElement(List<Node> _nodes, int _id)
         {
@@ -21,25 +24,7 @@ namespace MiStrAnEngine
             Id = _id;
         }
 
-        //private Matrix GetVn(int i)
-        //{
-        //    Matrix a = new Matrix(new double[,] { })
-
-        //}
-
-        public bool TestingShell(out Matrix Ke, out Matrix fe)
-        {
-            double r = 0, s = 0;
-
-            double h1 = 1 - r - s;
-            double h2 = r;
-            double h3 = s;
-
-            Ke = Matrix.ZeroMatrix(1, 1);
-            fe = Matrix.ZeroMatrix(1, 1);
-
-            return false;
-        }
+       
 
         public bool GenerateKefe(out Matrix Ke, out Matrix fe)
         {
@@ -83,7 +68,7 @@ namespace MiStrAnEngine
 
             double Lx = nodes[2].x - nodes[0].x; double Ly = nodes[2].y - nodes[0].y;
 
-            Matrix _D = (Math.Pow(t,3) / 12) * D;
+            Matrix _D = (Math.Pow(thickness,3) / 12) * D;
 
             double A1 = Ly / Math.Pow(Lx,3); double A2 = Lx / Math.Pow(Ly, 3); double A3 = 1 / (Lx * Ly);
             double A4 = Ly / Math.Pow(Lx, 2); double A5 = Lx / Math.Pow(Ly, 2); double A6 = 1 / Lx;
@@ -175,11 +160,11 @@ namespace MiStrAnEngine
                 Matrix B = new Matrix(new double[,] { { -(b - y), 0, b - y, 0, b + y, 0, -(b + y), 0 }, { 0, -(a - x), 0, -(a + x), 0, a + x, 0, a - x }, { -(a - x), -(b - y), -(a + x), b - y, a + x, b + y, a - x, -(b + y) } });
                 B = 1 / (4 * a * b) * B;
 
-                Ke = Ke + a * b * t * Matrix.Transpose(B) * D * B;
+                Ke = Ke + a * b * thickness * Matrix.Transpose(B) * D * B;
             }
 
             fe = new Matrix(new double[,] { {bx}, {by}, {bx}, { by }, { bx }, { by }, { bx }, { by } });
-            fe = a * b * t * fe;
+            fe = a * b * thickness * fe;
         }
 
     }

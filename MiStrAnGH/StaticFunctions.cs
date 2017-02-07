@@ -66,7 +66,7 @@ namespace MiStrAnGH
                     { 0 ,                  0 ,  0.807692307692308} });
 
                 mistShell.D = 1e11 * mistShell.D;
-                mistShell.t = 0.008;
+                mistShell.thickness = 0.008;
                 mistShell.eq = new Matrix(new double[,] { {0,0,1e3 } });
 
 
