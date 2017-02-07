@@ -47,6 +47,57 @@ namespace MiStrAnEngine
             return true;
         }
 
+        public void ShellTesting()
+        {
+            Vector x1 = nodes[0].Pos;
+            Vector x2 = nodes[1].Pos;
+            Vector x3 = nodes[2].Pos;
+
+            Vector gr = -x1 + x2;
+            Vector gs = -x1 + x3;
+
+            Matrix B1 = new Matrix(3,6);
+
+            B1[0, 0] = -gr.X;
+            B1[0, 1] = -gr.Y;
+            B1[0, 2] = gr.X;
+            B1[0, 3] = gr.Y;
+
+            B1[1, 0] = -gs.X;
+            B1[1, 1] = -gs.Y;
+            B1[1, 4] = gs.X;
+            B1[1, 5] = gs.Y;
+
+            double ex1 = x1.X;
+            double ex2 = x2.X;
+            double ex3 = x3.X;
+
+            double ey1 = x1.Y;
+            double ey2 = x2.Y;
+            double ey3 = x3.Y;
+
+            Matrix C = new Matrix(new double[,] { 
+                { 1, ex1, ey1, 0, 0, 0 }, 
+                { 0, 0, 0, 1, ex1, ey1 }, 
+                { 1, ex2, ey2, 0, 0, 0 }, 
+                { 0, 0, 0, 1, ex2, ey2 }, 
+                { 1, ex3, ey3, 0, 0, 0 }, 
+                { 0, 0, 0, 1, ex3, ey3 } });
+
+            Matrix B2 = new Matrix(3, 6);
+            B2[0, 1] = 1;
+            B2[1, 5] = 1;
+            B2[2, 2] = 1;
+            B2[2, 4] = 1;
+
+            B2 = B2 * C.Invert();
+
+
+
+
+
+        }
+
         public int[] GetElementDofs()
         {
             int[] dofs = new int[]
