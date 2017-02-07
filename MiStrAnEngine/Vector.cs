@@ -29,6 +29,10 @@ namespace MiStrAnEngine
             this.Z = this.Z / L;
         }
 
+        public Matrix ToMatrix()
+        {
+            return new Matrix(new double[,] { { this.X }, { this.Y }, { this.Z }, });
+        }
 
         public static Vector operator +(Vector a, Vector b)
         { return new Vector(a.X + b.X, a.Y + b.Y, a.Z + b.Z); }
@@ -47,6 +51,9 @@ namespace MiStrAnEngine
 
         public static double operator*(Vector a, Vector b)
         { return DotProduct(a, b); }
+
+        public static Vector operator /(Vector a, double b)
+        { return a*(1/b); }
 
         public static double DotProduct(Vector a, Vector b)
         { return a.X * b.X + a.Y * b.Y + a.Z * b.Z; }

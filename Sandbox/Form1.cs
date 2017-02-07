@@ -23,9 +23,9 @@ namespace Sandbox
         private void button1_Click(object sender, EventArgs e)
         {
             // shell
-            Node node1 = new Node(2, 2, 0);
-            Node node2 = new Node(6, 3, 0);
-            Node node3 = new Node(5, 5, 0);
+            Node node1 = new Node(5, 5, 0);
+            Node node2 = new Node(10, 9, 1);
+            Node node3 = new Node(6, 9, 1);
 
             List<Node> nodeList = new List<Node>() { node1, node2, node3 };
 
@@ -34,6 +34,7 @@ namespace Sandbox
 
             Matrix Ke, fe;
 
+            //element.GetLocalNodeCoordinates();
             //element.TestingShell2();
 
             //element.D = new Matrix(new double[,] { { 1, 2, 3 }, { 2, 2, 2 }, { 3, 2, 1 } });

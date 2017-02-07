@@ -61,13 +61,13 @@ namespace MiStrAnGH
                 MiStrAnEngine.ShellElement mistShell = new MiStrAnEngine.ShellElement(shellNodes, i);
 
                 // TEMPORARY FOR TEST CASE
-                mistShell.D = new Matrix(new double[,] { { 2.307692307692308,0.692307692307692,0},
+                mistShell.D = new MiStrAnEngine.Matrix(new double[,] { { 2.307692307692308,0.692307692307692,0},
                     { 0.692307692307692,   2.307692307692308,                   0},
                     { 0 ,                  0 ,  0.807692307692308} });
 
                 mistShell.D = 1e11 * mistShell.D;
                 mistShell.thickness = 0.008;
-                mistShell.eq = new Matrix(new double[,] { {0,0,1e3 } });
+                mistShell.eq = new MiStrAnEngine.Matrix(new double[,] { {0,0,1e3 } });
 
 
 

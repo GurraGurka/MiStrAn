@@ -70,7 +70,7 @@ namespace MiStrAnGH
 
             if (run)
             {
-                Matrix a, r;
+               MiStrAnEngine.Matrix a, r;
                 s.Analyze(out a, out r);
 
                 List<double> aList = new List<double>();

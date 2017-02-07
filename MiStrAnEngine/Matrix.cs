@@ -37,7 +37,8 @@ using System;
 using System.Text.RegularExpressions;
 using System.Linq;
 
-
+namespace MiStrAnEngine
+{ 
 public class Matrix
 {
     public int rows;
@@ -98,6 +99,12 @@ public class Matrix
         }
     }
 
+        public Vector ToVector()
+        {
+            return new Vector(this[0], this[1], this[2]);
+
+        }
+
     public double this[int i]
     {
         get
@@ -120,6 +127,7 @@ public class Matrix
                throw new MException("Operator for 1D matrix used. Matrix is multidimensional");
         }
     }
+
 
     public Matrix this[int iRow, int[] iCols]      // Access sub array
     {
@@ -770,4 +778,6 @@ public class MException : Exception
     public MException(string Message)
         : base(Message)
     { }
+}
+
 }

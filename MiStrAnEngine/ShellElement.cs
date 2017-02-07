@@ -15,8 +15,6 @@ namespace MiStrAnEngine
         public Matrix eq; // [eqx eqy eqz]
         public Matrix D;
 
-        private Vector Vn1, Vn2, Vn3,V11,V21,V12,V22,V13,V23,x1,x2,x3;
-        double a;
 
         public ShellElement(List<Node> _nodes, int _id)
         {
@@ -60,8 +58,53 @@ namespace MiStrAnEngine
             return dofs;
         }
 
+        public void GetLocalNodeCoordinates(out double x1, out double x2, out double x3,
+            out double y1, out double y2, out double y3)
+        {
+            Vector centroid = (nodes[0].Pos + nodes[1].Pos + nodes[2].Pos) / 3;
+
+            Vector e1 = centroid - nodes[0].Pos;
+            e1.Normalize();
+
+            Vector e3 = Vector.CrossProduct(nodes[1].Pos - nodes[0].Pos, nodes[2].Pos - nodes[0].Pos);
+            e3.Normalize();
+            Vector e2 = Vector.CrossProduct(e3, e1);
+
+            // Relative positions
+            Vector relPos1 = nodes[0].Pos - centroid;
+            Vector relPos2 = nodes[1].Pos - centroid;
+            Vector relPos3 = nodes[2].Pos - centroid;
+
+            Matrix T = new Matrix(new double[,] {
+                { Vector.DotProduct(e1, Vector.e1), Vector.DotProduct(e1, Vector.e2), Vector.DotProduct(e1, Vector.e3) },
+                { Vector.DotProduct(e2, Vector.e1), Vector.DotProduct(e2, Vector.e2), Vector.DotProduct(e2, Vector.e3) },
+                { Vector.DotProduct(e3, Vector.e1), Vector.DotProduct(e3, Vector.e2), Vector.DotProduct(e3, Vector.e3) }
+            });
+
+            Vector localPos1 = (T * relPos1.ToMatrix()).ToVector();
+            Vector localPos2 = (T * relPos2.ToMatrix()).ToVector();
+            Vector localPos3 = (T * relPos3.ToMatrix()).ToVector();
+
+            x1 = localPos1.X;
+            x2 = localPos2.X;
+            x3 = localPos3.X;
+
+            y1 = localPos1.Y;
+            y2 = localPos2.Y;
+            y3 = localPos3.Y;
+        }
+
         public Matrix GetL()
         {
+            //double x1 = nodes[0].x;
+            //double x1 = nodes[0].x;
+            //double x1 = nodes[0].x;
+
+            //double x1 = nodes[0].x;
+            //double x1 = nodes[0].x;
+            //double x1 = nodes[0].x;
+
+
 
             return Matrix.ZeroMatrix(1, 1);
         }
