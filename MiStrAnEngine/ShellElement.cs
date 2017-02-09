@@ -203,7 +203,7 @@ namespace MiStrAnEngine
 
 
         // See slides p.44
-        private void GetLocalNodeCoordinates(out Matrix xel, out Matrix Tg)
+        public void GetLocalNodeCoordinates(out Matrix xel, out Matrix Tg)
         {
             Vector v1 = nodes[1].Pos - nodes[0].Pos;
             Vector _v2 = nodes[2].Pos - nodes[0].Pos;
@@ -216,7 +216,7 @@ namespace MiStrAnEngine
 
             Matrix xeg = new Matrix(3, 3);
             xeg.SetRow(v1.ToMatrix().Transpose(), 1);
-            xeg.SetRow(v2.ToMatrix().Transpose(), 2);
+            xeg.SetRow(_v2.ToMatrix().Transpose(), 2);
 
             Matrix T = new Matrix(3, 3);
             T.SetCol(e1.ToMatrix(), 0);
