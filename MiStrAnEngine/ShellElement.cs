@@ -157,10 +157,9 @@ namespace MiStrAnEngine
         public int[] GetElementDofs()
         {
             int[] dofs = new int[]
-           {nodes[0].dofX, nodes[0].dofY, nodes[0].dofZ, nodes[0].dofXX, nodes[0].dofYY,
-            nodes[1].dofX, nodes[1].dofY, nodes[1].dofZ, nodes[1].dofXX, nodes[1].dofYY,
-            nodes[2].dofX, nodes[2].dofY, nodes[2].dofZ, nodes[2].dofXX, nodes[2].dofYY,
-            nodes[3].dofX, nodes[3].dofY, nodes[3].dofZ, nodes[3].dofXX, nodes[3].dofYY};
+           {nodes[0].dofX, nodes[0].dofY, nodes[0].dofZ, nodes[0].dofXX, nodes[0].dofYY, nodes[0].dofZZ,
+            nodes[1].dofX, nodes[1].dofY, nodes[1].dofZ, nodes[1].dofXX, nodes[1].dofYY, nodes[1].dofZZ,
+            nodes[2].dofX, nodes[2].dofY, nodes[2].dofZ, nodes[2].dofXX, nodes[2].dofYY, nodes[2].dofZZ };
 
             return dofs;
         }

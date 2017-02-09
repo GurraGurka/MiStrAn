@@ -19,6 +19,7 @@ namespace MiStrAnEngine
         public int dofZ;
         public int dofXX;
         public int dofYY;
+        public int dofZZ;
 
 
         private int id;
@@ -36,11 +37,12 @@ namespace MiStrAnEngine
             set
             {
                 id = value;
-                dofX = (id + 1) * 5 - 5;
-                dofY = (id + 1) * 5 - 4;
-                dofZ = (id + 1) * 5 - 3;
-                dofXX = (id + 1) * 5 - 2;
-                dofYY = (id + 1) * 5 - 1;
+                dofX = (id + 1) * 6 - 6;
+                dofY = (id + 1) * 6 - 5;
+                dofZ = (id + 1) * 6 - 4;
+                dofXX = (id + 1) * 6 - 3;
+                dofYY = (id + 1) * 6 - 2;
+                dofZZ = (id + 1) * 6 - 1;
             }
         }
 
