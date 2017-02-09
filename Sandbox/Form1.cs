@@ -23,33 +23,26 @@ namespace Sandbox
         private void button1_Click(object sender, EventArgs e)
         {
             // shell
-<<<<<<< HEAD
+
             Node node1 = new Node(1, 1, 0);
             Node node2 = new Node(2, 1, 0);
             Node node3 = new Node(1.5, 2, 0);
-=======
-            Node node1 = new Node(0.1, 0.2, 1);
-            Node node2 = new Node(1.3, 0.3, 0.3);
-            Node node3 = new Node(0.7, 1.2, 0.1);
->>>>>>> origin/master
 
             List<Node> nodeList = new List<Node>() { node1, node2, node3 };
 
 
 
             ShellElement element = new ShellElement(nodeList, 1);
-            //element.thickness = 1;
+            element.thickness = 1;
 
             Matrix Tg, xel;
 
             element.GetLocalNodeCoordinates(out xel, out Tg);
 
-            //Matrix Ke, fe;
+            Matrix Ke, fe;
 
-<<<<<<< HEAD
-=======
             //Matrix test = new Matrix(3, 3);
->>>>>>> origin/master
+
 
 
 
@@ -58,13 +51,18 @@ namespace Sandbox
 
             //element.GetLocalNodeCoordinates();
             //element.TestingShell2();
+            double E = 1;
+            double v = 0.3;
+            double G = E / (2.0 * (1 + v));
+            double[] angle = new double[] { 0,0,0,0,0,0,0};
+            element.D = Materials.eqModulus(E, E, G, v, angle, 1.0/7.0);
 
-            element.D = new Matrix(new double[,] { { 1.3462, 0.5769, 0.5769, 0,0,0 },
-                                                    { 0.5769, 1.3462, 0.5769,0,0,0 },
+           // element.D =// new Matrix(new double[,] { { 1.3462, 0.5769, 0.5769, 0,0,0 },
+           /* { 0.5769, 1.3462, 0.5769,0,0,0 },
                                                     { 0.5769, 0.5769, 1.3462,0,0,0 },
                                                     { 0, 0, 0,0.3846,0,0 },
                                                     { 0, 0, 0,0,0.3846,0 },
-                                                    { 0, 0, 0,0,0,0.3846 } });
+                                                    { 0, 0, 0,0,0,0.3846 } });*/
 
 
             element.GenerateKefe(out Ke,out fe);

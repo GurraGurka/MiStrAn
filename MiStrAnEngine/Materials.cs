@@ -16,7 +16,7 @@ namespace MiStrAnEngine
             Matrix BB = new Matrix(3, 3); //Coupling stiffness terms of a laminate
             Matrix DD = new Matrix(3, 3); //Bending stiffness n therms of a laminate
 
-            //Just loop through 4 times now (otherwise listlength)
+            
             int listLength = angle.Length;
 
             //if odd numbers of numbers
@@ -46,13 +46,13 @@ namespace MiStrAnEngine
                 double Q_26 = Q11 * Math.Pow(n, 3) * m - Q22 * Math.Pow(m, 3) * n + Q12 * (Math.Pow(m, 3) * n - Math.Pow(n, 3) * m) + Q66 * 2 * (Math.Pow(m, 3) * n - Math.Pow(n, 3) * m);
 
                 Matrix Q_ = new Matrix(new double[,] { { Q_11, Q_12, Q_16}, { Q_12, Q_22, Q_26 }, {Q_16, Q_26, Q_66} });
-               
-                
+
+
                 //Determine distances from the mid-plane
                 //Good picture in laminatedComposite PDF
 
-                double hk = 0;
-                double hkMinus1 = 0;
+                double hk =  thickLam / 2.0; //TEMP
+                double hkMinus1 = 0; //-hk; //TEMP
 
                 //Only symmetrical cases(from neutral axis)
 
@@ -73,9 +73,9 @@ namespace MiStrAnEngine
                 }
 
                 //Add local modulus to globals (times 2 to account for both sides of neutral axes)
-                AA =AA+ 2*(hk - hkMinus1) * Q_;
-                BB =BB+ 2*(Math.Pow(hk,2) - Math.Pow(hkMinus1,2)) * Q_;
-                DD =DD+ 2 * (Math.Pow(hk, 3) - Math.Pow(hkMinus1, 3)) * Q_;
+                AA =AA+ (hk - hkMinus1) * Q_;
+                BB =BB+ (Math.Pow(hk,2) - Math.Pow(hkMinus1,2)) * Q_;
+                DD =DD+ (Math.Pow(hk, 3) - Math.Pow(hkMinus1, 3)) * Q_;
 
 
             }
@@ -85,11 +85,11 @@ namespace MiStrAnEngine
             DD = (1.0 / 3.0) * DD;
 
             //Step 5 i euroCOMP
-            Matrix a = AA.Invert();
+         //   Matrix a = AA.Invert();
 
             //TEMPORARY. THEY GET SINGULAR
            // Matrix b = B.Invert();
-            Matrix d = DD.Invert();
+         //   Matrix d = DD.Invert();
 
             //Step 6 euroCOMP
             /*   double totalThick = listLength * thickLam;
