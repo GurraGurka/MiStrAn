@@ -23,18 +23,24 @@ namespace Sandbox
         private void button1_Click(object sender, EventArgs e)
         {
             // shell
-            Node node1 = new Node(1, 1, 0);
-            Node node2 = new Node(3, 2, 1);
-            Node node3 = new Node(1, 4, 1);
+            Node node1 = new Node(0.1, 0.2, 1);
+            Node node2 = new Node(1.3, 0.3, 0.3);
+            Node node3 = new Node(0.7, 1.2, 0.1);
 
             List<Node> nodeList = new List<Node>() { node1, node2, node3 };
 
+
+
             ShellElement element = new ShellElement(nodeList, 1);
-            element.thickness = 1;
+            //element.thickness = 1;
 
-            Matrix Ke, fe;
+            Matrix Tg, xel;
 
-            Matrix test = new Matrix(3, 3);
+            element.GetLocalNodeCoordinates(out xel, out Tg);
+
+            //Matrix Ke, fe;
+
+            //Matrix test = new Matrix(3, 3);
 
             element.ShellTesting();
 
