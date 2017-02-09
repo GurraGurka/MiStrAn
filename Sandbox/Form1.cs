@@ -24,8 +24,8 @@ namespace Sandbox
         {
             // shell
             Node node1 = new Node(1, 1, 0);
-            Node node2 = new Node(3, 2, 1);
-            Node node3 = new Node(1, 4, 1);
+            Node node2 = new Node(2, 1, 0);
+            Node node3 = new Node(1.5, 2, 0);
 
             List<Node> nodeList = new List<Node>() { node1, node2, node3 };
 
@@ -34,14 +34,27 @@ namespace Sandbox
 
             Matrix Ke, fe;
 
-            Matrix test = new Matrix(3, 3);
 
-            element.ShellTesting();
+
+
+
+            //element.ShellTesting();
 
             //element.GetLocalNodeCoordinates();
             //element.TestingShell2();
 
-            //element.D = new Matrix(new double[,] { { 1, 2, 3 }, { 2, 2, 2 }, { 3, 2, 1 } });
+            element.D = new Matrix(new double[,] { { 1.3462, 0.5769, 0.5769, 0,0,0 },
+                                                    { 0.5769, 1.3462, 0.5769,0,0,0 },
+                                                    { 0.5769, 0.5769, 1.3462,0,0,0 },
+                                                    { 0, 0, 0,0.3846,0,0 },
+                                                    { 0, 0, 0,0,0.3846,0 },
+                                                    { 0, 0, 0,0,0,0.3846 } });
+
+
+            element.GenerateKefe(out Ke,out fe);
+
+
+
             //element.t = 2;
             //element.eq = new Matrix(new double[,] { { 5,5,5} });
 
@@ -62,6 +75,10 @@ namespace Sandbox
             //Matrix d, Q;
 
             //SF.solveq(K, f, bc, out d, out Q);
+
+            int[] dofs = new int[] { 0, 1, 6, 7, 12, 13 };
+
+            Matrix K = Ke[dofs, dofs];
 
         }
 
