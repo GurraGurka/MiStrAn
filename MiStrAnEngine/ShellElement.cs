@@ -325,13 +325,13 @@ namespace MiStrAnEngine
         }
 
         //Temp public for testing
-        public Matrix GetB(Matrix L,Matrix xe)
+        public Matrix GetB(Matrix L, Matrix xe)
         {
             //xe is the transformed coordinates
 
-            double L1 = L[0,0];// first element
-            double L2 = L[0,1]; //second
-            double L3 = L[0,2]; //third
+            double L1 = L[0, 0];// first element
+            double L2 = L[1, 0]; //second
+            double L3 = L[2, 0]; //third
 
             double b1 = xe[1, 1] - xe[2, 1];
             double b2 = xe[2, 1] - xe[0, 1];
@@ -346,9 +346,13 @@ namespace MiStrAnEngine
             double l2 = Math.Sqrt(Math.Pow(xe[1, 0] - xe[2, 0], 2) + Math.Pow(xe[1, 1] - xe[2, 1], 2));
             double l3 = Math.Sqrt(Math.Pow(xe[2, 0] - xe[0, 0], 2) + Math.Pow(xe[2, 1] - xe[0, 1], 2));
 
-            double mu1 = (Math.Pow(l3, 2) - Math.Pow(l2,2)) / Math.Pow(l1, 2);
-            double mu2 = (Math.Pow(l1, 2) - Math.Pow(l3,2)) / Math.Pow(l2, 2);
-            double mu3 = (Math.Pow(l2, 2) - Math.Pow(l1,2)) / Math.Pow(l3, 2);
+            double mu3 = (Math.Pow(l3, 2) - Math.Pow(l2, 2)) / Math.Pow(l1, 2);
+            double mu1 = (Math.Pow(l1, 2) - Math.Pow(l3, 2)) / Math.Pow(l2, 2);
+            double mu2 = (Math.Pow(l2, 2) - Math.Pow(l1, 2)) / Math.Pow(l3, 2);
+
+            Matrix A = new Matrix(new double[,] { { b1, b2, b3 },{ c1, c2, c3 } });
+            A = (1 / (2 * delta)) * A;
+
 
             double dN1dx=b1/(2*delta);
             double dN1dy=c1/(2*delta);
@@ -357,6 +361,112 @@ namespace MiStrAnEngine
             double dN3dx = b3 / (2 * delta);
             double dN3dy = c3 / (2 * delta);
 
+            //each ddP is a column vector
+            double[] ddP1 = new double[] {0,0,0,0,0,0,2*L2+L2*L3*3*(1-mu3),L2*L3*(1+3*mu1),-L2*L3*(1+3*mu2) };
+            double[] ddP2 = new double[] { 0, 0, 0, 0, 0, 0, -L1*L3*(1+3*mu3),2*L3+L1*L3*3*(1-mu1),L1*L3*(1+3*mu2) };
+            double[] ddP3 = new double[] { 0, 0, 0, 0, 0, 0,L1*L2*(1+3*mu3),-L1*L2*(1+3*mu1),2*L1+L1*L2*3*(1-mu2) };
+            double[] ddP4 = new double[] { 0, 0, 0, 1, 0, 0, 2*L1+L1*L3*3*(1-mu3)-L2*L3*(1+3*mu3)+0.5*Math.Pow(L3,2)*(1+3*mu3),L2*L3*3*(1-mu1)-0.5*Math.Pow(L3,2)*(1+3*mu1)+L1*L3*(1+3*mu1),0.5*Math.Pow(L3,2)*3*(1-mu2)-L1*L3*(1+3*mu2)+L2*L3*(1+3*mu2) };
+            double[] ddP5 = new double[] { 0, 0, 0, 0, 0, 1,L1*L2*3*(1-mu3)-0.5*Math.Pow(L2,2)*(1+3*mu3)+L2*L3*(1+3*mu3),0.5*Math.Pow(L2,2)*3*(1-mu1)-L2*L3*(1+3*mu1)+L1*L2*(1+3*mu1),2*L3+L2*L3*3*(1-mu2)-L1*L2*(1+3*mu2)+0.5*Math.Pow(L2,2)*(1+3*mu2)  };
+            double[] ddP6 = new double[] { 0, 0, 0, 0, 1, 0,0.5*Math.Pow(L1,2)*3*(1-mu3)-L1*L2*(1+3*mu3)+L1*l3*(1+3*mu3),2*L2+L1*L2*3*(1-mu1)-L1*L3*(1+3*mu1)+0.5*Math.Pow(L1,2)*(1+3*mu1),L1*L3*3*(1-mu2)-0.5*Math.Pow(L1,2)*(1+3*mu2)+L1*L2*(1+3*mu2)  };
+
+            //Snygga till sen
+            List<double[]> ddPs = new List<double[]>();
+            ddPs.Add(ddP1); ddPs.Add(ddP2); ddPs.Add(ddP3); ddPs.Add(ddP4); ddPs.Add(ddP5); ddPs.Add(ddP6);
+
+            
+            //JAG SKA GÖRA EN FUNKTION AV DETTA SEN MEN JAG LÅTER DET VARA FÖR TILLFÄLLET
+
+            double[] N11 = new double[6];
+            for(int i =0; i<ddPs.Count;i++)
+            {
+                double[] ddP = ddPs[i];
+                double dd = ddP[0] - ddP[3] + ddP[5] + 2 * ddP[6] - ddP[8];
+                N11[i] = dd;
+            }
+
+            Matrix ddN11 = new Matrix(new double[,] { { N11[0], N11[3], N11[4] }, { N11[3], N11[1], N11[5] }, { N11[4], N11[5], N11[2] } });
+
+            double[] N12 = new double[6];
+            for (int i = 0; i < ddPs.Count; i++)
+            {
+                double[] ddP = ddPs[i];
+                double dd = -b2 * ddP[8] - ddP[5] - b3 * ddP[6];
+                N12[i] = dd;
+            }
+
+            Matrix ddN12 = new Matrix(new double[,] { { N12[0], N12[3], N12[4] }, { N12[3], N12[1], N12[5] }, { N12[4], N12[5], N12[2] } });
+
+            double[] N13 = new double[6];
+            for (int i = 0; i < ddPs.Count; i++)
+            {
+                double[] ddP = ddPs[i];
+                double dd = -c2 * ddP[8] - ddP[5] - b3 * ddP[6];
+                N13[i] = dd;
+            }
+
+            Matrix ddN13 = new Matrix(new double[,] { { N13[0], N13[3], N13[4] }, { N13[3], N13[1], N13[5] }, { N13[4], N13[5], N13[2] } });
+
+            double[] N21 = new double[6];
+            for (int i = 0; i < ddPs.Count; i++)
+            {
+                double[] ddP = ddPs[i];
+                double dd =ddP[1] - ddP[4]+ ddP[3]+2*ddP[7]-ddP[6];
+                N21[i] = dd;
+            }
+
+            Matrix ddN21 = new Matrix(new double[,] { { N21[0], N21[3], N21[4] }, { N21[3], N21[1], N21[5] }, { N21[4], N21[5], N21[2] } });
+
+            double[] N22 = new double[6];
+            for (int i = 0; i < ddPs.Count; i++)
+            {
+                double[] ddP = ddPs[i];
+                double dd = -b3 * ddP[6] - ddP[3] - b1 * ddP[7];
+                N22[i] = dd;
+            }
+
+            Matrix ddN22 = new Matrix(new double[,] { { N22[0], N22[3], N22[4] }, { N22[3], N22[1], N22[5] }, { N22[4], N22[5], N22[2] } });
+
+            double[] N23 = new double[6];
+            for (int i = 0; i < ddPs.Count; i++)
+            {
+                double[] ddP = ddPs[i];
+                double dd = -c3 * ddP[6] - ddP[3] - c1 * ddP[7];
+                N23[i] = dd;
+            }
+
+            Matrix ddN23 = new Matrix(new double[,] { { N23[0], N23[3], N23[4] }, { N23[3], N23[1], N23[5] }, { N23[4], N23[5], N23[2] } });
+
+            double[] N31 = new double[6];
+            for (int i = 0; i < ddPs.Count; i++)
+            {
+                double[] ddP = ddPs[i];
+                double dd = ddP[2] - ddP[5] + ddP[4]+2*ddP[8]-ddP[7];
+                N31[i] = dd;
+            }
+
+            Matrix ddN31 = new Matrix(new double[,] { { N31[0], N31[3], N31[4] }, { N31[3], N31[1], N31[5] }, { N31[4], N31[5], N31[2] } });
+
+            double[] N32 = new double[6];
+            for (int i = 0; i < ddPs.Count; i++)
+            {
+                double[] ddP = ddPs[i];
+                double dd = -b1*ddP[7] - ddP[4] -b2*ddP[8];
+                N32[i] = dd;
+            }
+
+            Matrix ddN32 = new Matrix(new double[,] { { N32[0], N32[3], N32[4] }, { N32[3], N32[1], N32[5] }, { N32[4], N32[5], N32[2] } });
+
+            double[] N33 = new double[6];
+            for (int i = 0; i < ddPs.Count; i++)
+            {
+                double[] ddP = ddPs[i];
+                double dd = -c1 * ddP[7] - ddP[4] - c2 * ddP[8];
+                N33[i] = dd;
+            }
+
+            Matrix ddN33 = new Matrix(new double[,] { { N33[0], N33[3], N33[4] }, { N33[3], N33[1], N33[5] }, { N33[4], N33[5], N33[2] } });
+
+            ddN11= A*ddN11*
             return new Matrix(1, 1);
         }
 
