@@ -267,5 +267,41 @@ namespace MiStrAnEngine
             fe = a * b * thickness * fe;
         }
 
+        //Temp public for testing
+        public Matrix GetB(Matrix L,Matrix xe)
+        {
+            //xe is the transformed coordinates
+
+            double L1 = L[0,0];// first element
+            double L2 = L[0,1]; //second
+            double L3 = L[0,2]; //third
+
+            double b1 = xe[1, 1] - xe[2, 1];
+            double b2 = xe[2, 1] - xe[0, 1];
+            double b3 = xe[0, 1] - xe[1, 1];
+            double c1 = xe[2, 0] - xe[1, 0];
+            double c2 = xe[0, 0] - xe[2, 0];
+            double c3 = xe[1, 0] - xe[0, 0];
+            double delta = 0.5 * (b1 * c2 - b2 * c1);
+
+            //Lengths of edges (z will be 0 in these cases)
+            double l1 = Math.Sqrt(Math.Pow(xe[0, 0] - xe[1, 0], 2) + Math.Pow(xe[0, 1] - xe[1, 1], 2));
+            double l2 = Math.Sqrt(Math.Pow(xe[1, 0] - xe[2, 0], 2) + Math.Pow(xe[1, 1] - xe[2, 1], 2));
+            double l3 = Math.Sqrt(Math.Pow(xe[2, 0] - xe[0, 0], 2) + Math.Pow(xe[2, 1] - xe[0, 1], 2));
+
+            double mu1 = (Math.Pow(l3, 2) - Math.Pow(l2,2)) / Math.Pow(l1, 2);
+            double mu2 = (Math.Pow(l1, 2) - Math.Pow(l3,2)) / Math.Pow(l2, 2);
+            double mu3 = (Math.Pow(l2, 2) - Math.Pow(l1,2)) / Math.Pow(l3, 2);
+
+            double dN1dx=b1/(2*delta);
+            double dN1dy=c1/(2*delta);
+            double dN2dx = b2 / (2 * delta);
+            double dN2dy = c2 / (2 * delta);
+            double dN3dx = b3 / (2 * delta);
+            double dN3dy = c3 / (2 * delta);
+
+            return new Matrix(1, 1);
+        }
+
     }
 }

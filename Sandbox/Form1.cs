@@ -75,8 +75,14 @@ namespace Sandbox
             double G12 = 2.91; //GPa
             double v12 = 0.267;
             double[] angle = new double[4] { 45,30, 30, 45};
-            double laminaThickness = 0.004; 
-            mat.eqModulus(E1, E2, G12, v12, angle, laminaThickness);
+            double laminaThickness = 0.004;
+            // mat.eqModulus(E1, E2, G12, v12, angle, laminaThickness);
+            List < MiStrAnEngine.Node > list = new List<MiStrAnEngine.Node>();
+            ShellElement shell = new ShellElement(list,1);
+
+            Matrix L = new Matrix(new double[,] { { 3 }, { 7 }, { 4} });
+            Matrix xe = new Matrix(new double[,] { { 4,9,0 }, { -1,3,0 }, { 7,2,0 } });
+            shell.GetB(L, xe);
         }
     }
 }
