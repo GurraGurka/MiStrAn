@@ -64,6 +64,7 @@ public class Matrix
         mat = _mat;
     }
 
+
     public Boolean IsSquare()
     {
         return (rows == cols);

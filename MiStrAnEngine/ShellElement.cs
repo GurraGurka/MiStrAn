@@ -29,22 +29,60 @@ namespace MiStrAnEngine
             Ke = Matrix.ZeroMatrix(20, 20);
             fe = Matrix.ZeroMatrix(20, 1);
 
-            int[] dofPlan = new int[] { 0, 1, 5, 6, 10, 11, 15, 16 };
-            int[] dofPlate = new int[] { 2, 3, 4, 7, 8, 9, 12, 13, 14, 17, 18, 19 };
+            Matrix B;
+            
 
-            Matrix KeMelosh, feMelosh, KeKirchoff, feKirchoff;
-
-            this.planre(out KeMelosh, out feMelosh);
-            this.platre(out KeKirchoff, out feKirchoff);
-
-            Ke[dofPlan, dofPlan] = KeMelosh;
-            fe[dofPlan, 0] = feMelosh;
-
-            Ke[dofPlate, dofPlate] = KeKirchoff;
-            fe[dofPlate, 0] = feKirchoff;
 
 
             return true;
+        }
+
+        private void GenerateGaussPoints(int n, out Matrix gp, out Matrix gw)
+        {
+
+            if (n == 1)
+            {
+                gp = new Matrix(new double[,] { { 1.0 / 3.0, 1.0 / 3.0, 1.0 / 3.0 } });
+                gw = new Matrix(1, 1);
+                gw[0] = 1;
+            }
+
+            else if (n == 3)
+            {
+                gp = new Matrix(new double[,] { { 1.0 / 2.0, 1.0 / 2.0, 0 }, { 1.0 / 2.0, 0, 1.0 / 2.0 }, { 0, 1.0 / 2.0, 1.0 / 2.0 } });
+                gw = new Matrix(new double[,] { { 1.0 / 3.0, 1.0 / 3.0, 1.0 / 3.0 } });
+            }
+            else if (n == 4)
+            {
+                gp = new Matrix(new double[,] {
+                    { 1.0 / 3.0, 1.0 / 3.0, 1.0 / 3.0 },
+                    { 0.6, 0.2, 0.2 },
+                    { 0.2, 0.6, 0.2 },
+                    { 0.2, 0.2, 0.6 } });
+
+                gw = new Matrix(new double[,] { { -27.0 / 48.0, 25.0 / 48.0, 25.0 / 48.0, 25.0 / 48.0 } });
+            }
+            else if (n == 7)
+            {
+                double alpha1 = 0.0597158717;
+                double beta1 = 0.4701420641;
+                double alpha2 = 0.7974269853;
+                double beta2 = 0.1012865073;
+                gp = new Matrix(new double[,] {
+                    { 1.0 / 3.0, 1.0 / 3.0, 1.0 / 3.0 },
+                    { alpha1, beta1, beta1 },
+                    { beta1, alpha1, beta1 },
+                    { beta1, beta1, alpha1 },
+                    { alpha2, beta2, beta2 },
+                    { beta2, alpha2, beta2 },
+                    { beta2, beta2, alpha2 } });
+                gw = new Matrix(new double[,] { { 0.2250000000, 0.1323941527, 0.1323941527,
+                        0.1323941527, 0.1259391805, 0.1259391805, 0.1259391805 } });
+            }
+
+            else
+                throw new MException("Number of gauss points is out of range");
+
         }
 
         public void ShellTesting()
