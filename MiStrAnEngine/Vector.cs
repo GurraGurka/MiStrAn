@@ -21,12 +21,23 @@ namespace MiStrAnEngine
 
         public Vector(Vector copy) : this(copy.X, copy.Y, copy.Z) { }
 
-        public void Normalize()
+        public Vector Normalize(bool overwrite = true)
         {
             double L = this.Length;
-            this.X = this.X / L;
-            this.Y = this.Y / L;
-            this.Z = this.Z / L;
+            Vector v = new Vector();
+
+            v.X = this.X / L;
+            v.Y = this.Y / L;
+            v.Z = this.Z / L;
+
+            if (overwrite)
+            {
+                this.X = v.X;
+                this.Y = v.Y;
+                this.Z = v.Z;
+            }
+
+            return v;
         }
 
         public Matrix ToMatrix()

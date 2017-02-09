@@ -29,17 +29,13 @@ namespace MiStrAnEngine
             Ke = new Matrix(18, 18);
             fe = new Matrix(18, 1);
 
-            Matrix B, gp, gw;
-            double xe1, xe2, xe3, ye1, ye2, ye3;
+            Matrix B, gp, gw,xe,T;
             
-            int nnDof = 6; // Degrees of freedom per node
-            int en = 3; //number of nodes per element
             int ng = 4; // Number of gauss points
 
             GenerateGaussPoints(ng, out gp, out gw);
            
-            GetLocalNodeCoordinates(out xe1, out xe2, out xe3, out ye1, out ye2, out ye3);
-            Matrix xe = new Matrix(new double[,] { { xe1, ye1, 0 }, { xe2, ye2, 0 }, { xe2, ye2, 0 } });
+            GetLocalNodeCoordinates(out xe, out T);
 
             int[] activeDofs = new int[] { 0, 1, 2, 3, 4, 6, 7, 8, 9, 10, 12, 13, 14, 15, 16 };
             int[] passiveDofs = new int[] { 5, 11, 17 };
@@ -47,11 +43,14 @@ namespace MiStrAnEngine
             for (int i = 0; i < ng; i++)
             {
                 B = GetB(gp.GetRow(i), xe);
-
-                Ke[activeDofs, activeDofs] = Ke[activeDofs, activeDofs] + B.Transpose() * D * B;
+                Ke[activeDofs, activeDofs] = Ke[activeDofs, activeDofs] + B.Transpose() * D * B;              
             }
 
+            // Adding max stiffness to rotational dofs
+            Ke[passiveDofs, passiveDofs] = Ke.Max() * Matrix.Ones(3, 3);
 
+            // Transforming to global dofs
+            Ke = T.Transpose() * Ke * T;
 
             return true;
         }
@@ -166,7 +165,7 @@ namespace MiStrAnEngine
             return dofs;
         }
 
-        public void GetLocalNodeCoordinates(out double xe1, out double xe2, out double xe3,
+        public void GetLocalNodeCoordinatesOLD(out double xe1, out double xe2, out double xe3,
             out double ye1, out double ye2, out double ye3)
         {
             Vector centroid = (nodes[0].Pos + nodes[1].Pos + nodes[2].Pos) / 3;
@@ -200,6 +199,47 @@ namespace MiStrAnEngine
             ye1 = localPos1.Y;
             ye2 = localPos2.Y;
             ye3 = localPos3.Y;
+        }
+
+
+        // See slides p.44
+        private void GetLocalNodeCoordinates(out Matrix xel, out Matrix Tg)
+        {
+            Vector v1 = nodes[1].Pos - nodes[0].Pos;
+            Vector _v2 = nodes[2].Pos - nodes[0].Pos;
+            Vector v3 = Vector.CrossProduct(v1, _v2);
+            Vector v2 = Vector.CrossProduct(v3, v1);
+
+            Vector e1 = v1.Normalize(false);
+            Vector e2 = v2.Normalize(false);
+            Vector e3 = v3.Normalize(false);
+
+            Matrix xeg = new Matrix(3, 3);
+            xeg.SetRow(v1.ToMatrix().Transpose(), 1);
+            xeg.SetRow(v2.ToMatrix().Transpose(), 2);
+
+            Matrix T = new Matrix(3, 3);
+            T.SetCol(e1.ToMatrix(), 0);
+            T.SetCol(e2.ToMatrix(), 1);
+            T.SetCol(e3.ToMatrix(), 2);
+
+            xel = xeg * T;
+
+            Tg = new Matrix(18, 18);
+            int[] pos1 = SF.intSrs(0, 2);
+            int[] pos2 = SF.intSrs(3, 5);
+            int[] pos3 = SF.intSrs(6, 8);
+            int[] pos4 = SF.intSrs(9, 11);
+            int[] pos5 = SF.intSrs(12, 14);
+            int[] pos6 = SF.intSrs(15, 17);
+            Tg[pos1, pos1] = T;
+            Tg[pos2, pos2] = T;
+            Tg[pos3, pos3] = T;
+            Tg[pos4, pos4] = T;
+            Tg[pos5, pos5] = T;
+            Tg[pos6, pos6] = T;
+
+
         }
 
         public Matrix GetL()
@@ -469,6 +509,7 @@ namespace MiStrAnEngine
             ddN11= A*ddN11*
             return new Matrix(1, 1);
         }
+
 
     }
 }
