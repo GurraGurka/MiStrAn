@@ -169,7 +169,15 @@ public class Matrix
         return m;
     }
 
-    public void SetCol(Matrix v, int k)
+    public Matrix GetRow(int k)
+    {
+        Matrix m = new Matrix(1, cols);
+        for (int i = 0; i < cols; i++)
+                m[0, i] = mat[k, i];
+        return m;
+    }
+
+        public void SetCol(Matrix v, int k)
     {
         for (int i = 0; i < rows; i++) mat[i, k] = v[i, 0];
     }
@@ -232,6 +240,12 @@ public class Matrix
 
     }
 
+    public Matrix Transpose()
+    {
+        Matrix M = Matrix.Transpose(this);
+
+        return M;
+    }
 
     public Matrix SolveWith(Matrix v)                        // Function solves Ax = v in confirmity with solution vector "v"
     {

@@ -26,18 +26,37 @@ namespace MiStrAnEngine
 
         public bool GenerateKefe(out Matrix Ke, out Matrix fe)
         {
-            Ke = Matrix.ZeroMatrix(20, 20);
-            fe = Matrix.ZeroMatrix(20, 1);
+            Ke = new Matrix(18, 18);
+            fe = new Matrix(18, 1);
 
-            Matrix B;
+            Matrix B, gp, gw;
+            double xe1, xe2, xe3, ye1, ye2, ye3;
             
+            int nnDof = 6; // Degrees of freedom per node
+            int en = 3; //number of nodes per element
+            int ng = 4; // Number of gauss points
+
+            GenerateGaussPoints(ng, out gp, out gw);
+           
+            GetLocalNodeCoordinates(out xe1, out xe2, out xe3, out ye1, out ye2, out ye3);
+            Matrix xe = new Matrix(new double[,] { { xe1, ye1, 0 }, { xe2, ye2, 0 }, { xe2, ye2, 0 } });
+
+            int[] activeDofs = new int[] { 0, 1, 2, 3, 4, 6, 7, 8, 9, 10, 12, 13, 14, 15, 16 };
+            int[] passiveDofs = new int[] { 5, 11, 17 };
+
+            for (int i = 0; i < ng; i++)
+            {
+                B = GetB(gp.GetRow(i), xe);
+
+                Ke[activeDofs, activeDofs] = Ke[activeDofs, activeDofs] + B.Transpose() * D * B;
+            }
 
 
 
             return true;
         }
 
-        private void GenerateGaussPoints(int n, out Matrix gp, out Matrix gw)
+        private static void GenerateGaussPoints(int n, out Matrix gp, out Matrix gw)
         {
 
             if (n == 1)
@@ -147,8 +166,8 @@ namespace MiStrAnEngine
             return dofs;
         }
 
-        public void GetLocalNodeCoordinates(out double x1, out double x2, out double x3,
-            out double y1, out double y2, out double y3)
+        public void GetLocalNodeCoordinates(out double xe1, out double xe2, out double xe3,
+            out double ye1, out double ye2, out double ye3)
         {
             Vector centroid = (nodes[0].Pos + nodes[1].Pos + nodes[2].Pos) / 3;
 
@@ -174,13 +193,13 @@ namespace MiStrAnEngine
             Vector localPos2 = (T * relPos2.ToMatrix()).ToVector();
             Vector localPos3 = (T * relPos3.ToMatrix()).ToVector();
 
-            x1 = localPos1.X;
-            x2 = localPos2.X;
-            x3 = localPos3.X;
+            xe1 = localPos1.X;
+            xe2 = localPos2.X;
+            xe3 = localPos3.X;
 
-            y1 = localPos1.Y;
-            y2 = localPos2.Y;
-            y3 = localPos3.Y;
+            ye1 = localPos1.Y;
+            ye2 = localPos2.Y;
+            ye3 = localPos3.Y;
         }
 
         public Matrix GetL()

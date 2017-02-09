@@ -34,6 +34,8 @@ namespace Sandbox
 
             Matrix Ke, fe;
 
+            Matrix test = new Matrix(3, 3);
+
             element.ShellTesting();
 
             //element.GetLocalNodeCoordinates();
