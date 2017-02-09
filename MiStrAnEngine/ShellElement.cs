@@ -407,7 +407,7 @@ namespace MiStrAnEngine
             double[] ddP3 = new double[] { 0, 0, 0, 0, 0, 0,L1*L2*(1+3*mu3),-L1*L2*(1+3*mu1),2*L1+L1*L2*3*(1-mu2) };
             double[] ddP4 = new double[] { 0, 0, 0, 1, 0, 0, 2*L1+L1*L3*3*(1-mu3)-L2*L3*(1+3*mu3)+0.5*Math.Pow(L3,2)*(1+3*mu3),L2*L3*3*(1-mu1)-0.5*Math.Pow(L3,2)*(1+3*mu1)+L1*L3*(1+3*mu1),0.5*Math.Pow(L3,2)*3*(1-mu2)-L1*L3*(1+3*mu2)+L2*L3*(1+3*mu2) };
             double[] ddP5 = new double[] { 0, 0, 0, 0, 0, 1,L1*L2*3*(1-mu3)-0.5*Math.Pow(L2,2)*(1+3*mu3)+L2*L3*(1+3*mu3),0.5*Math.Pow(L2,2)*3*(1-mu1)-L2*L3*(1+3*mu1)+L1*L2*(1+3*mu1),2*L3+L2*L3*3*(1-mu2)-L1*L2*(1+3*mu2)+0.5*Math.Pow(L2,2)*(1+3*mu2)  };
-            double[] ddP6 = new double[] { 0, 0, 0, 0, 1, 0,0.5*Math.Pow(L1,2)*3*(1-mu3)-L1*L2*(1+3*mu3)+L1*l3*(1+3*mu3),2*L2+L1*L2*3*(1-mu1)-L1*L3*(1+3*mu1)+0.5*Math.Pow(L1,2)*(1+3*mu1),L1*L3*3*(1-mu2)-0.5*Math.Pow(L1,2)*(1+3*mu2)+L1*L2*(1+3*mu2)  };
+            double[] ddP6 = new double[] { 0, 0, 0, 0, 1, 0,0.5*Math.Pow(L1,2)*3*(1-mu3)-L1*L2*(1+3*mu3)+L1*L3*(1+3*mu3),2*L2+L1*L2*3*(1-mu1)-L1*L3*(1+3*mu1)+0.5*Math.Pow(L1,2)*(1+3*mu1),L1*L3*3*(1-mu2)-0.5*Math.Pow(L1,2)*(1+3*mu2)+L1*L2*(1+3*mu2)  };
 
             //Snygga till sen
             List<double[]> ddPs = new List<double[]>();
@@ -420,7 +420,7 @@ namespace MiStrAnEngine
             for(int i =0; i<ddPs.Count;i++)
             {
                 double[] ddP = ddPs[i];
-                double dd = ddP[0] - ddP[3] + ddP[5] + 2 * ddP[6] - ddP[8];
+                double dd = ddP[0] - ddP[3] + ddP[5] + 2 *( ddP[6] - ddP[8]);
                 N11[i] = dd;
             }
 
@@ -430,7 +430,7 @@ namespace MiStrAnEngine
             for (int i = 0; i < ddPs.Count; i++)
             {
                 double[] ddP = ddPs[i];
-                double dd = -b2 * ddP[8] - ddP[5] - b3 * ddP[6];
+                double dd = -b2 * (ddP[8] - ddP[5]) - b3 * ddP[6];
                 N12[i] = dd;
             }
 
@@ -440,7 +440,7 @@ namespace MiStrAnEngine
             for (int i = 0; i < ddPs.Count; i++)
             {
                 double[] ddP = ddPs[i];
-                double dd = -c2 * ddP[8] - ddP[5] - b3 * ddP[6];
+                double dd = -c2 *( ddP[8] - ddP[5]) - c3 * ddP[6];
                 N13[i] = dd;
             }
 
@@ -450,7 +450,7 @@ namespace MiStrAnEngine
             for (int i = 0; i < ddPs.Count; i++)
             {
                 double[] ddP = ddPs[i];
-                double dd =ddP[1] - ddP[4]+ ddP[3]+2*ddP[7]-ddP[6];
+                double dd =ddP[1] - ddP[4]+ ddP[3]+2*(ddP[7]-ddP[6]);
                 N21[i] = dd;
             }
 
@@ -460,7 +460,7 @@ namespace MiStrAnEngine
             for (int i = 0; i < ddPs.Count; i++)
             {
                 double[] ddP = ddPs[i];
-                double dd = -b3 * ddP[6] - ddP[3] - b1 * ddP[7];
+                double dd = -b3 *( ddP[6] - ddP[3]) - b1 * ddP[7];
                 N22[i] = dd;
             }
 
@@ -470,7 +470,7 @@ namespace MiStrAnEngine
             for (int i = 0; i < ddPs.Count; i++)
             {
                 double[] ddP = ddPs[i];
-                double dd = -c3 * ddP[6] - ddP[3] - c1 * ddP[7];
+                double dd = -c3 *( ddP[6] - ddP[3]) - c1 * ddP[7];
                 N23[i] = dd;
             }
 
@@ -480,7 +480,7 @@ namespace MiStrAnEngine
             for (int i = 0; i < ddPs.Count; i++)
             {
                 double[] ddP = ddPs[i];
-                double dd = ddP[2] - ddP[5] + ddP[4]+2*ddP[8]-ddP[7];
+                double dd = ddP[2] - ddP[5] + ddP[4]+2*(ddP[8]-ddP[7]);
                 N31[i] = dd;
             }
 
@@ -490,7 +490,7 @@ namespace MiStrAnEngine
             for (int i = 0; i < ddPs.Count; i++)
             {
                 double[] ddP = ddPs[i];
-                double dd = -b1*ddP[7] - ddP[4] -b2*ddP[8];
+                double dd = -b1*(ddP[7] - ddP[4]) -b2*ddP[8];
                 N32[i] = dd;
             }
 
@@ -500,14 +500,30 @@ namespace MiStrAnEngine
             for (int i = 0; i < ddPs.Count; i++)
             {
                 double[] ddP = ddPs[i];
-                double dd = -c1 * ddP[7] - ddP[4] - c2 * ddP[8];
+                double dd = -c1 *( ddP[7] - ddP[4]) - c2 * ddP[8];
                 N33[i] = dd;
             }
 
             Matrix ddN33 = new Matrix(new double[,] { { N33[0], N33[3], N33[4] }, { N33[3], N33[1], N33[5] }, { N33[4], N33[5], N33[2] } });
 
-            ddN11= A*ddN11*
-            return new Matrix(1, 1);
+            ddN11 = A * ddN11 * A.Transpose();
+            ddN12 = A * ddN12 * A.Transpose();
+            ddN13 = A * ddN13 * A.Transpose();
+            ddN21 = A * ddN21 * A.Transpose();
+            ddN22 = A * ddN22 * A.Transpose();
+            ddN23 = A * ddN23 * A.Transpose();
+            ddN31 = A * ddN31 * A.Transpose();
+            ddN32 = A * ddN32 * A.Transpose();
+            ddN33 = A * ddN33 * A.Transpose();
+
+            Matrix B = new Matrix(new double[,] { { dN1dx,0,0,0,0,dN2dx,0,0,0,0,dN3dx,0,0,0,0},
+                                                  {0,dN1dy,0,0,0,0,dN2dy,0,0,0,0,dN3dy,0,0,0 },
+                                                  {dN1dy,dN1dx,0,0,0,dN2dy,dN2dx,0,0,0,dN3dy,dN3dx,0,0,0 },
+                                                  {0,0,ddN11[0,0],ddN12[0,0],ddN13[0,0],0,0,ddN21[0,0],ddN22[0,0],ddN23[0,0],0,0,ddN31[0,0],ddN32[0,0],ddN33[0,0] },
+                                                  {0,0,ddN11[1,1],ddN12[1,1],ddN13[1,1],0,0,ddN21[1,1],ddN22[1,1],ddN23[1,1],0,0,ddN31[1,1],ddN32[1,1],ddN33[1,1] },
+                                                  {0,0,2*ddN11[0,1],2*ddN12[0,1],2*ddN13[0,1],0,0,2*ddN21[0,1],2*ddN22[0,1],2*ddN23[0,1],0,0,2*ddN31[0,1],2*ddN32[0,1],2*ddN33[0,1] } });
+
+            return B;
         }
 
 

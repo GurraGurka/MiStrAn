@@ -12,9 +12,9 @@ namespace MiStrAnEngine
         public static Matrix eqModulus(double E1, double E2, double G12, double v12, double[] angle, double thickLam)
         {
             //Global matrices for the laminate
-            Matrix A = new Matrix(3, 3); //Extensional or membrane stiffness terms of a laminate
-            Matrix B = new Matrix(3, 3); //Coupling stiffness terms of a laminate
-            Matrix D = new Matrix(3, 3); //Bending stiffness n therms of a laminate
+            Matrix AA = new Matrix(3, 3); //Extensional or membrane stiffness terms of a laminate
+            Matrix BB = new Matrix(3, 3); //Coupling stiffness terms of a laminate
+            Matrix DD = new Matrix(3, 3); //Bending stiffness n therms of a laminate
 
             //Just loop through 4 times now (otherwise listlength)
             int listLength = angle.Length;
@@ -73,35 +73,42 @@ namespace MiStrAnEngine
                 }
 
                 //Add local modulus to globals (times 2 to account for both sides of neutral axes)
-                A =A+ 2*(hk - hkMinus1) * Q_;
-                B =B+ 2*(Math.Pow(hk,2) - Math.Pow(hkMinus1,2)) * Q_;
-                D =D+ 2*(Math.Pow(hk, 3) - Math.Pow(hkMinus1, 3)) *Q_;
+                AA =AA+ 2*(hk - hkMinus1) * Q_;
+                BB =BB+ 2*(Math.Pow(hk,2) - Math.Pow(hkMinus1,2)) * Q_;
+                DD =DD+ 2 * (Math.Pow(hk, 3) - Math.Pow(hkMinus1, 3)) * Q_;
 
 
             }
 
             
-            B = (1 / 2) * B;
-            D = (1 / 3) * D;
+            BB = (1.0 / 2.0) * BB;
+            DD = (1.0 / 3.0) * DD;
 
             //Step 5 i euroCOMP
-            Matrix a = A.Invert();
+            Matrix a = AA.Invert();
 
             //TEMPORARY. THEY GET SINGULAR
            // Matrix b = B.Invert();
-            //Matrix d = D.Invert();
+            Matrix d = DD.Invert();
 
             //Step 6 euroCOMP
-            double totalThick = listLength * thickLam;
-            double Ex = 1 / (totalThick * a[0, 0]);
-            double Ey = 1 / (totalThick * a[1, 1]);
-            double Gxy = 1 / (totalThick * a[2, 2]);
-            double vxy = -a[0, 1] / a[0, 0];
-            double vyx = -a[0, 1] / a[1, 1];
-
+            /*   double totalThick = listLength * thickLam;
+               double Ex = 1 / (totalThick * a[0, 0]);
+               double Ey = 1 / (totalThick * a[1, 1]);
+               double Gxy = 1 / (totalThick * a[2, 2]);
+               double vxy = -a[0, 1] / a[0, 0];
+               double vyx = -a[0, 1] / a[1, 1]; */
             //d and b matrices can be used for the equivalent bending elastic constants (step 6 euroCOMP)
 
-            return new Matrix(1, 1);
+            //Total D-matrix D=[AA -BB;-BB DD]
+            Matrix D = new Matrix(6, 6);
+
+            D[new int[]  { 0, 1, 2 } ,new int[] { 0, 1, 2 }] = AA;
+            D[new int[] { 3, 4, 5 }, new int[] { 3, 4, 5 }] = DD;
+            D[new int[] { 0, 1, 2 }, new int[] { 3, 4, 5 }] = -BB;
+            D[new int[] { 3, 4, 5 }, new int[] { 0, 1, 2 }] = -BB;
+
+            return D;
         }
     }
 }
