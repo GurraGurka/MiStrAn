@@ -38,16 +38,36 @@ namespace Sandbox
 
             element.GetLocalNodeCoordinates(out xel, out Tg);
 
-            //Matrix Ke, fe;
+            Matrix Ke, fe;
 
             //Matrix test = new Matrix(3, 3);
 
-            element.ShellTesting();
+
+
+
+
+            //element.ShellTesting();
 
             //element.GetLocalNodeCoordinates();
             //element.TestingShell2();
+            double E = 1;
+            double v = 0.3;
+            double G = E / (2.0 * (1 + v));
+            double[] angle = new double[] { 0, 0, 0, 0, 0, 0, 0 };
+            element.D = Materials.eqModulus(E, E, G, v, angle, 1.0 / 7.0);
 
-            //element.D = new Matrix(new double[,] { { 1, 2, 3 }, { 2, 2, 2 }, { 3, 2, 1 } });
+            // element.D =// new Matrix(new double[,] { { 1.3462, 0.5769, 0.5769, 0,0,0 },
+            /* { 0.5769, 1.3462, 0.5769,0,0,0 },
+                                                     { 0.5769, 0.5769, 1.3462,0,0,0 },
+                                                     { 0, 0, 0,0.3846,0,0 },
+                                                     { 0, 0, 0,0,0.3846,0 },
+                                                     { 0, 0, 0,0,0,0.3846 } });*/
+
+
+            element.GenerateKefe(out Ke, out fe);
+
+
+
             //element.t = 2;
             //element.eq = new Matrix(new double[,] { { 5,5,5} });
 
@@ -68,6 +88,11 @@ namespace Sandbox
             //Matrix d, Q;
 
             //SF.solveq(K, f, bc, out d, out Q);
+
+            int[] dofs = new int[] { 0, 1, 6, 7, 12, 13 };
+
+            Matrix K = Ke[dofs, dofs];
+
 
         }
 
