@@ -31,7 +31,7 @@ namespace MiStrAnEngine
 
             Matrix B,N, gp, gw,xe,T,q;
 
-            q =new Matrix(new double[,] { { 1 }, { 0 }, { 0 } });
+            q =new Matrix(new double[,] { { 1 }, { 0.45 }, { 0 } });
 
             int ng = 4; // Number of gauss points
 
@@ -48,7 +48,7 @@ namespace MiStrAnEngine
                 Matrix DKe = gw[i]* B.Transpose() * D * B;
                 Ke[activeDofs, activeDofs] = Ke[activeDofs, activeDofs] + DKe; 
                 Matrix DMe= gw[i] * N.Transpose() * q;
-                fe[activeDofs, activeDofs] = fe[activeDofs, activeDofs] + DMe;
+                fe[activeDofs, 0] = fe[activeDofs, 0] + DMe;
             }
 
             // Adding max stiffness to rotational dofs
@@ -56,7 +56,7 @@ namespace MiStrAnEngine
 
             // Transforming to global dofs
             Ke = T.Transpose() * Ke * T;
-            fe = T.Transpose() * fe * T;
+            fe = T * fe;
 
             return true;
         }

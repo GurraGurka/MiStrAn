@@ -23,9 +23,9 @@ namespace Sandbox
         private void button1_Click(object sender, EventArgs e)
         {
             // shell
-            Node node1 = new Node(0, 0, 0);
-            Node node2 = new Node(2, 0, 0);
-            Node node3 = new Node(1, 1, 0);
+            Node node1 = new Node(1, 1, 0);
+            Node node2 = new Node(2, 1, 0);
+            Node node3 = new Node(1.5, 2, 0);
 
             List<Node> nodeList = new List<Node>() { node1, node2, node3 };
 
@@ -92,7 +92,7 @@ namespace Sandbox
             int[] dofs = new int[] { 0, 1, 6, 7, 12, 13 };
 
             Matrix K = Ke[dofs, dofs];
-
+            Matrix f = fe[dofs, 0];
 
         }
 
