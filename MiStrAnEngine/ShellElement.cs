@@ -43,7 +43,8 @@ namespace MiStrAnEngine
             for (int i = 0; i < ng; i++)
             {
                 B = GetB(gp.GetRow(i), xe);
-                Ke[activeDofs, activeDofs] = Ke[activeDofs, activeDofs] + B.Transpose() * D * B;              
+                Matrix DKe = gw[i]* B.Transpose() * D * B;
+                Ke[activeDofs, activeDofs] = Ke[activeDofs, activeDofs] + DKe;              
             }
 
             // Adding max stiffness to rotational dofs
@@ -405,9 +406,9 @@ namespace MiStrAnEngine
         {
             //xe is the transformed coordinates
 
-            double L1 = L[0, 0];// first element
-            double L2 = L[1, 0]; //second
-            double L3 = L[2, 0]; //third
+            double L1 = L[0];// first element
+            double L2 = L[1]; //second
+            double L3 = L[2]; //third
 
             double b1 = xe[1, 1] - xe[2, 1];
             double b2 = xe[2, 1] - xe[0, 1];
