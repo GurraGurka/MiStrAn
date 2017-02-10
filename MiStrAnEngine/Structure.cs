@@ -44,6 +44,10 @@ namespace MiStrAnEngine
 
                 K[dofs, dofs] = K[dofs, dofs] + Ke;
                 f[dofs, 0] = f[dofs, 0] + fe;
+
+                int[] dofs2 = new int[] { 0, 1, 6, 7, 12, 13 };
+
+                Matrix Test = Ke[dofs2, dofs2];
             }
 
             // #TODO make it possible to have rotational loads
@@ -83,8 +87,14 @@ namespace MiStrAnEngine
         {
             AssembleKfbc();
 
-           return StaticFunctions.solveq(K, f, bc, out a, out r);
+            int[] dofs = new int[] { 0, 1, 6, 7, 12, 13 };
 
+            Matrix Test = K[dofs, dofs];
+
+            return StaticFunctions.solveq(K, f, bc, out a, out r);
+
+            
+            Test = Test;
         }
     }
 }
