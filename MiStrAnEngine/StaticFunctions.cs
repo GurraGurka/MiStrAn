@@ -31,7 +31,7 @@ namespace MiStrAnEngine
 
 
         // Direct copy of CALFEM's solveq
-        // FÄRDIG OCH TESTAD 2017-02-02
+        // FÄRDIG OCH TESTAD 2017-02-02 .hmmm...
         public static bool solveq(Matrix K, Matrix f, Matrix bc, out Matrix d, out Matrix Q)
         {
 

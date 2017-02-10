@@ -55,7 +55,7 @@ namespace MiStrAnEngine
             Ke[passiveDofs, passiveDofs] = Ke.Max() * Matrix.Ones(3, 3);
 
             // Transforming to global dofs
-            Ke = T.Transpose() * Ke * T;
+            Ke = T * Ke * T.Transpose();
             fe = T * fe;
 
             return true;
@@ -274,6 +274,7 @@ namespace MiStrAnEngine
             T.SetCol(e1.ToMatrix(), 0);
             T.SetCol(e2.ToMatrix(), 1);
             T.SetCol(e3.ToMatrix(), 2);
+
 
             xel = xeg * T;
 
