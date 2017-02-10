@@ -29,8 +29,10 @@ namespace MiStrAnEngine
             Ke = new Matrix(18, 18);
             fe = new Matrix(18, 1);
 
-            Matrix B, gp, gw,xe,T;
-            
+            Matrix B,N, gp, gw,xe,T,q;
+
+            q =new Matrix(new double[,] { { 1 }, { 0 }, { 0 } });
+
             int ng = 4; // Number of gauss points
 
             GenerateGaussPoints(ng, out gp, out gw);
@@ -39,12 +41,14 @@ namespace MiStrAnEngine
 
             int[] activeDofs = new int[] { 0, 1, 2, 3, 4, 6, 7, 8, 9, 10, 12, 13, 14, 15, 16 };
             int[] passiveDofs = new int[] { 5, 11, 17 };
-
+            
             for (int i = 0; i < ng; i++)
             {
-                B = GetB(gp.GetRow(i), xe);
+                GetB_N(gp.GetRow(i), xe,out B, out N);
                 Matrix DKe = gw[i]* B.Transpose() * D * B;
-                Ke[activeDofs, activeDofs] = Ke[activeDofs, activeDofs] + DKe;              
+                Ke[activeDofs, activeDofs] = Ke[activeDofs, activeDofs] + DKe; 
+                Matrix DMe= gw[i] * N.Transpose() * q;
+                fe[activeDofs, activeDofs] = fe[activeDofs, activeDofs] + DMe;
             }
 
             // Adding max stiffness to rotational dofs
@@ -52,6 +56,7 @@ namespace MiStrAnEngine
 
             // Transforming to global dofs
             Ke = T.Transpose() * Ke * T;
+            fe = T.Transpose() * fe * T;
 
             return true;
         }
@@ -402,7 +407,7 @@ namespace MiStrAnEngine
         }
 
         //Temp public for testing
-        public Matrix GetB(Matrix L, Matrix xe)
+        public void GetB_N(Matrix L, Matrix xe, out Matrix B, out Matrix N)
         {
             //xe is the transformed coordinates
 
@@ -427,16 +432,42 @@ namespace MiStrAnEngine
             double mu1 = (Math.Pow(l1, 2) - Math.Pow(l3, 2)) / Math.Pow(l2, 2);
             double mu2 = (Math.Pow(l2, 2) - Math.Pow(l1, 2)) / Math.Pow(l3, 2);
 
-            Matrix A = new Matrix(new double[,] { { b1, b2, b3 },{ c1, c2, c3 } });
+            Matrix A = new Matrix(new double[,] { { b1, b2, b3 }, { c1, c2, c3 } });
             A = (1 / (2 * delta)) * A;
 
+            //First parts of N matrix
+            double N1 = L1;
+            double N2 = L2;
+            double N3 = L3;
 
-            double dN1dx=b1/(2*delta);
-            double dN1dy=c1/(2*delta);
+
+            double dN1dx = b1 / (2 * delta);
+            double dN1dy = c1 / (2 * delta);
             double dN2dx = b2 / (2 * delta);
             double dN2dy = c2 / (2 * delta);
             double dN3dx = b3 / (2 * delta);
             double dN3dy = c3 / (2 * delta);
+
+
+            Matrix P = new Matrix(new double[,] { { L1 }, {L2}, {L3 }, {L1*L2 }, { L2*L3}, {L3*L1 },
+                                                {Math.Pow(L1,2)*L2+0.5*L1*L2*L3*(3*(1-mu3)*L1-(1+3*mu3)*L2+(1+3*mu3)*L3)},
+                                                {Math.Pow(L2,2)*L3+0.5*L1*L2*L3*(3*(1-mu1)*L2-(1+3*mu1)*L3+(1+3*mu1)*L1)},
+                                                {Math.Pow(L3,2)*L1+0.5*L1*L2*L3*(3*(1-mu2)*L3-(1+3*mu2)*L1+(1+3*mu2)*L2)}});
+
+            //For the N-matrix
+            double NN11 = P[0] - P[3] + P[5] + 2 * (P[6] - P[8]);
+            double NN12 = -b2 * (P[8] - P[5]) - b3 * P[6];
+            double NN13 = -c2 * (P[8] - P[5]) - c3 * P[6];
+            double NN21 = P[1] - P[4] + P[3] + 2 * (P[7] - P[6]);
+            double NN22 = -b3 * (P[6] - P[3]) - b1 * P[7];
+            double NN23 = -c3 * (P[6] - P[3]) - c1 * P[7];
+            double NN31 = P[2] - P[5] + P[4] + 2 * (P[8] - P[7]);
+            double NN32 = -b1 * (P[7] - P[4]) - b2 * P[8];
+            double NN33 = -c1 * (P[7] - P[4]) - c2 * P[8];
+
+            N = new Matrix(new double[,] { { N1, 0, 0, 0, 0, N2, 0, 0, 0, 0, N3, 0, 0, 0, 0 },
+                                                { 0,N1,0,0,0,0,N2,0,0,0,0,N3,0,0,0},
+                                                { 0,0,NN11,NN12,NN13,0,0,NN21,NN22,NN23,0,0,NN31,NN32,NN33} });
 
             //each ddP is a column vector
             double[] ddP1 = new double[] {0,0,0,0,0,0,2*L2+L2*L3*3*(1-mu3),L2*L3*(1+3*mu1),-L2*L3*(1+3*mu2) };
@@ -453,6 +484,7 @@ namespace MiStrAnEngine
             
             //JAG SKA GÖRA EN FUNKTION AV DETTA SEN MEN JAG LÅTER DET VARA FÖR TILLFÄLLET
 
+            //For the B matrix
             double[] N11 = new double[6];
             for(int i =0; i<ddPs.Count;i++)
             {
@@ -553,14 +585,14 @@ namespace MiStrAnEngine
             ddN32 = A * ddN32 * A.Transpose();
             ddN33 = A * ddN33 * A.Transpose();
 
-            Matrix B = new Matrix(new double[,] { { dN1dx,0,0,0,0,dN2dx,0,0,0,0,dN3dx,0,0,0,0},
+            B = new Matrix(new double[,] { { dN1dx,0,0,0,0,dN2dx,0,0,0,0,dN3dx,0,0,0,0},
                                                   {0,dN1dy,0,0,0,0,dN2dy,0,0,0,0,dN3dy,0,0,0 },
                                                   {dN1dy,dN1dx,0,0,0,dN2dy,dN2dx,0,0,0,dN3dy,dN3dx,0,0,0 },
                                                   {0,0,ddN11[0,0],ddN12[0,0],ddN13[0,0],0,0,ddN21[0,0],ddN22[0,0],ddN23[0,0],0,0,ddN31[0,0],ddN32[0,0],ddN33[0,0] },
                                                   {0,0,ddN11[1,1],ddN12[1,1],ddN13[1,1],0,0,ddN21[1,1],ddN22[1,1],ddN23[1,1],0,0,ddN31[1,1],ddN32[1,1],ddN33[1,1] },
                                                   {0,0,2*ddN11[0,1],2*ddN12[0,1],2*ddN13[0,1],0,0,2*ddN21[0,1],2*ddN22[0,1],2*ddN23[0,1],0,0,2*ddN31[0,1],2*ddN32[0,1],2*ddN33[0,1] } });
 
-            return B;
+           
         }
 
 
