@@ -124,6 +124,14 @@ namespace MiStrAnEngine
             B1[1, 4] = gs.X;
             B1[1, 5] = gs.Y;
 
+            B1[2, 0] = -gs.X - gr.X;
+            B1[2, 1] = -gs.Y - gr.Y;
+            B1[2, 2] = gs.X;
+            B1[2, 3] = gs.Y;
+            B1[2, 4] = gr.X;
+            B1[2, 5] = gr.Y;
+
+
             double ex1 = x1.X;
             double ex2 = x2.X;
             double ex3 = x3.X;
@@ -131,6 +139,35 @@ namespace MiStrAnEngine
             double ey1 = x1.Y;
             double ey2 = x2.Y;
             double ey3 = x3.Y;
+
+            Matrix A = new Matrix(new double[,] { { gr.X, gr.Y }, { gs.X, gs.Y } });
+            Matrix g_r = A.SolveWith(new Matrix(new double[,] { { 0 }, { 1 } }));
+            Matrix g_s = A.SolveWith(new Matrix(new double[,] { { 1 }, { 0 } }));
+
+            Vector Lr = new Vector();
+            Lr.X = gs.Y; Lr.Y = -gs.X;
+            Vector Ls = new Vector(Lr.Y, -Lr.X, 0);
+            Ls = -Ls;
+            //Matrix T = new Matrix(new double[,] {
+            //    { Vector.DotProduct(Lr, gr), Vector.DotProduct(Lr, gs),  },
+            //    { Vector.DotProduct(Ls, gr), Vector.DotProduct(Ls, gs),  },
+
+            //});
+
+            Matrix T = new Matrix(2, 2);
+            T.SetCol(g_s, 0);
+            T.SetCol(g_r, 1);
+
+            Matrix Tg = new Matrix(6, 6);
+            int[] rng1 = SF.intSrs(0, 1);
+            int[] rng2 = SF.intSrs(2, 3);
+            int[] rng3 = SF.intSrs(4, 5);
+
+            Tg[rng1, rng1] = T;
+            Tg[rng2, rng2] = T;
+            Tg[rng3, rng3] = T;
+
+            B1 = B1 * Tg;
 
             Matrix C = new Matrix(new double[,] { 
                 { 1, ex1, ey1, 0, 0, 0 }, 

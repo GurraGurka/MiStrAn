@@ -12,7 +12,7 @@ namespace MiStrAnGH
     public static class StaticFunctions
     {
         
-        public static MiStrAnEngine.Structure ConvertGHMeshToStructure(Mesh m, List<Point3d> bcs, List<Point3d> loads)
+        public static MiStrAnEngine.Structure ConvertGHMeshToStructure(Mesh m, List<Point3d> bcs, List<Point3d> loadsPts, List<Vector3d> loadVecs)
         {
             List<MiStrAnEngine.Node> mistranNodes = new List<MiStrAnEngine.Node>();
             List<MiStrAnEngine.ShellElement> mistranShells = new List<MiStrAnEngine.ShellElement>();
@@ -39,11 +39,11 @@ namespace MiStrAnGH
 
                 //LOADS
                 //Okej det här går att göra mer effektivt, men duger för tillfället
-                for (int j = 0; j < loads.Count; j++)
+                for (int j = 0; j < loadsPts.Count; j++)
                 {
                     Point3d closePt = mPt;
-                    if (closePt.DistanceTo(loads[j]) < 0.001)
-                        mistranLoads.Add(new MiStrAnEngine.Load(mistranNodes[i],0,0)); //TEMP JUST 1000 
+                    if (closePt.DistanceTo(loadsPts[j]) < 0.001)
+                        mistranLoads.Add(new MiStrAnEngine.Load(mistranNodes[i], new MiStrAnEngine.Vector(loadVecs[i].X, loadVecs[i].Y, loadVecs[i].Z))); //TEMP JUST 1000 
                 }
             }
               

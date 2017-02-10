@@ -23,9 +23,9 @@ namespace Sandbox
         private void button1_Click(object sender, EventArgs e)
         {
             // shell
-            Node node1 = new Node(0.1, 0.2, 1);
-            Node node2 = new Node(1.3, 0.3, 0.3);
-            Node node3 = new Node(0.7, 1.2, 0.1);
+            Node node1 = new Node(0, 0, 0);
+            Node node2 = new Node(2, 0, 0);
+            Node node3 = new Node(1, 1, 0);
 
             List<Node> nodeList = new List<Node>() { node1, node2, node3 };
 

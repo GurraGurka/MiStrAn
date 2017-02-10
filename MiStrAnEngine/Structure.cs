@@ -46,11 +46,12 @@ namespace MiStrAnEngine
                 f[dofs, 0] = f[dofs, 0] + fe;
             }
 
-            // #TODO make it possible to have other loads than in z
+            // #TODO make it possible to have rotational loads
             foreach (Load load in loads)
             {
-                int loadDof = load.node.dofZ;
-                f[loadDof, 0] = f[loadDof, 0] + load.loadAmplitude;
+                int[] loadDofs = new int[] {load.node.dofX, load.node.dofY, load.node.dofZ };
+
+                f[loadDofs, 0] = f[loadDofs, 0] + load.LoadVec.ToMatrix();
             }
 
             // #TODO make it possible to have other bc's than fully fixed

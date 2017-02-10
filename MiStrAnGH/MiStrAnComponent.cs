@@ -30,7 +30,8 @@ namespace MiStrAnGH
             pManager.AddBooleanParameter("Run", "Run", "Run calcs", GH_ParamAccess.item, false);
             pManager.AddGeometryParameter("Mesh", "Mesh", "Mesh to analyze", GH_ParamAccess.list);
             pManager.AddGeometryParameter("BC", "BC", "Zero displacement nodes", GH_ParamAccess.list);
-            pManager.AddGeometryParameter("Load", "Load", "Just nodes for loads", GH_ParamAccess.list);
+            pManager.AddGeometryParameter("LoadPoints", "LoadPoints", "Just nodes for loads", GH_ParamAccess.list);
+            pManager.AddGeometryParameter("LoadVectors", "LoadVectors", " One Load vector for each node", GH_ParamAccess.list);
         }
 
         /// <summary>
@@ -51,12 +52,14 @@ namespace MiStrAnGH
         {
             List<Mesh> meshes = new List<Mesh>();
             List<Point3d> bcNodes = new List<Point3d>();
-            List<Point3d> bcLoads = new List<Point3d>();
+            List<Point3d> LoadPts = new List<Point3d>();
+            List<Vector3d> LoadVecs = new List<Vector3d>();
             bool run = false;
 
             if (!DA.GetDataList(1, meshes)) { return;  }
             if (!DA.GetDataList(2, bcNodes)) { return; }
-            if (!DA.GetDataList(3, bcLoads)) { return; }
+            if (!DA.GetDataList(3, LoadPts)) { return; }
+            if (!DA.GetDataList(4, LoadVecs)) { return; }
             DA.GetData(0, ref run);
            
 
@@ -65,7 +68,7 @@ namespace MiStrAnGH
             //    int a = 5;
             //    int trtr = a + 3;
                 // MiStrAnEngine.Structure mistStruc= StaticFunctions.ConvertGHMeshToStructure(m);
-                MiStrAnEngine.Structure s = StaticFunctions.ConvertGHMeshToStructure(meshes[0], bcNodes,bcLoads);
+                MiStrAnEngine.Structure s = StaticFunctions.ConvertGHMeshToStructure(meshes[0], bcNodes,LoadPts,LoadVecs);
             //}
 
             if (run)
