@@ -31,7 +31,7 @@ namespace MiStrAnEngine
 
             Matrix B,N, gp, gw,xe,T,q;
 
-            q =new Matrix(new double[,] { { 1 }, { 0.45 }, { 0 } });
+            q =new Matrix(new double[,] { { 0 }, { 0 }, { 0 } });
 
             int ng = 4; // Number of gauss points
 
