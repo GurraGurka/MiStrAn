@@ -61,6 +61,16 @@ namespace MiStrAnEngine
             return true;
         }
 
+        public void SetSteelSection()
+        {
+            double E = 210e9;
+            double v = 0.3;
+            double G = E / (2.0 * (1 + v));
+            double[] angle = new double[] { 0};
+            this.D = Materials.eqModulus(E, E, G, v, angle, thickness);
+
+        }
+
         private static void GenerateGaussPoints(int n, out Matrix gp, out Matrix gw)
         {
 

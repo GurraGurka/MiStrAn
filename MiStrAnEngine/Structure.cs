@@ -32,7 +32,7 @@ namespace MiStrAnEngine
 
         public void AssembleKfbc()
         {
-            int nDofs = nodes.Count * 5;
+            int nDofs = nodes.Count * 6;
             K = Matrix.ZeroMatrix(nDofs, nDofs);
             f = Matrix.ZeroMatrix(nDofs, 1);
 

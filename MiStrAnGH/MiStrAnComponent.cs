@@ -31,7 +31,7 @@ namespace MiStrAnGH
             pManager.AddGeometryParameter("Mesh", "Mesh", "Mesh to analyze", GH_ParamAccess.list);
             pManager.AddGeometryParameter("BC", "BC", "Zero displacement nodes", GH_ParamAccess.list);
             pManager.AddGeometryParameter("LoadPoints", "LoadPoints", "Just nodes for loads", GH_ParamAccess.list);
-            pManager.AddGeometryParameter("LoadVectors", "LoadVectors", " One Load vector for each node", GH_ParamAccess.list);
+            pManager.AddVectorParameter("LoadVectors", "LoadVectors", " One Load vector for each node", GH_ParamAccess.list);
         }
 
         /// <summary>
