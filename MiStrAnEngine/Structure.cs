@@ -34,33 +34,20 @@ namespace MiStrAnEngine
         {
             int nDofs = nodes.Count * 6;
             K = Matrix.ZeroMatrix(nDofs, nDofs);
-            Matrix KTest1 = Matrix.ZeroMatrix(nDofs, nDofs);
-            Matrix KTest2 = Matrix.ZeroMatrix(nDofs, nDofs);
-            Matrix KTest3 = Matrix.ZeroMatrix(nDofs, nDofs);
             f = Matrix.ZeroMatrix(nDofs, 1);
-            bool TEMP = false;
 
             foreach (ShellElement elem in elements)
             {
                 int[] dofs = elem.GetElementDofs();
                 Matrix Ke, fe;
                 elem.GenerateKefe(out Ke, out fe);
-                if (TEMP == false)
-                {
-                    KTest1[dofs, dofs] = Ke;
-                    TEMP = true;
-                }
-                else
-                    KTest2[dofs, dofs] = Ke;
 
                 K[dofs, dofs] = K[dofs, dofs] + Ke;
                 f[dofs, 0] = f[dofs, 0] + fe;
 
-                int[] dofs2 = new int[] { 0, 1, 6, 7, 12, 13 };
-
-                Matrix Test = Ke[dofs2, dofs2];
             }
-            KTest3 = KTest1 + KTest2;
+
+
             // #TODO make it possible to have rotational loads
             foreach (Load load in loads)
             {
