@@ -54,7 +54,7 @@ namespace MiStrAnEngine
             {
                 GetB_N(gp.GetRow(i), xe,out B, out N);
                 Matrix DKe = gw[i]* B.Transpose() * D * B;
-                Ke[activeDofs, activeDofs] = Ke[activeDofs, activeDofs] + DKe;// elementArea*DKe; 
+                Ke[activeDofs, activeDofs] = Ke[activeDofs, activeDofs] + elementArea*DKe; 
                 Matrix DMe= gw[i] * N.Transpose() * q;
                 fe[activeDofs, 0] = fe[activeDofs, 0] + DMe;
             }
@@ -63,7 +63,7 @@ namespace MiStrAnEngine
             Ke[passiveDofs, passiveDofs] = Ke.Max() * Matrix.Ones(3, 3);
 
             // Transforming to global dofs
-            Ke = T.Transpose() * Ke * T;
+            Ke = T * Ke * T.Transpose();
             fe = T * fe;
 
             return true;
