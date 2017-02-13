@@ -23,9 +23,9 @@ namespace Sandbox
         private void button1_Click(object sender, EventArgs e)
         {
             // shell
-            Node node1 = new Node(-0.5, 0.5, 0);
-            Node node2 = new Node(0.5, -0.5, 0);
-            Node node3 = new Node(0.5, 0.5, 0);
+            Node node1 = new Node(0, 0, 0);
+            Node node2 = new Node(1, 0, 0);
+            Node node3 = new Node(0, 1, 0);
 
             List<Node> nodeList = new List<Node>() { node1, node2, node3 };
 
@@ -67,6 +67,25 @@ namespace Sandbox
 
             //element.GenerateKefe(out Ke, out fe);
 
+            //element.GetLocalNodeCoordinates();
+            //element.TestingShell2();
+            /*  double E = 210*Math.Pow(10,9);
+              double v = 0.3;
+              double G = E / (2.0 * (1 + v));
+              double[] angle = new double[] { 0, 0, 0, 0, 0, 0, 0 };
+              element.D = Materials.eqModulus(E, E, G, v, angle, 1.0 / 7.0);
+
+              // element.D =// new Matrix(new double[,] { { 1.3462, 0.5769, 0.5769, 0,0,0 },
+              /* { 0.5769, 1.3462, 0.5769,0,0,0 },
+                                                       { 0.5769, 0.5769, 1.3462,0,0,0 },
+                                                       { 0, 0, 0,0.3846,0,0 },
+                                                       { 0, 0, 0,0,0.3846,0 },
+                                                       { 0, 0, 0,0,0,0.3846 } });*/
+
+            element.thickness = 0.1;
+            element.SetSteelSection();
+            element.GenerateKefe(out Ke, out fe);
+
 
 
             //element.t = 2;
@@ -92,7 +111,7 @@ namespace Sandbox
 
             int[] dofs = new int[] { 0, 1, 6, 7, 12, 13 };
 
-            Matrix K = Ke[dofs, dofs];
+            Matrix KTest = Ke[dofs, dofs];
             Matrix f = fe[dofs, 0];
 
         }
