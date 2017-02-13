@@ -73,9 +73,9 @@ namespace MiStrAnEngine
                 }
 
                 //Add local modulus to globals (times 2 to account for both sides of neutral axes)
-                AA =AA+ (hk - hkMinus1) * Q_;
-                BB =BB+ (Math.Pow(hk,2) - Math.Pow(hkMinus1,2)) * Q_;
-                DD =DD+ (Math.Pow(hk, 3) - Math.Pow(hkMinus1, 3)) * Q_;
+                AA =AA+ 2*(hk - hkMinus1) * Q_;
+                BB = BB;//+ 2*(Math.Pow(hk,2) - Math.Pow(hkMinus1,2)) * Q_;
+                DD =DD+ 2*(Math.Pow(hk, 3) - Math.Pow(hkMinus1, 3)) * Q_;
 
 
             }
