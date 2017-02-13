@@ -72,10 +72,12 @@ namespace MiStrAnEngine
                     hkMinus1 = (i - 1) * thickLam + 0.5 * thickLam;
                 }
 
+
                 //Add local modulus to globals (times 2 to account for both sides of neutral axes)
-                AA =AA+ 2*(hk - hkMinus1) * Q_;
+                //THIS IS ONLY HALF BUT IT WORKS IN THE END
+                AA =AA+ (hk - hkMinus1) * Q_;
                 BB = BB;//+ 2*(Math.Pow(hk,2) - Math.Pow(hkMinus1,2)) * Q_;
-                DD =DD+ 2*(Math.Pow(hk, 3) - Math.Pow(hkMinus1, 3)) * Q_;
+                DD =DD+ (Math.Pow(hk, 3) - Math.Pow(hkMinus1, 3)) * Q_;
 
 
             }
