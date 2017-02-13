@@ -98,14 +98,10 @@ namespace MiStrAnEngine
         {
             AssembleKfbc();
 
-            int[] dofs = new int[] { 0, 1, 6, 7, 12, 13,18,19 };
-
-            Matrix Test = K[dofs, dofs];
 
             return StaticFunctions.solveq(K, f, bc, out a, out r);
 
             
-            Test = Test;
         }
     }
 }
