@@ -41,12 +41,20 @@ namespace MiStrAnEngine
 
             int[] activeDofs = new int[] { 0, 1, 2, 3, 4, 6, 7, 8, 9, 10, 12, 13, 14, 15, 16 };
             int[] passiveDofs = new int[] { 5, 11, 17 };
-            
+
+            double b1 = xe[1, 1] - xe[2, 1];
+            double b2 = xe[2, 1] - xe[0, 1];
+            double b3 = xe[0, 1] - xe[1, 1];
+            double c1 = xe[2, 0] - xe[1, 0];
+            double c2 = xe[0, 0] - xe[2, 0];
+            double c3 = xe[1, 0] - xe[0, 0];
+            double elementArea = 0.5 * (b1 * c2 - b2 * c1);
+
             for (int i = 0; i < ng; i++)
             {
                 GetB_N(gp.GetRow(i), xe,out B, out N);
                 Matrix DKe = gw[i]* B.Transpose() * D * B;
-                Ke[activeDofs, activeDofs] = Ke[activeDofs, activeDofs] + DKe; 
+                Ke[activeDofs, activeDofs] = Ke[activeDofs, activeDofs] + DKe;// elementArea*DKe; 
                 Matrix DMe= gw[i] * N.Transpose() * q;
                 fe[activeDofs, 0] = fe[activeDofs, 0] + DMe;
             }
@@ -55,7 +63,7 @@ namespace MiStrAnEngine
             Ke[passiveDofs, passiveDofs] = Ke.Max() * Matrix.Ones(3, 3);
 
             // Transforming to global dofs
-            Ke = T * Ke * T.Transpose();
+            Ke = T.Transpose() * Ke * T;
             fe = T * fe;
 
             return true;

@@ -52,6 +52,7 @@ namespace MiStrAnEngine
                 }
                 else
                     KTest2[dofs, dofs] = Ke;
+
                 K[dofs, dofs] = K[dofs, dofs] + Ke;
                 f[dofs, 0] = f[dofs, 0] + fe;
 

@@ -29,6 +29,7 @@ namespace MiStrAnEngine
                 //Reduced stiffness terms (EUROCOMP eq4.50)
                 double Q11 = E1 / (1 - v12 * v21);
                 double Q12 = v21 * E1 / (1 - v12 * v21);
+                //ADD Q21 porbably with E2 instead of E1
                 double Q22 = E2 / (1 - v12 * v21);
                 double Q66 = G12;
 
