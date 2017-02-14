@@ -47,6 +47,7 @@ namespace MiStrAnEngine
 
         public Matrix L;
         public Matrix U;
+        public Matrix D;
         private int[] pi;
         private double detOfP = 1;
 
@@ -238,11 +239,107 @@ namespace MiStrAnEngine
             }
         }
 
-        // #TODO add this
-        public void MakeLUSymmetric()
+
+
+        public void MakeLL()
         {
+            double[,] a = mat;
+
+            int n = (int)Math.Sqrt(a.Length);
+
+            double[,] ret = new double[n, n];
+            for (int r = 0; r < n; r++)
+                for (int c = 0; c <= r; c++)
+                {
+                    if (c == r)
+                    {
+                        double sum = 0;
+                        for (int j = 0; j < c; j++)
+                        {
+                            sum += ret[c, j] * ret[c, j];
+                        }
+                        ret[c, c] = Math.Sqrt(a[c, c] - sum);
+                    }
+                    else
+                    {
+                        double sum = 0;
+                        for (int j = 0; j < c; j++)
+                            sum += ret[r, j] * ret[c, j];
+                        ret[r, c] = 1.0 / ret[c, c] * (a[r, c] - sum);
+                    }
+                }
+
+            L = new Matrix(ret);
+        }
+
+        public void MakeLL_ALGLIB()
+        {
+            double[,] a = mat;
+            alglib.spdmatrixcholesky(ref a, a.GetLength(1), false);
+            
+            L = new Matrix(a);
+        }
+
+        // See https://en.wikipedia.org/wiki/Cholesky_decomposition#The_Cholesky_algorithm
+        //Using the The LDL-algorithm
+        public void MakeLDL()
+        {
+            Matrix A = this;
+            L = new Matrix(rows, cols);
+            D = new Matrix(rows, cols);
+
+            for (int i = 0; i < rows; i++)
+            {
+
+                for (int j = 0; j <= i; j++)
+                {
+                    if(i==j)
+                    {
+                        L[i, j] = 1;
+                        double sum = 0;
+                        for (int k = 0; k < j; k++)
+                        {
+                            sum += L[j, k] * L[j, k] * D[k, k];
+                        }
+                        D[j, j] = A[j, j] - sum;
+                    }
+                    else
+                    {
+                        double sum = 0;
+                        for (int k = 0; k < j; k++)
+                        {
+                            sum += L[i, k] * L[j, k] * D[k, k];
+                        }
+
+                        if (D[j, j] == 0)
+                            L[i, j] = 0;
+                        else
+                            L[i, j] = (1 / D[j, j]) * (A[i, j] - sum);
+                    }
+                }
+            }
+
+        }
 
 
+        private static double CholeskySumDiagonal(Matrix L,int j)
+        {
+            double sum = 0;
+
+            for (int k = 0; k < j; k++)
+                sum += Math.Pow(L[j,k], 2);
+
+            return sum;
+        }
+
+        private static double CholeskySum(Matrix L, int i, int j)
+        {
+            double sum = 0;
+
+            for (int k = 0; k < j; k++)
+                sum += L[i,k]*L[j,k];
+
+            return sum;
         }
 
         public Matrix Transpose()
@@ -265,6 +362,85 @@ namespace MiStrAnEngine
             Matrix x = SubsBack(U, z);
 
             return x;
+        }
+
+        // Assumes symmetric non definite matrix.
+        // see https://se.mathworks.com/help/dsp/ref/ldlsolver.html
+        public Matrix SolveWith_LDL(Matrix v)                        // Function solves Ax = v in confirmity with solution vector "v"
+        {
+            if (rows != cols) throw new MException("The matrix is not square!");
+            if (rows != v.rows) throw new MException("Wrong number of results in solution vector!");
+            if (D == null) MakeLDL();
+
+            Matrix Y = SolveLowerTriangular(L, v);
+            Matrix Z = SolveDiagonal(D, Y);
+            Matrix X = SolveUpperTriangular(L.Transpose(), Z);
+            
+
+            return X;
+        }
+
+        // Assumes symmetric positive definite matrix.
+        // Uses cholesky decomposition
+        public Matrix SolveWith_LL(Matrix v)                        // Function solves Ax = v in confirmity with solution vector "v"
+        {
+            if (rows != cols) throw new MException("The matrix is not square!");
+            if (rows != v.rows) throw new MException("Wrong number of results in solution vector!");
+            MakeLL_ALGLIB();
+
+
+            Matrix Y = SolveLowerTriangular(L, v);
+            Matrix X = SolveUpperTriangular(L.Transpose(), Y);
+
+
+            return X;
+        }
+
+        private static Matrix SolveLowerTriangular(Matrix A, Matrix v)
+        {
+            Matrix X = new Matrix(v.rows, 1);
+
+            for (int i = 0; i < A.rows; i++)
+            {
+                double sum = 0;
+                for (int k = 0; k < i; k++)
+                    sum += A[i, k] * X[k, 0];
+
+                X[i, 0] = (v[i, 0] - sum) / A[i, i];
+            }
+
+            return X;
+
+        }
+
+        private static Matrix SolveDiagonal(Matrix D, Matrix v)
+        {
+            Matrix X = new Matrix(D.rows, 1);
+
+            for (int i = 0; i < D.rows; i++)
+            {
+                X[i, 0] =  v[i, 0]/ D[i, i];
+            }
+
+            return X;
+        }
+
+        private static Matrix SolveUpperTriangular(Matrix A, Matrix v)
+        {
+            Matrix X = new Matrix(v.rows, 1);
+
+
+            for (int i = A.rows-1; i >=0; i--)
+            {
+                double sum = 0;
+                for (int k = i+1; k < A.rows; k++)
+                    sum += A[i, k] * X[k, 0];
+
+                X[i, 0] = (v[i, 0] - sum)/A[i,i];
+            }
+
+            return X;
+
         }
 
         public Matrix Invert()                                   // Function returns the inverted matrix

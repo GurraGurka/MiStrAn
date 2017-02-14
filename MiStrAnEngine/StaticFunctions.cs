@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+
 namespace MiStrAnEngine
 {
     public static class StaticFunctions
@@ -12,7 +13,7 @@ namespace MiStrAnEngine
             return new Matrix(1, 1);
         }
 
-        // Generate a series of integerns
+        // Generate a series of integers
         public static int[] intSrs(int from, int to)
         {
             int n = to-from + 1;
@@ -35,6 +36,7 @@ namespace MiStrAnEngine
         public static bool solveq(Matrix K, Matrix f, Matrix bc, out Matrix d, out Matrix Q)
         {
 
+
             int nd = K.cols;
             int[] fdof = intSrs(0, nd - 1);
             int[] pdof = new int[bc.rows];
@@ -49,7 +51,11 @@ namespace MiStrAnEngine
 
             Matrix dp = bc.GetCol(1);
 
-            Matrix s = K[fdof, fdof].SolveWith(f[fdof, 0] - K[fdof, pdof] * dp);
+            //       Matrix s = K[fdof, fdof].SolveWith(f[fdof, 0] - K[fdof, pdof] * dp);
+            //    Matrix s = K[fdof, fdof].SolveWith_LDL(f[fdof, 0] - K[fdof, pdof] * dp);
+            Matrix s = K[fdof, fdof].SolveWith_LL(f[fdof, 0] - K[fdof, pdof] * dp);
+
+
 
             d[pdof, 0] = dp;
             d[fdof, 0] = s;
