@@ -9,14 +9,21 @@ namespace MiStrAnEngine
     {
         //Make lists for E1, E2 etc
         //Only verified to MATLAB-cod with configurations: 4 laminas (all 0 degrees), 4 laminas (45,30,30,45) degrees
-        public static Matrix eqModulus(double E1, double E2, double G12, double v12, double[] angle, double thickLam)
+        public static void eqModulus(double E1, double E2, double G12, double v12, double[] angle, double thickLam, double density, out Matrix D, out Matrix q)
         {
-            //Global matrices for the laminate
+            //Global stiffness  matrices for the laminate
             Matrix AA = new Matrix(3, 3); //Extensional or membrane stiffness terms of a laminate
             Matrix BB = new Matrix(3, 3); //Coupling stiffness terms of a laminate
             Matrix DD = new Matrix(3, 3); //Bending stiffness n therms of a laminate
 
+            //Global bodyforces matrices for the laminate
             
+            double II0 = 0;
+            double II1 = 0;
+            double II2 = 0;
+
+            double gravity = 9.82;
+
             int listLength = angle.Length;
 
             //if odd numbers of numbers
@@ -80,19 +87,25 @@ namespace MiStrAnEngine
                 BB = BB;//+ 2*(Math.Pow(hk,2) - Math.Pow(hkMinus1,2)) * Q_;
                 DD =DD+ 2*(Math.Pow(hk, 3) - Math.Pow(hkMinus1, 3)) * Q_;
 
+                //Same but for the masses (Gravity 9.82)
+                II0 =II0+  2 * (hk - hkMinus1);
+             //   II2 = II2 + 2 * (Math.Pow(hk, 3) - Math.Pow(hkMinus1, 3)) * density*9.82;
+
 
             }
 
             
             BB = (1.0 / 2.0) * BB;
             DD = (1.0 / 3.0) * DD;
+            // II2 = (1.0 / 3.0) * II2;
+            II0 = II0 * density * gravity;
 
             //Step 5 i euroCOMP
-         //   Matrix a = AA.Invert();
+            //   Matrix a = AA.Invert();
 
             //TEMPORARY. THEY GET SINGULAR
-           // Matrix b = B.Invert();
-         //   Matrix d = DD.Invert();
+            // Matrix b = B.Invert();
+            //   Matrix d = DD.Invert();
 
             //Step 6 euroCOMP
             /*   double totalThick = listLength * thickLam;
@@ -104,14 +117,18 @@ namespace MiStrAnEngine
             //d and b matrices can be used for the equivalent bending elastic constants (step 6 euroCOMP)
 
             //Total D-matrix D=[AA -BB;-BB DD]
-            Matrix D = new Matrix(6, 6);
+            D = new Matrix(6, 6);
 
             D[new int[]  { 0, 1, 2 } ,new int[] { 0, 1, 2 }] = AA;
             D[new int[] { 3, 4, 5 }, new int[] { 3, 4, 5 }] = DD;
             D[new int[] { 0, 1, 2 }, new int[] { 3, 4, 5 }] = -BB;
             D[new int[] { 3, 4, 5 }, new int[] { 0, 1, 2 }] = -BB;
 
-            return D;
+            //Total q matrix (DETTA ÄR EN REN CHANSNING)
+            q = new Matrix(new double[,] { { 0 } , { 0 }, { -II0 } }); //Gravity works in negative direction
+
+
+            
         }
     }
 }

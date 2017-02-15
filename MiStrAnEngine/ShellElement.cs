@@ -14,6 +14,7 @@ namespace MiStrAnEngine
         public double thickness;
         public Matrix eq; // [eqx eqy eqz]
         public Matrix D;
+        public Matrix q;
 
 
         public ShellElement(List<Node> _nodes, int _id)
@@ -22,6 +23,7 @@ namespace MiStrAnEngine
             Id = _id;
         }
 
+
        
 
         public bool GenerateKefe(out Matrix Ke, out Matrix fe)
@@ -29,9 +31,9 @@ namespace MiStrAnEngine
             Ke = new Matrix(18, 18);
             fe = new Matrix(18, 1);
 
-            Matrix B,N, gp, gw,xe,T,q;
+            Matrix B, N, gp, gw, xe, T; //,q;
 
-            q =new Matrix(new double[,] { { 0 }, { 0 }, { 0 } });
+           // q =new Matrix(new double[,] { { 0 }, { 0 }, { 0 } });
 
             int ng = 4; // Number of gauss points
 
@@ -54,15 +56,20 @@ namespace MiStrAnEngine
                 Matrix DKe = gw[i]* B.Transpose() * D * B;
                 Ke[activeDofs, activeDofs] = Ke[activeDofs, activeDofs] + elementArea*DKe; 
                 Matrix DMe= gw[i] * N.Transpose() * q;
-                fe[activeDofs, 0] = fe[activeDofs, 0] + DMe;
+                fe[activeDofs, 0] = fe[activeDofs, 0] + elementArea*DMe;
             }
+        
+          //  GetB_N(gp.GetRow(0), xe, out B, out N);
+           // Matrix DMe = N.Transpose() * q;
+          //  fe[activeDofs, 0] = fe[activeDofs, 0] + elementArea*DMe;
 
             // Adding max stiffness to rotational dofs
             Ke[passiveDofs, passiveDofs] = Ke.Max() * Matrix.Ones(3, 3);
+           // fe[passiveDofs, 0] = 0 * Matrix.Ones(3, 1); ;
 
             // Transforming to global dofs
             Ke = T * Ke * T.Transpose();
-            fe = T * fe;
+           // fe = T.Transpose() * fe;
 
             return true;
         }
@@ -72,8 +79,14 @@ namespace MiStrAnEngine
             double E = 210e9;
             double v = 0.3;
             double G = E / (2.0 * (1 + v));
-            double[] angle = new double[2] { 0,0 }; // double[] angle = new double[] { 0};
-            this.D = Materials.eqModulus(E, E, G, v, angle, thickness/2.0);
+            double density = 7800*1000; //[kg/m^3]
+            Matrix d = new Matrix(6, 6);
+            Matrix qLoc = new Matrix(6, 1);
+
+            double[] angle = new double[1] { 0}; // double[] angle = new double[] { 0};
+            Materials.eqModulus(E, E, G, v, angle, thickness, density, out d, out qLoc);
+            this.D = d;
+            this.q = qLoc;
 
         }
 
@@ -288,6 +301,8 @@ namespace MiStrAnEngine
             double l2 = Math.Sqrt(Math.Pow(xe[1, 0] - xe[2, 0], 2) + Math.Pow(xe[1, 1] - xe[2, 1], 2));
             double l3 = Math.Sqrt(Math.Pow(xe[2, 0] - xe[0, 0], 2) + Math.Pow(xe[2, 1] - xe[0, 1], 2));
 
+            
+
             double mu3 = (Math.Pow(l3, 2) - Math.Pow(l2, 2)) / Math.Pow(l1, 2);
             double mu1 = (Math.Pow(l1, 2) - Math.Pow(l3, 2)) / Math.Pow(l2, 2);
             double mu2 = (Math.Pow(l2, 2) - Math.Pow(l1, 2)) / Math.Pow(l3, 2);
@@ -314,7 +329,7 @@ namespace MiStrAnEngine
                                                 {Math.Pow(L2,2)*L3+0.5*L1*L2*L3*(3*(1-mu1)*L2-(1+3*mu1)*L3+(1+3*mu1)*L1)},
                                                 {Math.Pow(L3,2)*L1+0.5*L1*L2*L3*(3*(1-mu2)*L3-(1+3*mu2)*L1+(1+3*mu2)*L2)}});
 
-            //For the N-matrix
+            //For the N-matrix  %Danskarnas bok volym 2 p.133 eq 4.64
             double NN11 = P[0] - P[3] + P[5] + 2 * (P[6] - P[8]);
             double NN12 = -b2 * (P[8] - P[5]) - b3 * P[6];
             double NN13 = -c2 * (P[8] - P[5]) - c3 * P[6];

@@ -39,8 +39,10 @@ namespace MiStrAnGH
         /// </summary>
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
         {
-            pManager.AddNumberParameter("displacements", "a", "solved displacements", GH_ParamAccess.list);
-            pManager.AddNumberParameter("reactions", "r", "solved reactions", GH_ParamAccess.list);
+            pManager.AddVectorParameter("Tx Ty Tz", "Displacements", "Solved displacements", GH_ParamAccess.list);
+            pManager.AddVectorParameter("Rx Ry Rz", "Rotations", "Solved rotations", GH_ParamAccess.list);
+            pManager.AddNumberParameter("r [N]", "Reactions", "solved reactions", GH_ParamAccess.list);
+            pManager.AddGeometryParameter("DefMesh", "DeformedMesh", "Deformed mesh", GH_ParamAccess.item);
         }
 
         /// <summary>
@@ -56,28 +58,36 @@ namespace MiStrAnGH
             List<Vector3d> LoadVecs = new List<Vector3d>();
             bool run = false;
 
+            DA.GetData(0, ref run);
             if (!DA.GetDataList(1, meshes)) { return;  }
             if (!DA.GetDataList(2, bcNodes)) { return; }
             if (!DA.GetDataList(3, LoadPts)) { return; }
             if (!DA.GetDataList(4, LoadVecs)) { return; }
-            DA.GetData(0, ref run);
-           
+
+
 
             //foreach (Mesh m in meshes)
             //{
             //    int a = 5;
             //    int trtr = a + 3;
-                // MiStrAnEngine.Structure mistStruc= StaticFunctions.ConvertGHMeshToStructure(m);
-                MiStrAnEngine.Structure s = StaticFunctions.ConvertGHMeshToStructure(meshes[0], bcNodes,LoadPts,LoadVecs);
+            // MiStrAnEngine.Structure mistStruc= StaticFunctions.ConvertGHMeshToStructure(m);
+            MiStrAnEngine.Structure s = StaticFunctions.ConvertGHMeshToStructure(meshes[0], bcNodes,LoadPts,LoadVecs);
+            
             //}
 
             if (run)
             {
+
                MiStrAnEngine.Matrix a, r;
                 s.Analyze(out a, out r);
 
                 List<double> aList = new List<double>();
                 List<double> rList = new List<double>();
+                List<Vector3d> defList = new List<Vector3d>();
+                List<Vector3d> rotList = new List<Vector3d>();
+                Mesh outMesh = new Mesh();
+                
+                
 
                 for (int i = 0; i < a.rows; i++)
                 {
@@ -85,9 +95,16 @@ namespace MiStrAnGH
                     rList.Add(r[i, 0]);
                 }
 
+                //Get outputs
+                StaticFunctions.GetDefMesh(meshes[0], aList, out outMesh);
+                StaticFunctions.GetDefRotVector(aList, out defList, out rotList);
 
-                DA.SetDataList(0, aList);
-                DA.SetDataList(1, rList);
+
+
+                DA.SetDataList(0, defList);
+                DA.SetDataList(1, rotList);
+                DA.SetDataList(2, rList);
+                DA.SetData(3, outMesh);
             }
 
         }
