@@ -275,7 +275,7 @@ namespace MiStrAnEngine
         public void MakeLL_ALGLIB()
         {
             double[,] a = mat;
-            alglib.spdmatrixcholesky(ref a, a.GetLength(1), false);
+            alglib.smp_spdmatrixcholesky(ref a, a.GetLength(1), false);
             
             L = new Matrix(a);
         }
