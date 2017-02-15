@@ -36,6 +36,8 @@
 using System;
 using System.Text.RegularExpressions;
 using System.Linq;
+using System.Runtime.InteropServices;
+using System.Collections.Generic;
 
 namespace MiStrAnEngine
 {
@@ -276,7 +278,7 @@ namespace MiStrAnEngine
         {
             double[,] a = mat;
             alglib.smp_spdmatrixcholesky(ref a, a.GetLength(1), false);
-            
+
             L = new Matrix(a);
         }
 
@@ -380,6 +382,53 @@ namespace MiStrAnEngine
             return X;
         }
 
+        public void ToCSRFormat(out int[] row, out int[] col, out double[] val, out int nnz, out int N)
+        {
+            if (rows != cols) throw new MException("The matrix is not square!");
+            N = rows;
+
+            row = new int[N + 1];
+            
+
+
+            List<int> _col = new List<int>();
+            List<double> _val = new List<double>();
+
+            nnz = 0;
+            int count = 0;
+            for (int i = 0; i < rows; i++)
+            {
+                bool foundFirst = false;
+                for (int j = 0; j < cols; j++)
+                {
+                    if (mat[i, j] == 0)
+                        continue;
+                    if (!foundFirst)
+                    {
+                        row[i] = count;
+                        foundFirst = true;
+                    }
+                    _val.Add(mat[i, j]);
+                    _col.Add(j);
+                    count++;
+                    nnz++;
+                }
+            }
+
+            row[N] = nnz;
+            col = _col.ToArray();
+            val = _val.ToArray();
+
+
+        }
+
+        [DllImport("SolverWrapperNativeCode.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern double CPUsolveCSRDouble(int[] row_offset, int[] col, double[] val,
+int nnz, int N, double[] _rhs, double[] _x);
+
+
+
+
         // Assumes symmetric positive definite matrix.
         // Uses cholesky decomposition
         public Matrix SolveWith_LL(Matrix v)                        // Function solves Ax = v in confirmity with solution vector "v"
@@ -394,6 +443,38 @@ namespace MiStrAnEngine
 
 
             return X;
+        }
+
+        public Matrix SolveWith_CG(Matrix v)
+        {
+            int[] row, col;
+            double[] vals;
+            int N, nnz;
+
+
+            ToCSRFormat(out row, out col, out vals, out nnz, out N);
+            double[] rhs = new double[v.rows];
+            double[] x = new double[v.rows];
+
+            for (int i = 0; i < v.rows; i++)
+            {
+                rhs[i] = v[i, 0];
+            }
+
+
+
+            CPUsolveCSRDouble(row, col, vals, nnz, N, rhs, x);
+
+            Matrix X = new Matrix(v.rows, 1);
+            for (int i = 0; i < v.rows; i++)
+            {
+                X[i, 0] = x[i];
+            }
+
+
+            return X;  
+
+
         }
 
         private static Matrix SolveLowerTriangular(Matrix A, Matrix v)

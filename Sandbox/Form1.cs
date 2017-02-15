@@ -22,101 +22,124 @@ namespace Sandbox
 
         private void button1_Click(object sender, EventArgs e)
         {
-            // shell
-            Node node1 = new Node(0, 0, 0);
-            Node node2 = new Node(1, 0, 0);
-            Node node3 = new Node(0, 1, 0);
+            //// shell
+            //Node node1 = new Node(0, 0, 0);
+            //Node node2 = new Node(1, 0, 0);
+            //Node node3 = new Node(0, 1, 0);
 
-            List<Node> nodeList = new List<Node>() { node1, node2, node3 };
-
-
-
-            ShellElement element = new ShellElement(nodeList, 1);
-            //element.thickness = 1;
-
-            element.thickness = 0.1;
-            element.SetSteelSection();
-
-            Matrix Ke, fe;
-
-            element.GenerateKefe(out Ke, out fe);
-
-            //Matrix test = new Matrix(3, 3);
+            //List<Node> nodeList = new List<Node>() { node1, node2, node3 };
 
 
 
+            //ShellElement element = new ShellElement(nodeList, 1);
+            ////element.thickness = 1;
+
+            //element.thickness = 0.1;
+            //element.SetSteelSection();
+
+            //Matrix Ke, fe;
+
+            //element.GenerateKefe(out Ke, out fe);
+
+            ////Matrix test = new Matrix(3, 3);
 
 
-            ////element.ShellTesting();
+
+
+
+            //////element.ShellTesting();
+
+            //////element.GetLocalNodeCoordinates();
+            //////element.TestingShell2();
+            ////double E = 1;
+            ////double v = 0.3;
+            ////double G = E / (2.0 * (1 + v));
+            ////double[] angle = new double[] { 0, 0, 0, 0, 0, 0, 0 };
+            ////element.D = Materials.eqModulus(E, E, G, v, angle, 1.0 / 7.0);
+
+            ////// element.D =// new Matrix(new double[,] { { 1.3462, 0.5769, 0.5769, 0,0,0 },
+            /////* { 0.5769, 1.3462, 0.5769,0,0,0 },
+            ////                                         { 0.5769, 0.5769, 1.3462,0,0,0 },
+            ////                                         { 0, 0, 0,0.3846,0,0 },
+            ////                                         { 0, 0, 0,0,0.3846,0 },
+            ////                                         { 0, 0, 0,0,0,0.3846 } });*/
+
+
+            ////element.GenerateKefe(out Ke, out fe);
 
             ////element.GetLocalNodeCoordinates();
             ////element.TestingShell2();
-            //double E = 1;
-            //double v = 0.3;
-            //double G = E / (2.0 * (1 + v));
-            //double[] angle = new double[] { 0, 0, 0, 0, 0, 0, 0 };
-            //element.D = Materials.eqModulus(E, E, G, v, angle, 1.0 / 7.0);
+            ///*  double E = 210*Math.Pow(10,9);
+            //  double v = 0.3;
+            //  double G = E / (2.0 * (1 + v));
+            //  double[] angle = new double[] { 0, 0, 0, 0, 0, 0, 0 };
+            //  element.D = Materials.eqModulus(E, E, G, v, angle, 1.0 / 7.0);
 
-            //// element.D =// new Matrix(new double[,] { { 1.3462, 0.5769, 0.5769, 0,0,0 },
-            ///* { 0.5769, 1.3462, 0.5769,0,0,0 },
-            //                                         { 0.5769, 0.5769, 1.3462,0,0,0 },
-            //                                         { 0, 0, 0,0.3846,0,0 },
-            //                                         { 0, 0, 0,0,0.3846,0 },
-            //                                         { 0, 0, 0,0,0,0.3846 } });*/
+            //  // element.D =// new Matrix(new double[,] { { 1.3462, 0.5769, 0.5769, 0,0,0 },
+            //  /* { 0.5769, 1.3462, 0.5769,0,0,0 },
+            //                                           { 0.5769, 0.5769, 1.3462,0,0,0 },
+            //                                           { 0, 0, 0,0.3846,0,0 },
+            //                                           { 0, 0, 0,0,0.3846,0 },
+            //                                           { 0, 0, 0,0,0,0.3846 } });*/
 
-
+            //element.thickness = 0.1;
+            //element.SetSteelSection();
             //element.GenerateKefe(out Ke, out fe);
 
-            //element.GetLocalNodeCoordinates();
-            //element.TestingShell2();
-            /*  double E = 210*Math.Pow(10,9);
-              double v = 0.3;
-              double G = E / (2.0 * (1 + v));
-              double[] angle = new double[] { 0, 0, 0, 0, 0, 0, 0 };
-              element.D = Materials.eqModulus(E, E, G, v, angle, 1.0 / 7.0);
+            //Matrix Testa = new Matrix(new double[,] { { 1, 2, 3 ,4}, { 5, 6, 7,8 }, { 9, 10, 11,12 }, { 13,14,15,16} });
+            //int[] dofsTEST =new int[3]{2 ,0,1};
+            //Matrix Test2 = Testa[dofsTEST, dofsTEST];
 
-              // element.D =// new Matrix(new double[,] { { 1.3462, 0.5769, 0.5769, 0,0,0 },
-              /* { 0.5769, 1.3462, 0.5769,0,0,0 },
-                                                       { 0.5769, 0.5769, 1.3462,0,0,0 },
-                                                       { 0, 0, 0,0.3846,0,0 },
-                                                       { 0, 0, 0,0,0.3846,0 },
-                                                       { 0, 0, 0,0,0,0.3846 } });*/
-
-            element.thickness = 0.1;
-            element.SetSteelSection();
-            element.GenerateKefe(out Ke, out fe);
-
-            Matrix Testa = new Matrix(new double[,] { { 1, 2, 3 ,4}, { 5, 6, 7,8 }, { 9, 10, 11,12 }, { 13,14,15,16} });
-            int[] dofsTEST =new int[3]{2 ,0,1};
-            Matrix Test2 = Testa[dofsTEST, dofsTEST];
-
-            Test2 = Test2 + Test2;
-            Testa[dofsTEST, dofsTEST] = Testa[dofsTEST, dofsTEST] + Testa[dofsTEST, dofsTEST];
-            //element.t = 2;
-            //element.eq = new Matrix(new double[,] { { 5,5,5} });
+            //Test2 = Test2 + Test2;
+            //Testa[dofsTEST, dofsTEST] = Testa[dofsTEST, dofsTEST] + Testa[dofsTEST, dofsTEST];
+            ////element.t = 2;
+            ////element.eq = new Matrix(new double[,] { { 5,5,5} });
 
 
-            //Matrix Ke;
-            //Matrix fe;
+            ////Matrix Ke;
+            ////Matrix fe;
 
-            //element.GenerateKefe(out Ke, out fe);
+            ////element.GenerateKefe(out Ke, out fe);
 
-            //Ke = Ke;
+            ////Ke = Ke;
 
-            //Solveq test case
+            ////Solveq test case
 
-            //Matrix K = new Matrix(new double[,] { { 2, -1 }, { -1, 2 } });
-            //Matrix f = new Matrix(new double[,] { { 0}, { 10 } });
-            //Matrix bc = new Matrix(new double[,] { { 0 , 0 } });
+            ////Matrix K = new Matrix(new double[,] { { 2, -1 }, { -1, 2 } });
+            ////Matrix f = new Matrix(new double[,] { { 0}, { 10 } });
+            ////Matrix bc = new Matrix(new double[,] { { 0 , 0 } });
 
-            //Matrix d, Q;
+            ////Matrix d, Q;
 
-            //SF.solveq(K, f, bc, out d, out Q);
+            ////SF.solveq(K, f, bc, out d, out Q);
 
-            int[] dofs = new int[] { 0, 1, 6, 7, 12, 13 };
+            //int[] dofs = new int[] { 0, 1, 6, 7, 12, 13 };
 
-            Matrix KTest = Ke[dofs, dofs];
-            Matrix f = fe[dofs, 0];
+            //Matrix KTest = Ke[dofs, dofs];
+            //Matrix f = fe[dofs, 0];
+
+            Matrix test = new Matrix(3, 3);
+            test[0, 0] = 1;
+            test[0, 1] = 1;
+            test[0, 2] = 1;
+            test[1, 0] = 1;
+            test[1, 1] = 1;
+            test[2, 0] = 1;
+            test[2, 2] = 1;
+
+            double[] rhs = new double[] { 6, 3, 4 };
+            double[] x = new double[3];
+            int[] rows, cols;
+            double[] vals;
+            int N, nnz;
+
+
+            test.ToCSRFormat(out rows, out cols, out vals, out nnz, out N);
+
+
+
+            Matrix.CPUsolveCSRDouble(rows, cols, vals, nnz, N, rhs, x);
+
 
         }
 
