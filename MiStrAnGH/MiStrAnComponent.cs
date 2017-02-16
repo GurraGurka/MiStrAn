@@ -32,6 +32,7 @@ namespace MiStrAnGH
             pManager.AddGeometryParameter("BC", "BC", "Zero displacement nodes", GH_ParamAccess.list);
             pManager.AddGeometryParameter("LoadPoints", "LoadPoints", "Just nodes for loads", GH_ParamAccess.list);
             pManager.AddVectorParameter("LoadVectors", "LoadVectors", " One Load vector for each node", GH_ParamAccess.list);
+            pManager.AddBooleanParameter("Use Exact solver method", "exact", "if true, uses exact LL matrix solver", GH_ParamAccess.item, false);
         }
 
         /// <summary>
@@ -57,12 +58,14 @@ namespace MiStrAnGH
             List<Point3d> LoadPts = new List<Point3d>();
             List<Vector3d> LoadVecs = new List<Vector3d>();
             bool run = false;
+            bool exact = false;
 
             DA.GetData(0, ref run);
             if (!DA.GetDataList(1, meshes)) { return;  }
             if (!DA.GetDataList(2, bcNodes)) { return; }
             if (!DA.GetDataList(3, LoadPts)) { return; }
             if (!DA.GetDataList(4, LoadVecs)) { return; }
+            DA.GetData(5, ref exact);
 
 
 
@@ -79,7 +82,7 @@ namespace MiStrAnGH
             {
 
                MiStrAnEngine.Matrix a, r;
-                s.Analyze(out a, out r);
+                s.Analyze(out a, out r,exact);
 
                 List<double> aList = new List<double>();
                 List<double> rList = new List<double>();

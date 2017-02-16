@@ -79,7 +79,7 @@ namespace MiStrAnEngine
             double E = 210e9;
             double v = 0.3;
             double G = E / (2.0 * (1 + v));
-            double density = 7800*1000; //[kg/m^3]
+            double density = 0;//7800*1000; //[kg/m^3]
             Matrix d = new Matrix(6, 6);
             Matrix qLoc = new Matrix(6, 1);
 

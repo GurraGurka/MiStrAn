@@ -67,6 +67,15 @@ namespace MiStrAnEngine
             mat = _mat;
         }
 
+        public Matrix(double[] _mat) : this(_mat.Length,1)
+        {
+            for (int i = 0; i < _mat.Length; i++)
+            {
+                mat[i, 0] = _mat[i];
+            }
+
+        }
+
 
         public Boolean IsSquare()
         {
@@ -426,6 +435,10 @@ namespace MiStrAnEngine
         public static extern double CPUsolveCSRDouble(int[] row_offset, int[] col, double[] val,
 int nnz, int N, double[] _rhs, double[] _x);
 
+        [DllImport("SolverWrapperNativeCode.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern double solveCSRDouble(int[] row_offset, int[] col, double[] val,
+    int nnz, int N, double[] _rhs, double[] _x);
+
 
 
 
@@ -463,7 +476,7 @@ int nnz, int N, double[] _rhs, double[] _x);
 
 
 
-            CPUsolveCSRDouble(row, col, vals, nnz, N, rhs, x);
+            solveCSRDouble(row, col, vals, nnz, N, rhs, x);
 
             Matrix X = new Matrix(v.rows, 1);
             for (int i = 0; i < v.rows; i++)
@@ -476,6 +489,8 @@ int nnz, int N, double[] _rhs, double[] _x);
 
 
         }
+
+        
 
         private static Matrix SolveLowerTriangular(Matrix A, Matrix v)
         {
@@ -644,6 +659,40 @@ int nnz, int N, double[] _rhs, double[] _x);
 
             return B;
 
+        }
+
+        public SparseMatrix ToSparse()
+        {
+            SparseMatrix M = new SparseMatrix(rows, cols);
+
+            for (int i = 0; i < rows; i++)
+            {
+                for (int j = 0; j < cols; j++)
+                {
+                    if(mat[i,j] != 0)
+                       M[i, j] = mat[i, j];
+                }
+            }
+
+            return M;
+        }
+
+        public alglib.sparsematrix ToAlglibSparse()
+        {
+            alglib.sparsematrix M;
+
+            alglib.sparsecreate(this.rows, this.cols, out M);
+
+            for (int i = 0; i < rows; i++)
+            {
+                for (int j = 0; j < cols; j++)
+                {
+                    if (mat[i, j] != 0)
+                        alglib.sparseset(M, i, j, mat[i, j]); 
+                }
+            }
+
+            return M;
         }
 
         public static Matrix IdentityMatrix(int iRows, int iCols)   // Function generates the identity matrix
@@ -1021,6 +1070,20 @@ int nnz, int N, double[] _rhs, double[] _x);
             Matrix O = MergeHorizontal(M, N);
 
             return O;
+        }
+
+        public double[] VectorToDoubleArray()
+        {
+            if (cols != 1) throw new MException("Matrix is not vector");
+
+            double[] a = new double[rows];
+
+            for (int i = 0; i < rows; i++)
+            {
+                a[i] = mat[i, 0];
+            }
+
+            return a;
         }
 
         public static string NormalizeMatrixString(string matStr)   // From Andy - thank you! :)

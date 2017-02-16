@@ -81,12 +81,12 @@ namespace MiStrAnEngine
             }
         }
 
-        public bool Analyze(out Matrix a, out Matrix r)
+        public bool Analyze(out Matrix a, out Matrix r, bool useExactMethod = false)
         {
             AssembleKfbc();
 
 
-            return StaticFunctions.solveq(K, f, bc, out a, out r);
+            return StaticFunctions.solveq(K, f, bc, out a, out r, useExactMethod);
 
             
         }

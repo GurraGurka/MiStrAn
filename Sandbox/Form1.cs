@@ -118,27 +118,38 @@ namespace Sandbox
             //Matrix KTest = Ke[dofs, dofs];
             //Matrix f = fe[dofs, 0];
 
-            Matrix test = new Matrix(3, 3);
-            test[0, 0] = 1;
-            test[0, 1] = 1;
-            test[0, 2] = 1;
-            test[1, 0] = 1;
-            test[1, 1] = 1;
-            test[2, 0] = 1;
-            test[2, 2] = 1;
+            Matrix A = new Matrix(3, 3);
+            Matrix B = new Matrix(3, 3);
+            Matrix C = new Matrix(3, 3);
 
-            double[] rhs = new double[] { 6, 3, 4 };
-            double[] x = new double[3];
-            int[] rows, cols;
-            double[] vals;
-            int N, nnz;
+            A[0, 0] = 1;
+            A[0, 2] = 3;
+            A[1, 0] = 5;
+            A[1, 1] = 4;
+            A[2, 2] = 1;
+
+            B[0, 0] = 3;
+            B[0, 1] = 5;
+            B[1, 0] = 6;
+            B[1, 2] = 7;
+            B[2, 2] = 2;
+
+            C[0, 0] = 1;
+            C[0, 1] = 1;
+            C[0, 2] = 1;
+            C[1, 0] = 1;
+            C[1, 1] = 1;
+            C[2, 0] = 1;
+            C[2, 2] = 1;
+
+            double[] b = new double[3];
+            b[0] = 6;
+            b[1] = 3;
+            b[2] = 4;
 
 
-            test.ToCSRFormat(out rows, out cols, out vals, out nnz, out N);
 
-
-
-            Matrix.CPUsolveCSRDouble(rows, cols, vals, nnz, N, rhs, x);
+            Matrix test = StaticFunctions.SolveWith_CG_alglib(C.ToAlglibSparse(), b);
 
 
         }
