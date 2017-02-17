@@ -140,12 +140,12 @@ namespace MiStrAnEngine
 
         public void ShellTesting()
         {
-            Vector x1 = nodes[0].Pos;
-            Vector x2 = nodes[1].Pos;
-            Vector x3 = nodes[2].Pos;
+            Vector3D x1 = nodes[0].Pos;
+            Vector3D x2 = nodes[1].Pos;
+            Vector3D x3 = nodes[2].Pos;
 
-            Vector gr = -x1 + x2;
-            Vector gs = -x1 + x3;
+            Vector3D gr = -x1 + x2;
+            Vector3D gs = -x1 + x3;
 
             Matrix B1 = new Matrix(3,6);
 
@@ -179,9 +179,9 @@ namespace MiStrAnEngine
             Matrix g_r = A.SolveWith(new Matrix(new double[,] { { 0 }, { 1 } }));
             Matrix g_s = A.SolveWith(new Matrix(new double[,] { { 1 }, { 0 } }));
 
-            Vector Lr = new Vector();
+            Vector3D Lr = new Vector3D();
             Lr.X = gs.Y; Lr.Y = -gs.X;
-            Vector Ls = new Vector(Lr.Y, -Lr.X, 0);
+            Vector3D Ls = new Vector3D(Lr.Y, -Lr.X, 0);
             Ls = -Ls;
             //Matrix T = new Matrix(new double[,] {
             //    { Vector.DotProduct(Lr, gr), Vector.DotProduct(Lr, gs),  },
@@ -240,14 +240,14 @@ namespace MiStrAnEngine
         // See slides p.44
         public void GetLocalNodeCoordinates(out Matrix xel, out Matrix Tg)
         {
-            Vector v1 = nodes[1].Pos - nodes[0].Pos;
-            Vector _v2 = nodes[2].Pos - nodes[0].Pos;
-            Vector v3 = Vector.CrossProduct(v1, _v2);
-            Vector v2 = Vector.CrossProduct(v3, v1);
+            Vector3D v1 = nodes[1].Pos - nodes[0].Pos;
+            Vector3D _v2 = nodes[2].Pos - nodes[0].Pos;
+            Vector3D v3 = Vector3D.CrossProduct(v1, _v2);
+            Vector3D v2 = Vector3D.CrossProduct(v3, v1);
 
-            Vector e1 = v1.Normalize(false);
-            Vector e2 = v2.Normalize(false);
-            Vector e3 = v3.Normalize(false);
+            Vector3D e1 = v1.Normalize(false);
+            Vector3D e2 = v2.Normalize(false);
+            Vector3D e3 = v3.Normalize(false);
 
             Matrix xeg = new Matrix(3, 3);
             xeg.SetRow(v1.ToMatrix().Transpose(), 1);

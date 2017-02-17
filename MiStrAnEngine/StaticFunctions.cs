@@ -8,10 +8,6 @@ namespace MiStrAnEngine
 {
     public static class StaticFunctions
     {
-        internal static Matrix GenerateK(List<Node> nodes, List<ShellElement> elements)
-        {
-            return new Matrix(1, 1);
-        }
 
         // Generate a series of integers
         public static int[] intSrs(int from, int to)
@@ -30,105 +26,9 @@ namespace MiStrAnEngine
             return series;
         }
 
-        public static Matrix SolveWith_CG_alglib(alglib.sparsematrix A, double[] b)
-        {
 
-            alglib.sparseconverttocrs(A);
+        
 
-            double[] x = new double[b.Length];
-
-            double[] r = new double[b.Length];
-            b.CopyTo(r, 0);
-
-            double[] old_r = new double[b.Length];
-
-            double[] p = new double[b.Length];
-            r.CopyTo(p, 0);
-
-            int maxIterations = 10000;
-            int resolvedIteration = 0;
-
-            double tol = 1*b.Length;
-
-            for (int i = 0; i < maxIterations; i++)
-            {
-
-                double[] Ap = new double[b.Length];
-                alglib.sparsemv(A, p, ref Ap);
-
-                double alpha_k = scalarProduct(r, r) / scalarProduct(p, Ap);
-
-
-
-                x = vectorAddition(x, scalarMultiply(alpha_k, p));
-
-                r.CopyTo(old_r, 0);
-                
-                r = vectorSubtraction(r,scalarMultiply(alpha_k,Ap));
-
-                double rNorm = r.Sum(z => Math.Sqrt(z * z));
-                if (rNorm < tol)
-                {
-                    resolvedIteration = i;
-                    break;
-                    
-                }
-
-                double beta_k = scalarProduct(r,r) / scalarProduct(old_r, old_r);
-
-                p = vectorAddition(r, scalarMultiply(beta_k, p));
-
-            }
-
-
-            return new Matrix(x);
-
-        }
-
-
-
-        private static double scalarProduct(double[] a, double[] b)
-        {
-            double c = 0;
-
-            for (int i = 0; i < a.Length; i++)
-            {
-                c += a[i] * b[i];
-            }
-
-            return c;
-        }
-
-        private static double[] scalarMultiply(double a, double[] b)
-        {
-            double[] c = new double[b.Length];
-
-            for (int i = 0; i < b.Length; i++)
-            {
-                c[i] = a * b[i];
-            }
-
-            return c;
-        }
-
-        private static double[] vectorAddition(double[] a, double[] b)
-        {
-            double[] c = new double[b.Length];
-
-            for (int i = 0; i < b.Length; i++)
-            {
-                c[i] = a[i] + b[i];
-            }
-
-            return c;
-        }
-
-        private static double[] vectorSubtraction(double[] a, double[] b)
-        {
-            double[] c = vectorAddition(scalarMultiply(-1, b),a);
-
-            return c;
-        }
 
         // Direct copy of CALFEM's solveq
         // FÄRDIG OCH TESTAD 2017-02-02 .hmmm...
@@ -157,10 +57,12 @@ namespace MiStrAnEngine
             Matrix kff = K[fdof, fdof];
             Matrix b = f[fdof, 0] - K[fdof, pdof] * dp;
 
+            SparseMatrix Kff_s = kff.ToSparse();
+
             Matrix s;
 
-            if(!useExactMethod)
-                s= SolveWith_CG_alglib(kff.ToAlglibSparse(), b.VectorToDoubleArray());
+            if (!useExactMethod)
+                  s = Kff_s.SolveWith_Preconditioned_CG(b.ToVector()).ToMatrix();
             else
                 s = kff.SolveWith_LL(b);
 

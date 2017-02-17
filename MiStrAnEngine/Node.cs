@@ -61,11 +61,11 @@ namespace MiStrAnEngine
         public Node(double _x, double _y, double _z) : this(_x, _y, _z, -1)
         { }
 
-        public Vector Pos
+        public Vector3D Pos
         {
             get
             {
-                return new Vector(this.x, this.y, this.z);
+                return new Vector3D(this.x, this.y, this.z);
             }
         }
 

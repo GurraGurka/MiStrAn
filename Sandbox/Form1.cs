@@ -118,40 +118,97 @@ namespace Sandbox
             //Matrix KTest = Ke[dofs, dofs];
             //Matrix f = fe[dofs, 0];
 
-            Matrix A = new Matrix(3, 3);
-            Matrix B = new Matrix(3, 3);
-            Matrix C = new Matrix(3, 3);
+            //SparseMatrix A = new SparseMatrix(3, 3);
+            //SparseMatrix B = new SparseMatrix(3, 3);
+            //Matrix C = new Matrix(3, 3);
 
-            A[0, 0] = 1;
-            A[0, 2] = 3;
-            A[1, 0] = 5;
-            A[1, 1] = 4;
-            A[2, 2] = 1;
+            //A[0, 0] = 1;
+            ////A[0, 2] = 3;
+            //A[0, 2] = 1;
+            //A[1, 1] = 1;
+            //A[1, 2] = 1;
+            //A[2, 2] = 1;
 
-            B[0, 0] = 3;
-            B[0, 1] = 5;
-            B[1, 0] = 6;
-            B[1, 2] = 7;
-            B[2, 2] = 2;
+            //B[0, 0] = 3;
+            //B[0, 1] = 5;
+            //B[1, 0] = 6;
+            //B[1, 2] = 7;
+            //B[2, 2] = 2;
 
-            C[0, 0] = 1;
-            C[0, 1] = 1;
-            C[0, 2] = 1;
-            C[1, 0] = 1;
-            C[1, 1] = 1;
-            C[2, 0] = 1;
-            C[2, 2] = 1;
+            //C[0, 0] = 1;
+            //C[0, 1] = 1;
+            //C[0, 2] = 1;
+            //C[1, 0] = 1;
+            //C[1, 1] = 1;
+            //C[2, 0] = 1;
+            //C[2, 2] = 1;
 
-            double[] b = new double[3];
-            b[0] = 6;
-            b[1] = 3;
-            b[2] = 4;
+            //Vector b = new Vector(3);
+            //b[0] = 2;
+            //b[1] = 2;
+            //b[2] = 1;
+
+            //Matrix v = new Matrix(3, 1);
+            //v[0] = 6;
+            //v[1] = 3;
+            //v[2] = 4;
+
+            //SparseMatrix M = new SparseMatrix(3, 3);
+            //M[0, 0] = 2;
+            //M[0, 1] = -1;
+            //M[1, 0] = -1;
+            //M[1, 1] = 2;
+            //M[1, 2] = -1;
+            //M[2, 1] = -1;
+            //M[2, 2] = 2;
+
+
+            //SparseMatrix L = M.MakeCholesky();
+            //L.ConvertToCRS();
+
+            //SparseMatrix iL = M.MakeIncompleteCholesky();
+
+            //L.ConvertToCRS();
+            //iL.ConvertToCRS();
+
+            //Vector b = new Vector(3);
+            //b[2] = 4;
+
+            //SparseMatrix Minv = M.GetPreconditioningMatrix();
+            //Matrix blaha = Minv.ToMatrix();
+            //Matrix blaha2 = iL.ToMatrix();
+
+            //Matrix fu = (blaha2 * blaha2.Transpose()) * blaha;
+
+
+            //Vector x = M.SolveWith_Preconditioned_CG(b);
+            //x = M.SolveWith_CG(b);
+            //Vector y = M.SolveWith_LL(b);
+
+            Vector v = new Vector(3);
+            v[0] = 0;
+            v[1] = 0;
+            v[2] = 5;
+
+            SparseMatrix M = new SparseMatrix(3, 3);
+            M[0, 0] = 1;
+            M[0, 1] = 1;
+            M[0, 2] = 1;
+            M[1, 0] = 1;
+            M[1, 1] = 1;
+            M[1, 2] = 1;
+            M[2, 0] = 1;
+            M[2, 1] = 1;
+            M[2, 2] = 1;
+
+
+            Vector a = M * v;
 
 
 
-            Matrix test = StaticFunctions.SolveWith_CG_alglib(C.ToAlglibSparse(), b);
+            // Matrix test = StaticFunctions.SolveWith_CG_alglib(C.ToAlglibSparse(), b);
 
-
+            a = a;
         }
 
         private void Form1_Load(object sender, EventArgs e)

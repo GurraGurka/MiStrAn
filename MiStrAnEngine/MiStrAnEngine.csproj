@@ -56,9 +56,9 @@
     <Compile Include="solveq.cs" />
     <Compile Include="SparseMatrix.cs" />
     <Compile Include="StaticFunctions.cs" />
-    <Compile Include="StiffnessMatrix.cs" />
     <Compile Include="Structure.cs" />
     <Compile Include="Vector.cs" />
+    <Compile Include="Vector3D.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

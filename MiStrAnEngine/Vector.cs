@@ -7,90 +7,102 @@ namespace MiStrAnEngine
 {
     public class Vector
     {
-        public double X, Y, Z;
+        public double[] values;
 
-        public Vector(double x, double y, double z)
+        public Vector(int length)
         {
-            X = x;
-            Y = y;
-            Z = z;
+            values = new double[length];
+
         }
 
-        public Vector() : this(0, 0, 0) { }
-
-
-        public Vector(Vector copy) : this(copy.X, copy.Y, copy.Z) { }
-
-        public Vector Normalize(bool overwrite = true)
+        public Vector(Vector copy) : this(copy.Length)  
         {
-            double L = this.Length;
-            Vector v = new Vector();
-
-            v.X = this.X / L;
-            v.Y = this.Y / L;
-            v.Z = this.Z / L;
-
-            if (overwrite)
-            {
-                this.X = v.X;
-                this.Y = v.Y;
-                this.Z = v.Z;
-            }
-
-            return v;
+            copy.values.CopyTo(values, 0);
         }
+
+        public double Norm
+        {
+            get { return values.Sum(x => Math.Pow(x, 2)); }
+
+        }
+
+        public double this[int i]
+        {
+            get { return values[i]; }
+
+            set { values[i] = value; }
+
+        }
+
+        public int Length
+        { get { return values.Length; } }
 
         public Matrix ToMatrix()
         {
-            return new Matrix(new double[,] { { this.X }, { this.Y }, { this.Z }, });
+            Matrix ret = new Matrix(Length, 1);
+
+            for (int i = 0; i < Length; i++)
+            {
+                ret[i, 0] = values[i];
+            }
+            return ret;
         }
 
-        public static Vector operator +(Vector a, Vector b)
-        { return new Vector(a.X + b.X, a.Y + b.Y, a.Z + b.Z); }
-        
-        public static Vector operator -(Vector a, Vector b)
-        { return new Vector(a.X - b.X, a.Y - b.Y, a.Z - b.Z); }
-
-        public static Vector operator *(double a, Vector b)
-        { return new Vector(a * b.X, a * b.Y, a * b.Z);   }
-
-        public static Vector operator *(Vector a, double b)
-        { return b * a; }
-
-        public static Vector operator -(Vector a)
-        { return new Vector(-a.X, -a.Y, -a.Z); }
-
-        public static double operator*(Vector a, Vector b)
-        { return DotProduct(a, b); }
-
-        public static Vector operator /(Vector a, double b)
-        { return a*(1/b); }
-
-        public static double DotProduct(Vector a, Vector b)
-        { return a.X * b.X + a.Y * b.Y + a.Z * b.Z; }
-
-        public static Vector CrossProduct(Vector a, Vector b)
-        { return new Vector(a.Y * b.Z - a.Z * b.Y, a.Z * b.X - a.X * b.Z, a.X * b.Y - a.Y * b.X); }
-
-        public double Length
-        { get { return Math.Sqrt(Math.Pow(this.X, 2) + Math.Pow(this.Y, 2) + Math.Pow(this.Z, 2)); } }
-
-        public static Vector e1
+        private static Vector Multiply(double a, Vector v)
         {
-            get { return new Vector(1, 0, 0); }
+            Vector ret = new Vector(v.Length);
+
+            for (int i = 0; i < v.Length; i++)
+            {
+                ret[i] = v[i] * a;
+            }
+
+            return ret;
         }
 
-        public static Vector e2
+        private static Vector Add(Vector a, Vector b)
         {
-            get { return new Vector(0, 1, 0); }
+            if (a.Length != b.Length) throw new MException("Vectors must share length");
+
+            Vector ret = new Vector(a.Length);
+            for (int i = 0; i < a.Length; i++)
+            {
+                ret[i] = a[i] + b[i];
+            }
+
+            return ret;
         }
 
-        public static Vector e3
+        private static double ScalarProduct(Vector a, Vector b)
         {
-            get { return new Vector(0, 0, 1); }
+            if (a.Length != b.Length) throw new MException("Vectors must share length");
+
+            double sum = 0;
+
+            for (int i = 0; i < a.Length; i++)
+            {
+                sum += a[i] * b[i];
+            }
+
+            return sum;
         }
 
+        //   O P E R A T O R S
 
+        public static Vector operator -(Vector v)
+        { return Vector.Multiply(-1, v); }
+
+        public static Vector operator +(Vector m1, Vector m2)
+        { return Vector.Add(m1, m2); }
+
+        public static Vector operator -(Vector m1, Vector m2)
+        { return Vector.Add(m1, -m2); }
+
+        public static double operator *(Vector m1, Vector m2)
+        { return Vector.ScalarProduct(m1, m2); }
+
+        public static Vector operator *(double n, Vector m)
+        { return Vector.Multiply(n, m); }
 
     }
 }
