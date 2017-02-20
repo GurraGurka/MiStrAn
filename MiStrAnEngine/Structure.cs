@@ -12,8 +12,8 @@ namespace MiStrAnEngine
         List<ShellElement> elements;
         List<BC> bcs;
         List<Load> loads;
-        public Matrix K;
-        public Matrix f;
+        public SparseMatrix K;
+        public Vector f;
         public Matrix bc;
 
         public Structure(List<Node> _nodes, List<ShellElement> _elements, List<BC> _bcs, List<Load> _loads)
@@ -33,27 +33,26 @@ namespace MiStrAnEngine
         public void AssembleKfbc()
         {
             int nDofs = nodes.Count * 6;
-            K = Matrix.ZeroMatrix(nDofs, nDofs);
-            f = Matrix.ZeroMatrix(nDofs, 1);
+            K = new SparseMatrix(nDofs, nDofs);
+            f = new Vector(nDofs);
 
             foreach (ShellElement elem in elements)
             {
                 int[] dofs = elem.GetElementDofs();
-                Matrix Ke, fe;
+                Matrix Ke;
+                Vector fe;
                 elem.GenerateKefe(out Ke, out fe);
 
-                K[dofs, dofs] = K[dofs, dofs] + Ke;
-                f[dofs, 0] = f[dofs, 0] + fe;
-
+                K.AddStiffnessContribution(Ke, dofs);
+                f[dofs] = f[dofs] + fe;
             }
-
 
             // #TODO make it possible to have rotational loads
             foreach (Load load in loads)
             {
                 int[] loadDofs = new int[] {load.node.dofX, load.node.dofY, load.node.dofZ };
 
-                f[loadDofs, 0] = f[loadDofs, 0] + load.LoadVec.ToMatrix();
+                f[loadDofs] = f[loadDofs] + load.LoadVec.ToVector();
             }
 
             // #TODO make it possible to have other bc's than fully fixed
@@ -81,7 +80,7 @@ namespace MiStrAnEngine
             }
         }
 
-        public bool Analyze(out Matrix a, out Matrix r, bool useExactMethod = false)
+        public bool Analyze(out Vector a, out Vector r, bool useExactMethod = false)
         {
             AssembleKfbc();
 

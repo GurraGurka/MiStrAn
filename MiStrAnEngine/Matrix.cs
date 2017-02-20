@@ -151,6 +151,7 @@ namespace MiStrAnEngine
 
         public Vector ToVector()
         {
+            if (cols != 1) throw new MException("Matrix cannot be converted to vector. Has several columns");
             Vector ret = new Vector(rows);
             for (int i = 0; i < rows; i++)
             {

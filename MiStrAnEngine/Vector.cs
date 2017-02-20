@@ -15,9 +15,15 @@ namespace MiStrAnEngine
 
         }
 
-        public Vector(Vector copy) : this(copy.Length)  
+        public Vector(Vector copy) : this(copy.Length)
         {
             copy.values.CopyTo(values, 0);
+        }
+
+        public Vector(double[] _values)
+        {
+            values = _values;
+
         }
 
         public double Norm
@@ -31,6 +37,29 @@ namespace MiStrAnEngine
             get { return values[i]; }
 
             set { values[i] = value; }
+
+        }
+
+        public Vector this[int[] rows]
+        {
+            get
+            {
+                Vector ret = new Vector(rows.Length);
+                for (int i = 0; i < rows.Length; i++)
+                {
+                    ret[i] = values[rows[i]];
+                }
+
+                return ret;
+
+            }
+
+            set
+            {
+                for (int i = 0; i < rows.Length; i++)
+                    values[rows[i]] = value[i];
+            }
+
 
         }
 
@@ -85,6 +114,14 @@ namespace MiStrAnEngine
             }
 
             return sum;
+        }
+
+        public dnAnalytics.LinearAlgebra.Vector ToDnAnalytics()
+        {
+            dnAnalytics.LinearAlgebra.Vector ret = new dnAnalytics.LinearAlgebra.DenseVector(this.values);
+
+            return ret;
+
         }
 
         //   O P E R A T O R S

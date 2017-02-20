@@ -81,7 +81,7 @@ namespace MiStrAnGH
             if (run)
             {
 
-               MiStrAnEngine.Matrix a, r;
+                 MiStrAnEngine.Vector a, r;
                 s.Analyze(out a, out r,exact);
 
                 List<double> aList = new List<double>();
@@ -92,10 +92,10 @@ namespace MiStrAnGH
                 
                 
 
-                for (int i = 0; i < a.rows; i++)
+                for (int i = 0; i < a.Length; i++)
                 {
-                    aList.Add(a[i, 0]);
-                    rList.Add(r[i, 0]);
+                    aList.Add(a[i]);
+                    rList.Add(r[i]);
                 }
 
                 //Get outputs

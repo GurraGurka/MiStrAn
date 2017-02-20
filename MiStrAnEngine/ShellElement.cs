@@ -26,14 +26,12 @@ namespace MiStrAnEngine
 
        
 
-        public bool GenerateKefe(out Matrix Ke, out Matrix fe)
+        public bool GenerateKefe(out Matrix Ke, out Vector fe)
         {
             Ke = new Matrix(18, 18);
-            fe = new Matrix(18, 1);
+            fe = new Vector(18);
 
             Matrix B, N, gp, gw, xe, T; //,q;
-
-           // q =new Matrix(new double[,] { { 0 }, { 0 }, { 0 } });
 
             int ng = 4; // Number of gauss points
 
@@ -56,20 +54,12 @@ namespace MiStrAnEngine
                 Matrix DKe = gw[i]* B.Transpose() * D * B;
                 Ke[activeDofs, activeDofs] = Ke[activeDofs, activeDofs] + elementArea*DKe; 
                 Matrix DMe= gw[i] * N.Transpose() * q;
-                fe[activeDofs, 0] = fe[activeDofs, 0] + elementArea*DMe;
+                fe[activeDofs] = fe[activeDofs] + elementArea*DMe.ToVector();
             }
         
-          //  GetB_N(gp.GetRow(0), xe, out B, out N);
-           // Matrix DMe = N.Transpose() * q;
-          //  fe[activeDofs, 0] = fe[activeDofs, 0] + elementArea*DMe;
-
-            // Adding max stiffness to rotational dofs
             Ke[passiveDofs, passiveDofs] = Ke.Max() * Matrix.Ones(3, 3);
-           // fe[passiveDofs, 0] = 0 * Matrix.Ones(3, 1); ;
 
-            // Transforming to global dofs
             Ke = T * Ke * T.Transpose();
-           // fe = T.Transpose() * fe;
 
             return true;
         }

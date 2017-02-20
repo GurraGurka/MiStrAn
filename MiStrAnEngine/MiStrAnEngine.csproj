@@ -34,11 +34,13 @@
     <Reference Include="alglibnet2">
       <HintPath>..\ExternalDLL\alglibnet2.dll</HintPath>
     </Reference>
-    <Reference Include="dnAnalytics">
+    <Reference Include="dnAnalytics, Version=2009.8.0.0, Culture=neutral, PublicKeyToken=47f8433cf19ffb12, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\ExternalDLL\dnAnalytics.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />

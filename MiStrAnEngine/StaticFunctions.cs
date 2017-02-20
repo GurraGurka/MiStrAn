@@ -32,10 +32,8 @@ namespace MiStrAnEngine
 
         // Direct copy of CALFEM's solveq
         // FÄRDIG OCH TESTAD 2017-02-02 .hmmm...
-        public static bool solveq(Matrix K, Matrix f, Matrix bc, out Matrix d, out Matrix Q, bool useExactMethod = false)
+        public static bool solveq(SparseMatrix K, Vector f, Matrix bc, out Vector d, out Vector Q, bool useExactMethod = false)
         {
-
-
             int nd = K.cols;
             int[] fdof = intSrs(0, nd - 1);
             int[] pdof = new int[bc.rows];
@@ -45,30 +43,31 @@ namespace MiStrAnEngine
 
             fdof = fdof.Except(pdof).ToArray();
 
-            d = Matrix.ZeroMatrix(nd, 1);
-            Q = Matrix.ZeroMatrix(nd, 1);
+            d = new Vector(nd);
+            Q = new Vector(nd);
 
-            Matrix dp = bc.GetCol(1);
+            Vector dp = bc.GetCol(1).ToVector();
 
-            //       Matrix s = K[fdof, fdof].SolveWith(f[fdof, 0] - K[fdof, pdof] * dp);
-            //    Matrix s = K[fdof, fdof].SolveWith_LDL(f[fdof, 0] - K[fdof, pdof] * dp);
-            //Matrix s = K[fdof, fdof].SolveWith_LL(f[fdof, 0] - K[fdof, pdof] * dp);
 
-            Matrix kff = K[fdof, fdof];
-            Matrix b = f[fdof, 0] - K[fdof, pdof] * dp;
+            SparseMatrix Kff = K[fdof, fdof];
+            Vector b = f[fdof] - K[fdof, pdof] * dp;
 
-            SparseMatrix Kff_s = kff.ToSparse();
+            Vector s;
 
-            Matrix s;
+            Kff.ConvertToCRS();
 
             if (!useExactMethod)
-                  s = Kff_s.SolveWith_Preconditioned_CG(b.ToVector()).ToMatrix();
+                 s = Kff.SolveWith_Preconditioned_CG(b);
             else
-                s = kff.SolveWith_LL(b);
+            {
+                Matrix s_ = Kff.ToMatrix().SolveWith_LL(b.ToMatrix());
+                s = s_.ToVector();
+            }
+                
 
 
-            d[pdof, 0] = dp;
-            d[fdof, 0] = s;
+            d[pdof] = dp;
+            d[fdof] = s;
 
             Q = (K * d) - f;
 

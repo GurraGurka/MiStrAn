@@ -45,6 +45,16 @@ namespace MiStrAnEngine
             return new Matrix(new double[,] { { this.X }, { this.Y }, { this.Z }, });
         }
 
+        public Vector ToVector()
+        {
+            Vector ret =  new Vector(3);
+            ret[0] = X;
+            ret[1] = Y;
+            ret[2] = Z;
+
+            return ret;
+        }
+
         public static Vector3D operator +(Vector3D a, Vector3D b)
         { return new Vector3D(a.X + b.X, a.Y + b.Y, a.Z + b.Z); }
         

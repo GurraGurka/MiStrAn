@@ -208,7 +208,7 @@ namespace Sandbox
 
             // Matrix test = StaticFunctions.SolveWith_CG_alglib(C.ToAlglibSparse(), b);
 
-            a = a;
+          //  a 
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -237,28 +237,28 @@ namespace Sandbox
 
         private void button3_Click(object sender, EventArgs e)
         {
-            Matrix K = new Matrix(new double[,] { { 2, -1, 0 }, { -1, 2, -1 }, { 0, -1, 2 } });
+  //          Matrix K = new Matrix(new double[,] { { 2, -1, 0 }, { -1, 2, -1 }, { 0, -1, 2 } });
 
-            double[,] blaha = new double[,] {
-           {     1   ,  0  ,   0 ,- 1   ,  0   ,  0 },
-   {  0  ,  12  ,   6   ,  0, - 12 ,    6 },
-    { 0  ,   6   ,  4  ,   0, - 6,     2 },
-  { -1  ,   0  ,   0  ,   1  ,   0   ,  0 },
-   {  0, -12, -6,     0,    12, -6 },
-   {  0  ,   6   ,  2  ,   0, - 6 ,    4 } };
-            K = new Matrix(blaha);
-            Matrix bc = new Matrix(3, 2);
-            bc[1, 0] = 1;
-            bc[2, 0] = 2;
+  //          double[,] blaha = new double[,] {
+  //         {     1   ,  0  ,   0 ,- 1   ,  0   ,  0 },
+  // {  0  ,  12  ,   6   ,  0, - 12 ,    6 },
+  //  { 0  ,   6   ,  4  ,   0, - 6,     2 },
+  //{ -1  ,   0  ,   0  ,   1  ,   0   ,  0 },
+  // {  0, -12, -6,     0,    12, -6 },
+  // {  0  ,   6   ,  2  ,   0, - 6 ,    4 } };
+  //          K = new Matrix(blaha);
+  //          Matrix bc = new Matrix(3, 2);
+  //          bc[1, 0] = 1;
+  //          bc[2, 0] = 2;
 
-            Matrix f = new Matrix(6, 1);
-            f[4] = 1;
+  //          Matrix f = new Matrix(6, 1);
+  //          f[4] = 1;
 
-            Matrix a, r;
+  //          Matrix a, r;
 
-            SF.solveq(K, f, bc, out a, out r);
+  //          SF.solveq(K, f, bc, out a, out r);
 
-            a = a;
+  //          a = a;
 
 
 

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
+using System.Windows.Forms;
 
 namespace MiStrAnEngine
 {
@@ -39,6 +39,25 @@ namespace MiStrAnEngine
             }
         }
 
+        public SparseMatrix this[int[] iRows, int[] iCols]      // Access this matrix as a 2D array
+        {
+            get
+            {
+                SparseMatrix subMat = new SparseMatrix(iRows.Length, iCols.Length);
+
+                for (int i = 0; i < iRows.Length; i++)
+                {
+                    for (int j = 0; j < iCols.Length; j++)
+                    {
+                        subMat[i, j] = this[iRows[i], iCols[j]];
+                    }
+                }
+
+                return subMat;
+
+            }
+        }
+
         public SparseMatrix Transpose()
         {
             SparseMatrix M = new SparseMatrix(this.cols, this.rows);
@@ -60,6 +79,7 @@ namespace MiStrAnEngine
         public Matrix ToMatrix()
         {
             Matrix M = new Matrix(rows, cols);
+            ConvertToCRS();
 
             int t0 = 0, t1 = 0;
 
@@ -217,6 +237,49 @@ namespace MiStrAnEngine
 
         }
 
+        public Vector SolveDnAnalytics_PCG(Vector b)
+        {
+            dnAnalytics.LinearAlgebra.Matrix A = this.ToDnAnalytics();
+            dnAnalytics.LinearAlgebra.Vector v = b.ToDnAnalytics();
+
+            dnAnalytics.LinearAlgebra.Solvers.IPreConditioner p = new dnAnalytics.LinearAlgebra.Solvers.Preconditioners.Diagonal();
+      
+            dnAnalytics.LinearAlgebra.Solvers.IIterator I = dnAnalytics.LinearAlgebra.Solvers.Iterator.CreateDefault();
+
+            dnAnalytics.LinearAlgebra.Solvers.Iterative.MlkBiCgStab solver = new dnAnalytics.LinearAlgebra.Solvers.Iterative.MlkBiCgStab(p, I);
+
+
+            dnAnalytics.LinearAlgebra.Vector X = solver.Solve(A, v);
+
+
+
+            dnAnalytics.LinearAlgebra.Solvers.ICalculationStatus status = I.Status;
+            MessageBox.Show(status.ToString());
+            
+
+            return new Vector(X.ToArray());
+
+
+            
+
+
+        }
+
+        public dnAnalytics.LinearAlgebra.Matrix ToDnAnalytics()
+        {
+            dnAnalytics.LinearAlgebra.Matrix M = new dnAnalytics.LinearAlgebra.SparseMatrix(rows);
+
+            for (int i = 0; i < rows; i++)
+            {
+                for (int j = 0; j < cols; j++)
+                {
+                    M[i, j] = this[i, j];
+                }
+            }
+
+            return M;
+        }
+
         public SparseMatrix GetPreconditioningMatrixCholesky()
         {
             SparseMatrix iL = MakeIncompleteCholesky();
@@ -335,9 +398,17 @@ namespace MiStrAnEngine
 
         public SparseMatrix MakeCholesky()
         {
-            SparseMatrix a = this;
+            SparseMatrix A = this;
 
-            int n = a.cols;
+            int n = A.cols;
+
+            if(A.rows > 2600)
+            {
+                Matrix M = A.ToMatrix();
+                M.MakeLL_ALGLIB();
+
+                return M.L.ToSparse();
+            }
 
             SparseMatrix ret = new SparseMatrix(n,n);
             for (int r = 0; r < n; r++)
@@ -350,14 +421,14 @@ namespace MiStrAnEngine
                         {
                             sum += ret[c, j] * ret[c, j];
                         }
-                        ret[c, c] = Math.Sqrt(a[c, c] - sum);
+                        ret[c, c] = Math.Sqrt(A[c, c] - sum);
                     }
                     else
                     {
                         double sum = 0;
                         for (int j = 0; j < c; j++)
                             sum += ret[r, j] * ret[c, j];
-                        ret[r, c] = 1.0 / ret[c, c] * (a[r, c] - sum);
+                        ret[r, c] = 1.0 / ret[c, c] * (A[r, c] - sum);
                     }
                 }
 
@@ -413,9 +484,10 @@ namespace MiStrAnEngine
 
             Vector p = new Vector(z);
 
-            int maxIterations = 10000;
+            int maxIterations = A.cols*A.rows; // size of matrix
 
-            double tol = A.rows*100;
+            double tol = A.rows*0.1;
+            bool converged = false;
 
             for (int i = 0; i < maxIterations; i++)
             {
@@ -428,7 +500,10 @@ namespace MiStrAnEngine
                 r = r - alpha_k * (A * p);
 
                 if (r.Norm < tol)
+                {
+                    converged = true;
                     break;
+                }
 
                 old_z = new Vector(z);
                 z = Minv * r;
@@ -438,7 +513,8 @@ namespace MiStrAnEngine
                 p = z + beta_k * p;
             }
 
-
+            if (!converged)
+                MessageBox.Show("Warning! Solver did not converge");
             return x;
         }
 
@@ -463,6 +539,18 @@ namespace MiStrAnEngine
             alglib.sparsegetcompressedrow(mat, i, ref colidx, ref rowValues, out nzcnt);
         }
 
+        public void AddStiffnessContribution(Matrix A, int[] dofs)
+        {
+
+            for (int i = 0; i < dofs.Length; i++)
+            {
+                for (int j = 0; j < dofs.Length; j++)
+                {
+                     alglib.sparseadd(this.mat, dofs[i], dofs[j], A[i, j]);
+                }
+            }
+            
+        }
 
 
         //   O P E R A T O R S
