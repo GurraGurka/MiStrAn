@@ -32,6 +32,10 @@ namespace MiStrAnGH
             pManager.AddGeometryParameter("BC", "BC", "Zero displacement nodes", GH_ParamAccess.list);
             pManager.AddGeometryParameter("LoadPoints", "LoadPoints", "Just nodes for loads", GH_ParamAccess.list);
             pManager.AddVectorParameter("LoadVectors", "LoadVectors", " One Load vector for each node", GH_ParamAccess.list);
+            pManager.AddMeshFaceParameter("DistLoadVFaces", "DistLoadFaces", " Distributed load mesh faces", GH_ParamAccess.list);
+            pManager.AddVectorParameter("DistLoadVecs", "DistLoadVecs", "Nodes for distributed loads", GH_ParamAccess.list);
+            pManager.AddNumberParameter("Thickness", "Thcikness", "Plate thickness (sson material input)", GH_ParamAccess.item);
+
         }
 
         /// <summary>
@@ -43,6 +47,7 @@ namespace MiStrAnGH
             pManager.AddVectorParameter("Rx Ry Rz", "Rotations", "Solved rotations", GH_ParamAccess.list);
             pManager.AddNumberParameter("r [N]", "Reactions", "solved reactions", GH_ParamAccess.list);
             pManager.AddGeometryParameter("DefMesh", "DeformedMesh", "Deformed mesh", GH_ParamAccess.item);
+            pManager.AddVectorParameter("P1 P2 0", "PrincipalStresses", "Principal stresses", GH_ParamAccess.list);
         }
 
         /// <summary>
@@ -56,6 +61,9 @@ namespace MiStrAnGH
             List<Point3d> bcNodes = new List<Point3d>();
             List<Point3d> LoadPts = new List<Point3d>();
             List<Vector3d> LoadVecs = new List<Vector3d>();
+            List<Vector3d> distLoadVecs = new List<Vector3d>();
+            List<MeshFace> distLoadFaces = new List<MeshFace>();
+            double thick = new double();
             bool run = false;
 
             DA.GetData(0, ref run);
@@ -63,6 +71,11 @@ namespace MiStrAnGH
             if (!DA.GetDataList(2, bcNodes)) { return; }
             if (!DA.GetDataList(3, LoadPts)) { return; }
             if (!DA.GetDataList(4, LoadVecs)) { return; }
+            //  if (!DA.GetDataList(5, distLoadFaces)) { return; }
+            // if (!DA.GetDataList(6, distLoadVecs)) { return; }
+            DA.GetDataList(5, distLoadFaces);
+            DA.GetDataList(6, distLoadVecs);
+            if (!DA.GetData(7, ref thick)) { return; }
 
 
 
@@ -71,7 +84,8 @@ namespace MiStrAnGH
             //    int a = 5;
             //    int trtr = a + 3;
             // MiStrAnEngine.Structure mistStruc= StaticFunctions.ConvertGHMeshToStructure(m);
-            MiStrAnEngine.Structure s = StaticFunctions.ConvertGHMeshToStructure(meshes[0], bcNodes,LoadPts,LoadVecs);
+
+            MiStrAnEngine.Structure s = StaticFunctions.ConvertGHMeshToStructure(meshes[0], bcNodes,LoadPts,LoadVecs, distLoadFaces,distLoadVecs, thick);
             
             //}
 
@@ -85,6 +99,7 @@ namespace MiStrAnGH
                 List<double> rList = new List<double>();
                 List<Vector3d> defList = new List<Vector3d>();
                 List<Vector3d> rotList = new List<Vector3d>();
+                List<Vector3d> principalStresses = new List<Vector3d>();
                 Mesh outMesh = new Mesh();
                 
                 
@@ -94,6 +109,13 @@ namespace MiStrAnGH
                     aList.Add(a[i, 0]);
                     rList.Add(r[i, 0]);
                 }
+
+                List<MiStrAnEngine.Vector> pStress;
+                s.CalcStresses(aList, out pStress);
+
+
+                for (int i = 0; i < pStress.Count; i++)
+                    principalStresses.Add(new Vector3d(pStress[i].X, pStress[i].Y, 0));
 
                 //Get outputs
                 StaticFunctions.GetDefMesh(meshes[0], aList, out outMesh);
@@ -105,6 +127,7 @@ namespace MiStrAnGH
                 DA.SetDataList(1, rotList);
                 DA.SetDataList(2, rList);
                 DA.SetData(3, outMesh);
+                DA.SetDataList(4, principalStresses);
             }
 
         }

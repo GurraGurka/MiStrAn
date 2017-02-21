@@ -26,12 +26,14 @@ namespace MiStrAnEngine
 
        
 
-        public bool GenerateKefe(out Matrix Ke, out Matrix fe)
+        public bool GenerateKefe(out Matrix Ke, out Matrix fe, out Matrix DBe, out Matrix Te)
         {
             Ke = new Matrix(18, 18);
             fe = new Matrix(18, 1);
+            DBe = new Matrix(6, 15);
+            Matrix Be = new Matrix(6, 15);
 
-            Matrix B, N, gp, gw, xe, T; //,q;
+            Matrix B, N, gp, gw, xe, T;
 
            // q =new Matrix(new double[,] { { 0 }, { 0 }, { 0 } });
 
@@ -40,6 +42,7 @@ namespace MiStrAnEngine
             GenerateGaussPoints(ng, out gp, out gw);
            
             GetLocalNodeCoordinates(out xe, out T);
+
 
             int[] activeDofs = new int[] { 0, 1, 2, 3, 4, 6, 7, 8, 9, 10, 12, 13, 14, 15, 16 };
             int[] passiveDofs = new int[] { 5, 11, 17 };
@@ -50,18 +53,30 @@ namespace MiStrAnEngine
             double c2 = xe[0, 0] - xe[2, 0];
             double elementArea = 0.5 * (b1 * c2 - b2 * c1);
 
+            //Get a D*Be adn Te for calulating stresses, gauss points = 0
+            Matrix unTrans = new Matrix(new double[,] { { nodes[0].x, nodes[0].y, nodes[0].z },
+                                                            { nodes[1].x, nodes[1].y, nodes[1].z },
+                                                            { nodes[2].x, nodes[2].y, nodes[2].z },});
+            GetB_N(new Matrix(new double[,] { { 0,0,0 } }), xe, out Be, out N);
+            //I DONT KNOW WHY BUT DIVISION OF THICKNESS IS NEEDED
+            DBe =(1/thickness)* D * Be;
+
+
+            //Te = T.Transpose();
+            Te = T;
+
             for (int i = 0; i < ng; i++)
             {
                 GetB_N(gp.GetRow(i), xe,out B, out N);
                 Matrix DKe = gw[i]* B.Transpose() * D * B;
                 Ke[activeDofs, activeDofs] = Ke[activeDofs, activeDofs] + elementArea*DKe; 
-                Matrix DMe= gw[i] * N.Transpose() * q;
+                Matrix DMe= thickness*gw[i] * N.Transpose() * q;
                 fe[activeDofs, 0] = fe[activeDofs, 0] + elementArea*DMe;
             }
-        
-          //  GetB_N(gp.GetRow(0), xe, out B, out N);
-           // Matrix DMe = N.Transpose() * q;
-          //  fe[activeDofs, 0] = fe[activeDofs, 0] + elementArea*DMe;
+
+            //  GetB_N(gp.GetRow(0), xe, out B, out N);
+            // Matrix DMe = N.Transpose() * q;
+            //  fe[activeDofs, 0] = fe[activeDofs, 0] + elementArea*DMe;
 
             // Adding max stiffness to rotational dofs
             Ke[passiveDofs, passiveDofs] = Ke.Max() * Matrix.Ones(3, 3);
@@ -74,17 +89,36 @@ namespace MiStrAnEngine
             return true;
         }
 
+        //Get the distributed load for the element
+        public void Getq(List<DistributedLoad> distLoads, out Matrix qElem)
+        {
+            qElem = new Matrix(new double[,] { { 0}, { 0}, { 0 } });
+           
+            foreach(DistributedLoad load in distLoads)
+            {
+                if (load.shellIndex == Id)
+                {
+                    qElem[0] = load.loadVec.X;
+                    qElem[1] = load.loadVec.Y;
+                    qElem[2] = load.loadVec.Z;
+                    break;
+                }
+            }
+        }
+
+     
+
         public void SetSteelSection()
         {
             double E = 210e9;
             double v = 0.3;
             double G = E / (2.0 * (1 + v));
-            double density = 7800*1000; //[kg/m^3]
+            double density = 7800; //[kg/m^3]
             Matrix d = new Matrix(6, 6);
             Matrix qLoc = new Matrix(6, 1);
 
             double[] angle = new double[1] { 0}; // double[] angle = new double[] { 0};
-            Materials.eqModulus(E, E, G, v, angle, thickness, density, out d, out qLoc);
+            Materials.eqModulus(E, E, G, v, angle, thickness, density, out d); //, out qLoc);
             this.D = d;
             this.q = qLoc;
 
@@ -277,7 +311,6 @@ namespace MiStrAnEngine
 
 
         }
-
 
         //Temp public for testing
         public void GetB_N(Matrix L, Matrix xe, out Matrix B, out Matrix N)

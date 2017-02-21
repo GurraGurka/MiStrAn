@@ -5,18 +5,17 @@ using System.Text;
 
 namespace MiStrAnEngine
 {
-    public class Load
+    public class DistributedLoad
     {
-        public Node node;
+        public int shellIndex;
 
         // Field variables
         public Vector loadVec;
 
-
         //Constructor
-        public Load(Node _node, Vector _loadVec)
+        public DistributedLoad(int _shellIndex, Vector _loadVec)
         {
-            node = _node;
+            shellIndex = _shellIndex;
             loadVec = _loadVec;
         }
 

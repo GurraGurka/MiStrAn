@@ -6,23 +6,30 @@ using System.Threading.Tasks;
 using Grasshopper.Kernel;
 using Rhino.Geometry;
 using Rhino.Geometry.Collections;
+using MiStrAnEngine;
+
+
 
 namespace MiStrAnGH
 {
     public static class StaticFunctions
     {
-        
-        public static MiStrAnEngine.Structure ConvertGHMeshToStructure(Mesh m, List<Point3d> bcs, List<Point3d> loadsPts, List<Vector3d> loadVecs)
+
+        public static MiStrAnEngine.Structure ConvertGHMeshToStructure(Mesh m, List<Point3d> bcs, List<Point3d> loadsPts, List<Vector3d> loadVecs, List<MeshFace> loadFaces, List<Vector3d> distLoadVecs, double thickness )
         {
             List<MiStrAnEngine.Node> mistranNodes = new List<MiStrAnEngine.Node>();
             List<MiStrAnEngine.ShellElement> mistranShells = new List<MiStrAnEngine.ShellElement>();
             List<MiStrAnEngine.BC> mistranBCs = new List<MiStrAnEngine.BC>();
             List<MiStrAnEngine.Load> mistranLoads = new List<MiStrAnEngine.Load>();
+            List<MiStrAnEngine.DistributedLoad> mistranDistLoads = new List<MiStrAnEngine.DistributedLoad>();
 
             MeshVertexList meshPts = m.Vertices;
 
+            if (loadsPts.Count != loadVecs.Count || loadFaces.Count!= distLoadVecs.Count) // samé nuly ve sloupci
+                throw new MException("Not same amount of vectors and load points/faces");
+
             //Create mistran nodes from all the mesh points. Add them to one list
-            for(int i=0;i<m.Vertices.Count;i++)
+            for (int i=0;i<m.Vertices.Count;i++)
             {
                 Point3f mPt = m.Vertices[i];
                 MiStrAnEngine.Node mistNode = new MiStrAnEngine.Node(mPt.X, mPt.Y, mPt.Z, i);
@@ -47,7 +54,7 @@ namespace MiStrAnGH
                 }
             }
               
-            //Create shellelements from all the meshfaces. Add tgem to one list
+            //Create shellelements from all the meshfaces. Add them to one list
             for(int i=0; i< m.Faces.Count;i++)
             {
                 List<MiStrAnEngine.Node> shellNodes = new List<MiStrAnEngine.Node>();
@@ -59,24 +66,25 @@ namespace MiStrAnGH
                     shellNodes.Add(mistranNodes[index]);
 
                 MiStrAnEngine.ShellElement mistShell = new MiStrAnEngine.ShellElement(shellNodes, i);
-                mistShell.thickness = 0.1;
+
+                //Set index for load shells and the vector
+                for(int j=0; j<loadFaces.Count; j++)
+                {
+                    
+                    //This only works for triangular
+                    if(m.Faces[i].A ==loadFaces[j].A && m.Faces[i].B == loadFaces[j].B && m.Faces[i].C == loadFaces[j].C)
+                        mistranDistLoads.Add(new MiStrAnEngine.DistributedLoad(i, new MiStrAnEngine.Vector(distLoadVecs[j].X, distLoadVecs[j].Y, distLoadVecs[j].Z)));
+
+                       
+                }
+
+                mistShell.thickness = thickness;
                 mistShell.SetSteelSection();
-
-                //// TEMPORARY FOR TEST CASE
-                //mistShell.D = new MiStrAnEngine.Matrix(new double[,] { { 2.307692307692308,0.692307692307692,0},
-                //    { 0.692307692307692,   2.307692307692308,                   0},
-                //    { 0 ,                  0 ,  0.807692307692308} });
-
-                //mistShell.D = 1e11 * mistShell.D;
-                //mistShell.thickness = 0.008;
-                //mistShell.eq = new MiStrAnEngine.Matrix(new double[,] { {0,0,1e3 } });
-
-
 
                 mistranShells.Add(mistShell);
             }
 
-            return new MiStrAnEngine.Structure(mistranNodes, mistranShells, mistranBCs, mistranLoads);
+            return new MiStrAnEngine.Structure(mistranNodes, mistranShells, mistranBCs, mistranLoads, mistranDistLoads);
         }
 
         public static void GetDefMesh(Mesh undefMesh,List<double> defs, out Mesh defMesh)
