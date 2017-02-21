@@ -12,8 +12,8 @@ namespace MiStrAnEngine
             //also need material indata from Grasshopper in future
         public static Matrix solveqMat(Structure struc)
         {
-            //TEMP MATERIAL DATA             //THIS SHOULD BE AN INPUT FROM GRASSHOPPER
-            double thickness = 0.1;
+            //TEMP MATERIAL DATA   NOT USED????
+            double thickness = 1;
             double irb = 2;
             double irs = 1;
 

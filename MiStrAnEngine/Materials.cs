@@ -9,7 +9,7 @@ namespace MiStrAnEngine
     {
         //Make lists for E1, E2 etc
         //Only verified to MATLAB-cod with configurations: 4 laminas (all 0 degrees), 4 laminas (45,30,30,45) degrees
-        public static void eqModulus(double E1, double E2, double G12, double v12, double[] angle, double thickLam, double density, out Matrix D, out Matrix q)
+        public static void eqModulus(double E1, double E2, double G12, double v12, double[] angle, double thickLam, double density, out Matrix D) //, out Matrix q)
         {
             //Global stiffness  matrices for the laminate
             Matrix AA = new Matrix(3, 3); //Extensional or membrane stiffness terms of a laminate
@@ -124,8 +124,8 @@ namespace MiStrAnEngine
             D[new int[] { 0, 1, 2 }, new int[] { 3, 4, 5 }] = -BB;
             D[new int[] { 3, 4, 5 }, new int[] { 0, 1, 2 }] = -BB;
 
-            //Total q matrix (DETTA ÄR EN REN CHANSNING)
-            q = new Matrix(new double[,] { { 0 } , { 0 }, { -II0 } }); //Gravity works in negative direction
+            //Total q matrix (NOT USED FOR THE MOMENT)
+          //  q = new Matrix(new double[,] { { 0 } , { 0 }, { -II0 } }); //Gravity works in negative direction
 
 
             

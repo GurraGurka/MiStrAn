@@ -49,6 +49,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BC.cs" />
+    <Compile Include="DistributedLoad.cs" />
     <Compile Include="Load.cs" />
     <Compile Include="Materials.cs" />
     <Compile Include="Matrix.cs" />

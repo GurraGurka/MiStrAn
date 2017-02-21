@@ -14,10 +14,10 @@ namespace MiStrAnEngine
 
 
         //Constructor
-        public Load(Node _node, Vector3D loadVec)
+        public Load(Node _node, Vector3D _loadVec)
         {
             node = _node;
-            LoadVec = loadVec;
+            LoadVec = _loadVec;
         }
 
     }
