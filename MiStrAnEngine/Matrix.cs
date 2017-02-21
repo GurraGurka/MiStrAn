@@ -67,6 +67,46 @@ namespace MiStrAnEngine
             mat = _mat;
         }
 
+        public Matrix(double[] _mat) : this(_mat.Length,1)
+        {
+            for (int i = 0; i < _mat.Length; i++)
+            {
+                mat[i, 0] = _mat[i];
+            }
+
+        }
+
+        public Matrix(Matrix copy) : this(copy.rows,copy.cols)
+        {
+            for (int i = 0; i < rows; i++)
+            {
+                for (int j = 0; j < cols; j++)
+                {
+                    mat[i, j] = copy[i, j];
+                }
+            }
+
+
+        }
+
+        public double Norm
+        {
+            get
+            {
+
+                double sum = 0;
+                for (int i = 0; i < rows; i++)
+                {
+                    for (int j = 0; j < cols; j++)
+                    {
+                        sum += this[i, j] * this[i, j];
+                    }
+                }
+
+                return Math.Sqrt(sum);
+
+            }
+        }
 
         public Boolean IsSquare()
         {
@@ -103,9 +143,22 @@ namespace MiStrAnEngine
             }
         }
 
+        public Vector3D ToVector3D()
+        {
+            return new Vector3D(this[0], this[1], this[2]);
+
+        }
+
         public Vector ToVector()
         {
-            return new Vector(this[0], this[1], this[2]);
+            if (cols != 1) throw new MException("Matrix cannot be converted to vector. Has several columns");
+            Vector ret = new Vector(rows);
+            for (int i = 0; i < rows; i++)
+            {
+                ret[i] = mat[i, 0];
+            }
+
+            return ret;
 
         }
 
@@ -253,6 +306,40 @@ namespace MiStrAnEngine
             for (int r = 0; r < n; r++)
                 for (int c = 0; c <= r; c++)
                 {
+                    if (c == r)
+                    {
+                        double sum = 0;
+                        for (int j = 0; j < c; j++)
+                        {
+                            sum += ret[c, j] * ret[c, j];
+                        }
+                        ret[c, c] = Math.Sqrt(a[c, c] - sum);
+                    }
+                    else
+                    {
+                        double sum = 0;
+                        for (int j = 0; j < c; j++)
+                            sum += ret[r, j] * ret[c, j];
+                        ret[r, c] = 1.0 / ret[c, c] * (a[r, c] - sum);
+                    }
+                }
+
+            L = new Matrix(ret);
+        }
+
+        public void MakeIncompleteLL()
+        {
+            double[,] a = mat;
+
+            int n = (int)Math.Sqrt(a.Length);
+
+            double[,] ret = new double[n, n];
+            for (int r = 0; r < n; r++)
+                for (int c = 0; c <= r; c++)
+                {
+                    if (a[r, c] == 0)
+                        continue;
+
                     if (c == r)
                     {
                         double sum = 0;
@@ -426,6 +513,10 @@ namespace MiStrAnEngine
         public static extern double CPUsolveCSRDouble(int[] row_offset, int[] col, double[] val,
 int nnz, int N, double[] _rhs, double[] _x);
 
+        [DllImport("SolverWrapperNativeCode.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern double solveCSRDouble(int[] row_offset, int[] col, double[] val,
+    int nnz, int N, double[] _rhs, double[] _x);
+
 
 
 
@@ -445,37 +536,89 @@ int nnz, int N, double[] _rhs, double[] _x);
             return X;
         }
 
-        public Matrix SolveWith_CG(Matrix v)
+
+        // see https://en.wikipedia.org/wiki/Conjugate_gradient_method
+        public Matrix SolveWith_CG(Matrix b)
         {
-            int[] row, col;
-            double[] vals;
-            int N, nnz;
+            Matrix A = this;
 
+            Matrix x = new Matrix(b.rows, b.cols);
 
-            ToCSRFormat(out row, out col, out vals, out nnz, out N);
-            double[] rhs = new double[v.rows];
-            double[] x = new double[v.rows];
+            Matrix r = b - A * x;
+            Matrix old_r;
 
-            for (int i = 0; i < v.rows; i++)
+            Matrix p = new Matrix(r);
+
+            int maxIterations = 1000;
+
+            double tol = 1e-3;
+
+            for (int i = 0; i < maxIterations; i++)
             {
-                rhs[i] = v[i, 0];
+                double alpha_k = (r.Transpose() * r)[0, 0] / (p.Transpose() * A * p)[0, 0];
+                x = x + alpha_k * p;
+
+                old_r = new Matrix(r);
+                r = r - alpha_k * A * p;
+
+
+                if (r.Norm < tol)
+                    break;
+                double beta_k = (r.Transpose() * r)[0, 0] / (old_r.Transpose() * old_r)[0, 0];
+                p = r + beta_k * p;
             }
 
 
-
-            CPUsolveCSRDouble(row, col, vals, nnz, N, rhs, x);
-
-            Matrix X = new Matrix(v.rows, 1);
-            for (int i = 0; i < v.rows; i++)
-            {
-                X[i, 0] = x[i];
-            }
-
-
-            return X;  
-
-
+            return x;
         }
+
+        public Matrix SolveWith_CGPrecon(Matrix b)
+        {
+            Matrix A = this;
+            A.MakeIncompleteLL();
+
+            Matrix M = A.L * A.L.Transpose();
+            M = M.Invert();
+
+            Matrix x = new Matrix(b.rows, b.cols);
+
+            Matrix r = b - A * x;
+            Matrix z = M * r;
+            Matrix old_r,old_z;
+
+            Matrix p = new Matrix(z);
+
+            int maxIterations = 1000;
+
+            double tol = 1e-3;
+
+            for (int i = 0; i < maxIterations; i++)
+            {
+                double alpha_k = (r.Transpose() * z)[0, 0] / (p.Transpose() * A * p)[0, 0];
+                x = x + alpha_k * p;
+
+                old_r = new Matrix(r);
+                r = r - alpha_k * A * p;
+
+
+                if (r.Norm < tol)
+                    break;
+                old_z = new Matrix(z);
+                z = M * r;
+                double beta_k = (z.Transpose() * r)[0, 0] / (old_z.Transpose() * old_r)[0, 0];
+                p = z + beta_k * p;
+            }
+
+
+            return x;
+        }
+
+
+
+
+
+
+
 
         private static Matrix SolveLowerTriangular(Matrix A, Matrix v)
         {
@@ -644,6 +787,40 @@ int nnz, int N, double[] _rhs, double[] _x);
 
             return B;
 
+        }
+
+        public SparseMatrix ToSparse()
+        {
+            SparseMatrix M = new SparseMatrix(rows, cols);
+
+            for (int i = 0; i < rows; i++)
+            {
+                for (int j = 0; j < cols; j++)
+                {
+                    if(mat[i,j] != 0)
+                       M[i, j] = mat[i, j];
+                }
+            }
+
+            return M;
+        }
+
+        public alglib.sparsematrix ToAlglibSparse()
+        {
+            alglib.sparsematrix M;
+
+            alglib.sparsecreate(this.rows, this.cols, out M);
+
+            for (int i = 0; i < rows; i++)
+            {
+                for (int j = 0; j < cols; j++)
+                {
+                    if (mat[i, j] != 0)
+                        alglib.sparseset(M, i, j, mat[i, j]); 
+                }
+            }
+
+            return M;
         }
 
         public static Matrix IdentityMatrix(int iRows, int iCols)   // Function generates the identity matrix
@@ -1021,6 +1198,20 @@ int nnz, int N, double[] _rhs, double[] _x);
             Matrix O = MergeHorizontal(M, N);
 
             return O;
+        }
+
+        public double[] VectorToDoubleArray()
+        {
+            if (cols != 1) throw new MException("Matrix is not vector");
+
+            double[] a = new double[rows];
+
+            for (int i = 0; i < rows; i++)
+            {
+                a[i] = mat[i, 0];
+            }
+
+            return a;
         }
 
         public static string NormalizeMatrixString(string matStr)   // From Andy - thank you! :)

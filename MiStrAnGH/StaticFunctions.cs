@@ -50,7 +50,7 @@ namespace MiStrAnGH
                 {
                     Point3d closePt = mPt;
                     if (closePt.DistanceTo(loadsPts[j]) < 0.001)
-                        mistranLoads.Add(new MiStrAnEngine.Load(mistranNodes[i], new MiStrAnEngine.Vector(loadVecs[j].X, loadVecs[j].Y, loadVecs[j].Z))); //TEMP JUST 1000 
+                        mistranLoads.Add(new MiStrAnEngine.Load(mistranNodes[i], new MiStrAnEngine.Vector3D(loadVecs[j].X, loadVecs[j].Y, loadVecs[j].Z))); //TEMP JUST 1000 
                 }
             }
               

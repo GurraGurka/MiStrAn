@@ -118,29 +118,97 @@ namespace Sandbox
             //Matrix KTest = Ke[dofs, dofs];
             //Matrix f = fe[dofs, 0];
 
-            Matrix test = new Matrix(3, 3);
-            test[0, 0] = 1;
-            test[0, 1] = 1;
-            test[0, 2] = 1;
-            test[1, 0] = 1;
-            test[1, 1] = 1;
-            test[2, 0] = 1;
-            test[2, 2] = 1;
+            //SparseMatrix A = new SparseMatrix(3, 3);
+            //SparseMatrix B = new SparseMatrix(3, 3);
+            //Matrix C = new Matrix(3, 3);
 
-            double[] rhs = new double[] { 6, 3, 4 };
-            double[] x = new double[3];
-            int[] rows, cols;
-            double[] vals;
-            int N, nnz;
+            //A[0, 0] = 1;
+            ////A[0, 2] = 3;
+            //A[0, 2] = 1;
+            //A[1, 1] = 1;
+            //A[1, 2] = 1;
+            //A[2, 2] = 1;
+
+            //B[0, 0] = 3;
+            //B[0, 1] = 5;
+            //B[1, 0] = 6;
+            //B[1, 2] = 7;
+            //B[2, 2] = 2;
+
+            //C[0, 0] = 1;
+            //C[0, 1] = 1;
+            //C[0, 2] = 1;
+            //C[1, 0] = 1;
+            //C[1, 1] = 1;
+            //C[2, 0] = 1;
+            //C[2, 2] = 1;
+
+            //Vector b = new Vector(3);
+            //b[0] = 2;
+            //b[1] = 2;
+            //b[2] = 1;
+
+            //Matrix v = new Matrix(3, 1);
+            //v[0] = 6;
+            //v[1] = 3;
+            //v[2] = 4;
+
+            //SparseMatrix M = new SparseMatrix(3, 3);
+            //M[0, 0] = 2;
+            //M[0, 1] = -1;
+            //M[1, 0] = -1;
+            //M[1, 1] = 2;
+            //M[1, 2] = -1;
+            //M[2, 1] = -1;
+            //M[2, 2] = 2;
 
 
-            test.ToCSRFormat(out rows, out cols, out vals, out nnz, out N);
+            //SparseMatrix L = M.MakeCholesky();
+            //L.ConvertToCRS();
+
+            //SparseMatrix iL = M.MakeIncompleteCholesky();
+
+            //L.ConvertToCRS();
+            //iL.ConvertToCRS();
+
+            //Vector b = new Vector(3);
+            //b[2] = 4;
+
+            //SparseMatrix Minv = M.GetPreconditioningMatrix();
+            //Matrix blaha = Minv.ToMatrix();
+            //Matrix blaha2 = iL.ToMatrix();
+
+            //Matrix fu = (blaha2 * blaha2.Transpose()) * blaha;
+
+
+            //Vector x = M.SolveWith_Preconditioned_CG(b);
+            //x = M.SolveWith_CG(b);
+            //Vector y = M.SolveWith_LL(b);
+
+            Vector v = new Vector(3);
+            v[0] = 0;
+            v[1] = 0;
+            v[2] = 5;
+
+            SparseMatrix M = new SparseMatrix(3, 3);
+            M[0, 0] = 1;
+            M[0, 1] = 1;
+            M[0, 2] = 1;
+            M[1, 0] = 1;
+            M[1, 1] = 1;
+            M[1, 2] = 1;
+            M[2, 0] = 1;
+            M[2, 1] = 1;
+            M[2, 2] = 1;
+
+
+            Vector a = M * v;
 
 
 
-            Matrix.CPUsolveCSRDouble(rows, cols, vals, nnz, N, rhs, x);
+            // Matrix test = StaticFunctions.SolveWith_CG_alglib(C.ToAlglibSparse(), b);
 
-
+          //  a 
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -169,28 +237,28 @@ namespace Sandbox
 
         private void button3_Click(object sender, EventArgs e)
         {
-            Matrix K = new Matrix(new double[,] { { 2, -1, 0 }, { -1, 2, -1 }, { 0, -1, 2 } });
+  //          Matrix K = new Matrix(new double[,] { { 2, -1, 0 }, { -1, 2, -1 }, { 0, -1, 2 } });
 
-            double[,] blaha = new double[,] {
-           {     1   ,  0  ,   0 ,- 1   ,  0   ,  0 },
-   {  0  ,  12  ,   6   ,  0, - 12 ,    6 },
-    { 0  ,   6   ,  4  ,   0, - 6,     2 },
-  { -1  ,   0  ,   0  ,   1  ,   0   ,  0 },
-   {  0, -12, -6,     0,    12, -6 },
-   {  0  ,   6   ,  2  ,   0, - 6 ,    4 } };
-            K = new Matrix(blaha);
-            Matrix bc = new Matrix(3, 2);
-            bc[1, 0] = 1;
-            bc[2, 0] = 2;
+  //          double[,] blaha = new double[,] {
+  //         {     1   ,  0  ,   0 ,- 1   ,  0   ,  0 },
+  // {  0  ,  12  ,   6   ,  0, - 12 ,    6 },
+  //  { 0  ,   6   ,  4  ,   0, - 6,     2 },
+  //{ -1  ,   0  ,   0  ,   1  ,   0   ,  0 },
+  // {  0, -12, -6,     0,    12, -6 },
+  // {  0  ,   6   ,  2  ,   0, - 6 ,    4 } };
+  //          K = new Matrix(blaha);
+  //          Matrix bc = new Matrix(3, 2);
+  //          bc[1, 0] = 1;
+  //          bc[2, 0] = 2;
 
-            Matrix f = new Matrix(6, 1);
-            f[4] = 1;
+  //          Matrix f = new Matrix(6, 1);
+  //          f[4] = 1;
 
-            Matrix a, r;
+  //          Matrix a, r;
 
-            SF.solveq(K, f, bc, out a, out r);
+  //          SF.solveq(K, f, bc, out a, out r);
 
-            a = a;
+  //          a = a;
 
 
 
