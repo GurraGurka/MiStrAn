@@ -26,18 +26,23 @@ namespace MiStrAnEngine
 
        
 
-        public bool GenerateKefe(out Matrix Ke, out Vector fe)
+        public bool GenerateKefe(out Matrix Ke, out Vector fe, out Matrix DBe, out Matrix Te)
         {
             Ke = new Matrix(18, 18);
             fe = new Vector(18);
+            DBe = new Matrix(6, 15);
+            Matrix Be = new Matrix(6, 15);
 
-            Matrix B, N, gp, gw, xe, T; //,q;
+            Matrix B, N, gp, gw, xe, T;
+
+           // q =new Matrix(new double[,] { { 0 }, { 0 }, { 0 } });
 
             int ng = 4; // Number of gauss points
 
             GenerateGaussPoints(ng, out gp, out gw);
            
             GetLocalNodeCoordinates(out xe, out T);
+
 
             int[] activeDofs = new int[] { 0, 1, 2, 3, 4, 6, 7, 8, 9, 10, 12, 13, 14, 15, 16 };
             int[] passiveDofs = new int[] { 5, 11, 17 };
@@ -48,33 +53,72 @@ namespace MiStrAnEngine
             double c2 = xe[0, 0] - xe[2, 0];
             double elementArea = 0.5 * (b1 * c2 - b2 * c1);
 
+            //Get a D*Be adn Te for calulating stresses, gauss points = 0
+            Matrix unTrans = new Matrix(new double[,] { { nodes[0].x, nodes[0].y, nodes[0].z },
+                                                            { nodes[1].x, nodes[1].y, nodes[1].z },
+                                                            { nodes[2].x, nodes[2].y, nodes[2].z },});
+            GetB_N(new Matrix(new double[,] { { 0,0,0 } }), xe, out Be, out N);
+            //I DONT KNOW WHY BUT DIVISION OF THICKNESS IS NEEDED
+            DBe =(1/thickness)* D * Be;
+
+
+            //Te = T.Transpose();
+            Te = T;
+            int test = 0;
             for (int i = 0; i < ng; i++)
             {
                 GetB_N(gp.GetRow(i), xe,out B, out N);
                 Matrix DKe = gw[i]* B.Transpose() * D * B;
                 Ke[activeDofs, activeDofs] = Ke[activeDofs, activeDofs] + elementArea*DKe; 
-                Matrix DMe= gw[i] * N.Transpose() * q;
+                Matrix DMe= thickness*gw[i] * N.Transpose() * q;
                 fe[activeDofs] = fe[activeDofs] + elementArea*DMe.ToVector();
             }
-        
-            Ke[passiveDofs, passiveDofs] = Matrix.Ones(3, 3); //Ke.Max() * Matrix.Ones(3, 3);
 
+            //  GetB_N(gp.GetRow(0), xe, out B, out N);
+            // Matrix DMe = N.Transpose() * q;
+            //  fe[activeDofs, 0] = fe[activeDofs, 0] + elementArea*DMe;
+
+            // Adding max stiffness to rotational dofs
+            Ke[passiveDofs, passiveDofs] =  Matrix.Ones(3, 3);
+           // fe[passiveDofs, 0] = 0 * Matrix.Ones(3, 1); ;
+
+            // Transforming to global dofs
             Ke = T * Ke * T.Transpose();
-
+           // fe = T.Transpose() * fe;
+           //snnsnsns
             return true;
         }
+
+        //Get the distributed load for the element
+        public void Getq(List<DistributedLoad> distLoads, out Matrix qElem)
+        {
+            qElem = new Matrix(new double[,] { { 0}, { 0}, { 0 } });
+           
+            foreach(DistributedLoad load in distLoads)
+            {
+                if (load.shellIndex == Id)
+                {
+                    qElem[0] = load.loadVec.X;
+                    qElem[1] = load.loadVec.Y;
+                    qElem[2] = load.loadVec.Z;
+                    break;
+                }
+            }
+        }
+
+     
 
         public void SetSteelSection()
         {
             double E = 210e9;
             double v = 0.3;
             double G = E / (2.0 * (1 + v));
-            double density = 0;//7800*1000; //[kg/m^3]
+            double density = 7800; //[kg/m^3]
             Matrix d = new Matrix(6, 6);
             Matrix qLoc = new Matrix(6, 1);
 
             double[] angle = new double[1] { 0}; // double[] angle = new double[] { 0};
-            Materials.eqModulus(E, E, G, v, angle, thickness, density, out d, out qLoc);
+            Materials.eqModulus(E, E, G, v, angle, thickness, density, out d); //, out qLoc);
             this.D = d;
             this.q = qLoc;
 
@@ -128,93 +172,7 @@ namespace MiStrAnEngine
 
         }
 
-        public void ShellTesting()
-        {
-            Vector3D x1 = nodes[0].Pos;
-            Vector3D x2 = nodes[1].Pos;
-            Vector3D x3 = nodes[2].Pos;
-
-            Vector3D gr = -x1 + x2;
-            Vector3D gs = -x1 + x3;
-
-            Matrix B1 = new Matrix(3,6);
-
-            B1[0, 0] = -gr.X;
-            B1[0, 1] = -gr.Y;
-            B1[0, 2] = gr.X;
-            B1[0, 3] = gr.Y;
-
-            B1[1, 0] = -gs.X;
-            B1[1, 1] = -gs.Y;
-            B1[1, 4] = gs.X;
-            B1[1, 5] = gs.Y;
-
-            B1[2, 0] = -gs.X - gr.X;
-            B1[2, 1] = -gs.Y - gr.Y;
-            B1[2, 2] = gs.X;
-            B1[2, 3] = gs.Y;
-            B1[2, 4] = gr.X;
-            B1[2, 5] = gr.Y;
-
-
-            double ex1 = x1.X;
-            double ex2 = x2.X;
-            double ex3 = x3.X;
-
-            double ey1 = x1.Y;
-            double ey2 = x2.Y;
-            double ey3 = x3.Y;
-
-            Matrix A = new Matrix(new double[,] { { gr.X, gr.Y }, { gs.X, gs.Y } });
-            Matrix g_r = A.SolveWith(new Matrix(new double[,] { { 0 }, { 1 } }));
-            Matrix g_s = A.SolveWith(new Matrix(new double[,] { { 1 }, { 0 } }));
-
-            Vector3D Lr = new Vector3D();
-            Lr.X = gs.Y; Lr.Y = -gs.X;
-            Vector3D Ls = new Vector3D(Lr.Y, -Lr.X, 0);
-            Ls = -Ls;
-            //Matrix T = new Matrix(new double[,] {
-            //    { Vector.DotProduct(Lr, gr), Vector.DotProduct(Lr, gs),  },
-            //    { Vector.DotProduct(Ls, gr), Vector.DotProduct(Ls, gs),  },
-
-            //});
-
-            Matrix T = new Matrix(2, 2);
-            T.SetCol(g_s, 0);
-            T.SetCol(g_r, 1);
-
-            Matrix Tg = new Matrix(6, 6);
-            int[] rng1 = SF.intSrs(0, 1);
-            int[] rng2 = SF.intSrs(2, 3);
-            int[] rng3 = SF.intSrs(4, 5);
-
-            Tg[rng1, rng1] = T;
-            Tg[rng2, rng2] = T;
-            Tg[rng3, rng3] = T;
-
-            B1 = B1 * Tg;
-
-            Matrix C = new Matrix(new double[,] { 
-                { 1, ex1, ey1, 0, 0, 0 }, 
-                { 0, 0, 0, 1, ex1, ey1 }, 
-                { 1, ex2, ey2, 0, 0, 0 }, 
-                { 0, 0, 0, 1, ex2, ey2 }, 
-                { 1, ex3, ey3, 0, 0, 0 }, 
-                { 0, 0, 0, 1, ex3, ey3 } });
-
-            Matrix B2 = new Matrix(3, 6);
-            B2[0, 1] = 1;
-            B2[1, 5] = 1;
-            B2[2, 2] = 1;
-            B2[2, 4] = 1;
-
-            B2 = B2 * C.Invert();
-
-
-
-
-
-        }
+       
 
         public int[] GetElementDofs()
         {
@@ -267,7 +225,6 @@ namespace MiStrAnEngine
 
 
         }
-
 
         //Temp public for testing
         public void GetB_N(Matrix L, Matrix xe, out Matrix B, out Matrix N)
