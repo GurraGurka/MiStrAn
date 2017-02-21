@@ -59,7 +59,7 @@ namespace MiStrAnGH
                     shellNodes.Add(mistranNodes[index]);
 
                 MiStrAnEngine.ShellElement mistShell = new MiStrAnEngine.ShellElement(shellNodes, i);
-                mistShell.thickness = 0.1;
+                mistShell.thickness = 0.01;
                 mistShell.SetSteelSection();
 
                 //// TEMPORARY FOR TEST CASE

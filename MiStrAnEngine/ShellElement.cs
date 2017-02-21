@@ -57,7 +57,7 @@ namespace MiStrAnEngine
                 fe[activeDofs] = fe[activeDofs] + elementArea*DMe.ToVector();
             }
         
-            Ke[passiveDofs, passiveDofs] = Ke.Max() * Matrix.Ones(3, 3);
+            Ke[passiveDofs, passiveDofs] = Matrix.Ones(3, 3); //Ke.Max() * Matrix.Ones(3, 3);
 
             Ke = T * Ke * T.Transpose();
 

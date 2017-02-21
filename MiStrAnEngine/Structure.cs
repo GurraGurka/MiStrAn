@@ -78,6 +78,7 @@ namespace MiStrAnEngine
                 bc[(i + 1) * 6 - 1, 0] = bcs[i].node.dofZZ;
                 bc[(i + 1) * 6 - 1, 1] = 0;
             }
+
         }
 
         public bool Analyze(out Vector a, out Vector r, bool useExactMethod = false)
