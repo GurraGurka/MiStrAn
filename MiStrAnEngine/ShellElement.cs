@@ -26,10 +26,10 @@ namespace MiStrAnEngine
 
        
 
-        public bool GenerateKefe(out Matrix Ke, out Matrix fe, out Matrix DBe, out Matrix Te)
+        public bool GenerateKefe(out Matrix Ke, out Vector fe, out Matrix DBe, out Matrix Te)
         {
             Ke = new Matrix(18, 18);
-            fe = new Matrix(18, 1);
+            fe = new Vector(18);
             DBe = new Matrix(6, 15);
             Matrix Be = new Matrix(6, 15);
 
@@ -71,7 +71,7 @@ namespace MiStrAnEngine
                 Matrix DKe = gw[i]* B.Transpose() * D * B;
                 Ke[activeDofs, activeDofs] = Ke[activeDofs, activeDofs] + elementArea*DKe; 
                 Matrix DMe= thickness*gw[i] * N.Transpose() * q;
-                fe[activeDofs, 0] = fe[activeDofs, 0] + elementArea*DMe;
+                fe[activeDofs] = fe[activeDofs] + elementArea*DMe.ToVector();
             }
 
             //  GetB_N(gp.GetRow(0), xe, out B, out N);
@@ -79,7 +79,7 @@ namespace MiStrAnEngine
             //  fe[activeDofs, 0] = fe[activeDofs, 0] + elementArea*DMe;
 
             // Adding max stiffness to rotational dofs
-            Ke[passiveDofs, passiveDofs] = Ke.Max() * Matrix.Ones(3, 3);
+            Ke[passiveDofs, passiveDofs] =  Matrix.Ones(3, 3);
            // fe[passiveDofs, 0] = 0 * Matrix.Ones(3, 1); ;
 
             // Transforming to global dofs
@@ -172,93 +172,7 @@ namespace MiStrAnEngine
 
         }
 
-        public void ShellTesting()
-        {
-            Vector x1 = nodes[0].Pos;
-            Vector x2 = nodes[1].Pos;
-            Vector x3 = nodes[2].Pos;
-
-            Vector gr = -x1 + x2;
-            Vector gs = -x1 + x3;
-
-            Matrix B1 = new Matrix(3,6);
-
-            B1[0, 0] = -gr.X;
-            B1[0, 1] = -gr.Y;
-            B1[0, 2] = gr.X;
-            B1[0, 3] = gr.Y;
-
-            B1[1, 0] = -gs.X;
-            B1[1, 1] = -gs.Y;
-            B1[1, 4] = gs.X;
-            B1[1, 5] = gs.Y;
-
-            B1[2, 0] = -gs.X - gr.X;
-            B1[2, 1] = -gs.Y - gr.Y;
-            B1[2, 2] = gs.X;
-            B1[2, 3] = gs.Y;
-            B1[2, 4] = gr.X;
-            B1[2, 5] = gr.Y;
-
-
-            double ex1 = x1.X;
-            double ex2 = x2.X;
-            double ex3 = x3.X;
-
-            double ey1 = x1.Y;
-            double ey2 = x2.Y;
-            double ey3 = x3.Y;
-
-            Matrix A = new Matrix(new double[,] { { gr.X, gr.Y }, { gs.X, gs.Y } });
-            Matrix g_r = A.SolveWith(new Matrix(new double[,] { { 0 }, { 1 } }));
-            Matrix g_s = A.SolveWith(new Matrix(new double[,] { { 1 }, { 0 } }));
-
-            Vector Lr = new Vector();
-            Lr.X = gs.Y; Lr.Y = -gs.X;
-            Vector Ls = new Vector(Lr.Y, -Lr.X, 0);
-            Ls = -Ls;
-            //Matrix T = new Matrix(new double[,] {
-            //    { Vector.DotProduct(Lr, gr), Vector.DotProduct(Lr, gs),  },
-            //    { Vector.DotProduct(Ls, gr), Vector.DotProduct(Ls, gs),  },
-
-            //});
-
-            Matrix T = new Matrix(2, 2);
-            T.SetCol(g_s, 0);
-            T.SetCol(g_r, 1);
-
-            Matrix Tg = new Matrix(6, 6);
-            int[] rng1 = SF.intSrs(0, 1);
-            int[] rng2 = SF.intSrs(2, 3);
-            int[] rng3 = SF.intSrs(4, 5);
-
-            Tg[rng1, rng1] = T;
-            Tg[rng2, rng2] = T;
-            Tg[rng3, rng3] = T;
-
-            B1 = B1 * Tg;
-
-            Matrix C = new Matrix(new double[,] { 
-                { 1, ex1, ey1, 0, 0, 0 }, 
-                { 0, 0, 0, 1, ex1, ey1 }, 
-                { 1, ex2, ey2, 0, 0, 0 }, 
-                { 0, 0, 0, 1, ex2, ey2 }, 
-                { 1, ex3, ey3, 0, 0, 0 }, 
-                { 0, 0, 0, 1, ex3, ey3 } });
-
-            Matrix B2 = new Matrix(3, 6);
-            B2[0, 1] = 1;
-            B2[1, 5] = 1;
-            B2[2, 2] = 1;
-            B2[2, 4] = 1;
-
-            B2 = B2 * C.Invert();
-
-
-
-
-
-        }
+       
 
         public int[] GetElementDofs()
         {
@@ -274,14 +188,14 @@ namespace MiStrAnEngine
         // See slides p.44
         public void GetLocalNodeCoordinates(out Matrix xel, out Matrix Tg)
         {
-            Vector v1 = nodes[1].Pos - nodes[0].Pos;
-            Vector _v2 = nodes[2].Pos - nodes[0].Pos;
-            Vector v3 = Vector.CrossProduct(v1, _v2);
-            Vector v2 = Vector.CrossProduct(v3, v1);
+            Vector3D v1 = nodes[1].Pos - nodes[0].Pos;
+            Vector3D _v2 = nodes[2].Pos - nodes[0].Pos;
+            Vector3D v3 = Vector3D.CrossProduct(v1, _v2);
+            Vector3D v2 = Vector3D.CrossProduct(v3, v1);
 
-            Vector e1 = v1.Normalize(false);
-            Vector e2 = v2.Normalize(false);
-            Vector e3 = v3.Normalize(false);
+            Vector3D e1 = v1.Normalize(false);
+            Vector3D e2 = v2.Normalize(false);
+            Vector3D e3 = v3.Normalize(false);
 
             Matrix xeg = new Matrix(3, 3);
             xeg.SetRow(v1.ToMatrix().Transpose(), 1);

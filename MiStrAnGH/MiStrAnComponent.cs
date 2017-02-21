@@ -92,7 +92,7 @@ namespace MiStrAnGH
             if (run)
             {
 
-               MiStrAnEngine.Matrix a, r;
+               MiStrAnEngine.Vector a, r;
                 s.Analyze(out a, out r);
 
                 List<double> aList = new List<double>();
@@ -104,13 +104,13 @@ namespace MiStrAnGH
                 
                 
 
-                for (int i = 0; i < a.rows; i++)
+                for (int i = 0; i < a.Length; i++)
                 {
-                    aList.Add(a[i, 0]);
-                    rList.Add(r[i, 0]);
+                    aList.Add(a[i]);
+                    rList.Add(r[i]);
                 }
 
-                List<MiStrAnEngine.Vector> pStress;
+                List<MiStrAnEngine.Vector3D> pStress;
                 s.CalcStresses(aList, out pStress);
 
 

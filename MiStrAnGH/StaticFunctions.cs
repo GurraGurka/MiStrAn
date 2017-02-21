@@ -73,7 +73,7 @@ namespace MiStrAnGH
                     
                     //This only works for triangular
                     if(m.Faces[i].A ==loadFaces[j].A && m.Faces[i].B == loadFaces[j].B && m.Faces[i].C == loadFaces[j].C)
-                        mistranDistLoads.Add(new MiStrAnEngine.DistributedLoad(i, new MiStrAnEngine.Vector(distLoadVecs[j].X, distLoadVecs[j].Y, distLoadVecs[j].Z)));
+                        mistranDistLoads.Add(new MiStrAnEngine.DistributedLoad(i, new MiStrAnEngine.Vector3D(distLoadVecs[j].X, distLoadVecs[j].Y, distLoadVecs[j].Z)));
 
                        
                 }

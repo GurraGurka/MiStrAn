@@ -10,14 +10,14 @@ namespace MiStrAnEngine
         public Node node;
 
         // Field variables
-        public Vector loadVec;
+        public Vector3D LoadVec;
 
 
         //Constructor
-        public Load(Node _node, Vector _loadVec)
+        public Load(Node _node, Vector3D _loadVec)
         {
             node = _node;
-            loadVec = _loadVec;
+            LoadVec = _loadVec;
         }
 
     }

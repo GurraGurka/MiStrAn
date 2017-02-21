@@ -10,10 +10,10 @@ namespace MiStrAnEngine
         public int shellIndex;
 
         // Field variables
-        public Vector loadVec;
+        public Vector3D loadVec;
 
         //Constructor
-        public DistributedLoad(int _shellIndex, Vector _loadVec)
+        public DistributedLoad(int _shellIndex, Vector3D _loadVec)
         {
             shellIndex = _shellIndex;
             loadVec = _loadVec;

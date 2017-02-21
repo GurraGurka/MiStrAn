@@ -14,8 +14,8 @@ namespace MiStrAnEngine
         List<DistributedLoad> distLoads;
         List<BC> bcs;
         List<Load> loads;
-        public Matrix K;
-        public Matrix f;
+        public SparseMatrix K;
+        public Vector f;
         public Matrix bc;
         public Matrix DB;
         public Matrix T;
@@ -37,9 +37,10 @@ namespace MiStrAnEngine
 
         public void AssembleKfbc()
         {
+
             int nDofs = nodes.Count * 6;
-            K = Matrix.ZeroMatrix(nDofs, nDofs);
-            f = Matrix.ZeroMatrix(nDofs, 1);
+            K = new SparseMatrix(nDofs, nDofs);
+            f = new Vector(nDofs);
             DB = Matrix.ZeroMatrix(elements.Count * 6,15);
             T = Matrix.ZeroMatrix(elements.Count * 18, 18);
 
@@ -50,16 +51,19 @@ namespace MiStrAnEngine
             for (int i=0; i<elements.Count; i++)
             {
                 int[] dofs = elements[i].GetElementDofs();
-                Matrix Ke, fe, q,DBe, Te;
+                Matrix Ke, q,DBe, Te;
+                Vector fe;
                 elements[i].Getq(distLoads, out q);
                 elements[i].q = q;
                 elements[i].GenerateKefe(out Ke, out fe, out DBe, out Te);
                 DB[SF.intSrs(i * 6, 5 * (i + 1) + i), SF.intSrs(0, 14)] = DBe;
                 T[SF.intSrs(i * 18, 17 * (i + 1) + i), SF.intSrs(0, 17)] = Te;
-                K[dofs, dofs] = K[dofs, dofs] + Ke;
-                f[dofs, 0] = f[dofs, 0] + fe;
+                K.AddStiffnessContribution(Ke, dofs);
+                f[dofs] = f[dofs] + fe;
 
             }
+
+
 
 
             // #TODO make it possible to have rotational loads
@@ -67,7 +71,7 @@ namespace MiStrAnEngine
             {
                 int[] loadDofs = new int[] {load.node.dofX, load.node.dofY, load.node.dofZ };
 
-                f[loadDofs, 0] = f[loadDofs, 0] + load.loadVec.ToMatrix();
+                f[loadDofs] = f[loadDofs] + load.LoadVec.ToVector();
             }
 
             // #TODO make it possible to have other bc's than fully fixed
@@ -95,17 +99,17 @@ namespace MiStrAnEngine
             }
         }
 
-        public bool Analyze(out Matrix a, out Matrix r)
+        public bool Analyze(out Vector a, out Vector r, bool useExactMethod = false)
         {
             AssembleKfbc();
 
 
-            return StaticFunctions.solveq(K, f, bc, out a, out r);
+            return StaticFunctions.solveq(K, f, bc, out a, out r, useExactMethod);
 
-            
+
         }
 
-        public void CalcStresses(List<double> a, out List<Vector> principalStresses)
+        public void CalcStresses(List<double> a, out List<Vector3D> principalStresses)
         {
             //Folllowing plants in MATlab
             //each element 15 dofs
@@ -113,7 +117,7 @@ namespace MiStrAnEngine
             List<double> vMstresses = new List<double>();
             Matrix ed = new Matrix(elements.Count, 15);
             Matrix edDebug = new Matrix(elements.Count, 15);
-            principalStresses = new List<Vector>();
+            principalStresses = new List<Vector3D>();
 
             for (int i =0; i<elements.Count; i++)
             {
@@ -157,7 +161,7 @@ namespace MiStrAnEngine
                 //Principle stresses
                 double p1 = (ss[0] + ss[1]) / 2.0 + Math.Sqrt(Math.Pow((ss[0]-ss[1])/2,2)+Math.Pow(ss[2],2));
                 double p2 = (ss[0] + ss[1]) / 2.0 - Math.Sqrt(Math.Pow((ss[0] - ss[1]) / 2, 2) + Math.Pow(ss[2], 2));
-                principalStresses.Add(new Vector(p1, p2, 0));
+                principalStresses.Add(new Vector3D(p1, p2, 0));
 
 
             }
