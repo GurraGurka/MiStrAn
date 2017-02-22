@@ -476,7 +476,7 @@ namespace MiStrAnEngine
             A.ConvertToCRS();
 
             Vector x = new Vector(A.rows);
-            SparseMatrix Minv = GetPreconditioningMatrixJacobi();
+            SparseMatrix Minv = A.GetPreconditioningMatrixJacobi();
 
             Vector r = new Vector(b);
             Vector z = Minv * r;
@@ -484,10 +484,10 @@ namespace MiStrAnEngine
 
             Vector p = new Vector(z);
 
-            int maxIterations = A.cols*A.rows; // size of matrix
-
-            double tol = A.rows*0.1;
+            int maxIterations = b.Length; // size of matrix
+            double tol = 1e-3;
             bool converged = false;
+            double bNorm = b.Norm;
 
             for (int i = 0; i < maxIterations; i++)
             {
@@ -499,7 +499,8 @@ namespace MiStrAnEngine
                 old_r = new Vector(r);
                 r = r - alpha_k * (A * p);
 
-                if (r.Norm < tol)
+                double relNorm = r.Norm / bNorm;
+                if (relNorm < tol)
                 {
                     converged = true;
                     break;
