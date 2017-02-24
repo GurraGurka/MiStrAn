@@ -83,7 +83,7 @@ namespace MiStrAnGH
 
         public override string ToString()
         {
-            return "testing";
+            return "Section";
         }
 
         public bool Write(GH_IWriter writer)

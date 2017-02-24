@@ -96,22 +96,18 @@ namespace MiStrAnGH
             return new StructureType(mistranNodes, mistranShells, mistranBCs, mistranLoads, mistranDistLoads);
         }
 
-        public static void GetDefMesh(Mesh undefMesh,List<double> defs, out Mesh defMesh)
+        public static void GetDefMesh(Mesh undefMesh,List<double> defs, double scalFac, out Mesh defMesh )
         {
             
 
-            //Scale 10% of the bounding box diagonal length (DEACTIVATED NOW)
-            double maxDiff = Math.Max(defs.Max(), Math.Abs(defs.Min()));
-            double length = undefMesh.GetBoundingBox(false).Diagonal.Length;
-             // double scale = length * 0.1 / maxDiff;
-            double scale = 100* length; //TEMP
+            
             Mesh deformableMesh = undefMesh.DuplicateMesh();
             List<Point3d> defPts = new List<Point3d>();
 
             int meshPtCount = 0;
             for (int i = 0; i < defs.Count; i+=6)
             {
-                Transform xPt = Transform.Translation(new Vector3d(scale * defs[i], scale * defs[i + 1], scale * defs[i + 2]));
+                Transform xPt = Transform.Translation(new Vector3d(scalFac * defs[i], scalFac * defs[i + 1], scalFac * defs[i + 2]));
 
                 Point3f pt3f = undefMesh.Vertices[meshPtCount];
                 Point3d pt3d = new Point3d(pt3f.X, pt3f.Y, pt3f.Z);

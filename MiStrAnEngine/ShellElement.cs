@@ -16,6 +16,8 @@ namespace MiStrAnEngine
         public Matrix D;
         public Matrix q;
         public Section Section;
+        public Matrix DBe; //D*B for the stresses
+        public Matrix Te; // Tranformation matrix for stresses
 
 
         public ShellElement(List<Node> _nodes, int _id)
@@ -32,7 +34,7 @@ namespace MiStrAnEngine
 
 
 
-        public bool GenerateKefe(out Matrix Ke, out Vector fe, out Matrix DBe, out Matrix Te)
+        public bool GenerateKefe(out Matrix Ke, out Vector fe, out Matrix DBeOLD, out Matrix TeOLD)
         {
             Ke = new Matrix(18, 18);
             fe = new Vector(18);
@@ -65,11 +67,12 @@ namespace MiStrAnEngine
                                                             { Nodes[2].x, Nodes[2].y, Nodes[2].z },});
             GetB_N(new Matrix(new double[,] { { 0,0,0 } }), xe, out Be, out N);
             //I DONT KNOW WHY BUT DIVISION OF THICKNESS IS NEEDED
-            DBe =(1/thickness)* D * Be;
-
+            DBeOLD =(1/thickness)* D * Be;
+            this.DBe = (1 / thickness) * D * Be;
 
             //Te = T.Transpose();
-            Te = T;
+            TeOLD = T;
+            this.Te = T;
             int test = 0;
             for (int i = 0; i < ng; i++)
             {

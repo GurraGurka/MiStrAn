@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-
 using Grasshopper.Kernel;
 using Rhino.Geometry;
 
@@ -73,7 +72,7 @@ namespace MiStrAnGH
             if (!DA.GetDataList(4, LoadVecs)) { return; }
             DA.GetDataList(5, distLoadFaces);
             DA.GetDataList(6, distLoadVecs);
-            if (!DA.GetData(7, ref sections)) { return; }
+            if (!DA.GetDataList(7, sections)) { return; }
 
 
 
@@ -116,7 +115,7 @@ namespace MiStrAnGH
                     principalStresses.Add(new Vector3d(pStress[i].X, pStress[i].Y, 0));
 
                 //Get outputs
-                StaticFunctions.GetDefMesh(meshes[0], aList, out outMesh);
+                StaticFunctions.GetDefMesh(meshes[0], aList,1, out outMesh);
                 StaticFunctions.GetDefRotVector(aList, out defList, out rotList);
 
 

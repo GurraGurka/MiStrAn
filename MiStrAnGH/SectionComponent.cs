@@ -47,7 +47,7 @@ namespace MiStrAnGH
         /// </summary>
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
         {
-            pManager.AddParameter(new SectionParameter(), "Generated", "Section", "Section with thickness, indexes and material ", GH_ParamAccess.item);
+            pManager.AddParameter(new SectionParameter(), "Generated", "Section", "Section with thickness, indexes and material ", GH_ParamAccess.list);
         }
 
         /// <summary>
@@ -59,27 +59,33 @@ namespace MiStrAnGH
             List<int> faceIndexes = new List<int>();
             List<double> Exs = new List<double>();
             List<double> Eys = new List<double>();
-            List<double> Gxys = new List<double>(new double[] { 2.9 * Math.Pow(10, 9) }) ;
-            List<double> thickness = new List<double>(new double[] { 0.01 });
-            List<double> angles = new List<double>(new double[] { 0 });
-            List<double> vs = new List<double>(new double[] { 0.3 });
-            double density = 2100;
+            List<double> Gxys = new List<double>();
+            List<double> thickness = new List<double>();
+            List<double> angles = new List<double>();
+            List<double> vs = new List<double>();
+            double density = new double();
 
-            List<double> temp = new List<double>(new double[] { 39 * Math.Pow(10, 9) });
-            Eys = new List<double>(new double[] { 8.6 * Math.Pow(10, 9) }); ;
+            List<double> ExsDef = new List<double>(new double[] { 39 * Math.Pow(10, 9) });
+            List<double> EysDef = new List<double>(new double[] { 8.6 * Math.Pow(10, 9) }); ;
+            List<double> GxysDef = new List<double>(new double[] { 2.9 * Math.Pow(10, 9) });
+            List<double> thicknessDef = new List<double>(new double[] { 0.01 });
+            List<double> anglesDef = new List<double>(new double[] { 0 });
+            List<double> vsDef = new List<double>(new double[] { 0.3 });
+            double densityDef = 2100;
 
             if (!DA.GetDataList(0, faceIndexes)) { return; }
-            if (!DA.GetDataList(1, Exs)) {Exs = temp; } 
-            DA.GetDataList(2, Eys);
-            DA.GetDataList(3, Gxys);
-            DA.GetDataList(4, thickness);
-            DA.GetDataList(5, angles);
-            DA.GetDataList(6, vs);
-            DA.GetData(7, ref density);
+            if (!DA.GetDataList(1, Exs)) {Exs = ExsDef; }
+            if (!DA.GetDataList(2, Eys)) { Eys = EysDef; }
+            if (!DA.GetDataList(3, Gxys)) { Gxys = GxysDef; }
+            if (!DA.GetDataList(4, thickness)) { thickness = thicknessDef; }
+            if (!DA.GetDataList(5, angles)) { angles = anglesDef; }
+            if (!DA.GetDataList(6, vs)) { vs = vsDef; }
+            if (!DA.GetData(7, ref density)) { density = densityDef; }
 
             int[] lenghts = { Exs.Count, Eys.Count, Gxys.Count, thickness.Count, angles.Count, vs.Count };
             int listlength = lenghts.Max();
 
+            //Check list length and that the layers are symmetrical
             checkListLength(Exs, listlength);
             checkListLength(Eys, listlength);
             checkListLength(Gxys, listlength);
@@ -87,9 +93,11 @@ namespace MiStrAnGH
             checkListLength(angles, listlength);
             checkListLength(vs, listlength);
 
-            SectionType section = new SectionType(thickness, angles, Exs, Eys,Gxys, vs, faceIndexes, density);
 
-            DA.SetData(0, section);
+            List<SectionType> section = new List<SectionType>();
+             section.Add(new SectionType(thickness, angles, Exs, Eys,Gxys, vs, faceIndexes, density));
+
+            DA.SetDataList(0, section);
 
         }
 
@@ -109,8 +117,20 @@ namespace MiStrAnGH
         // IF the parameter contains too few elements (or only one defined)
         public void checkListLength(List<double> param, int listLength)
         {
-            if (param.Count == listLength || param.Count == 1)
+            //Only one value is okay
+            if (param.Count == 1)
                 return;
+            //This is also okay, but a check so the section is symmtrical
+            else if (param.Count == listLength)
+            {
+                double iter = Math.Floor(listLength / 2.0);
+                Convert.ToInt32(iter);
+                for (int i = 0; i < iter; i++)
+                {
+                    if(param[i] != param[param.Count-1-i])
+                        AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "Only symmetrical sections allowed");
+                }
+            }
             else
                 AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "Only one or same amount of inputs");
         }
