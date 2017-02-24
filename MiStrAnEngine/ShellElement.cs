@@ -11,10 +11,11 @@ namespace MiStrAnEngine
     {
         public List<Node> Nodes;
         public int Id;
-        public double thickness;
         public Matrix D;
         public Section Section;
         public List<Load> Loads;
+        public Matrix DBe; //D*B for the stresses
+        public Matrix Te; // Tranformation matrix for stresses
 
         private Vector3D centroid;
 
@@ -44,7 +45,7 @@ namespace MiStrAnEngine
 
         }
 
-        public bool GenerateKefe(out Matrix Ke, out Vector fe, out Matrix DBe, out Matrix Te)
+        public bool GenerateKefe(out Matrix Ke, out Vector fe)
         {
             Ke = new Matrix(18, 18);
             fe = new Vector(18);
@@ -77,11 +78,13 @@ namespace MiStrAnEngine
                                                             { Nodes[2].x, Nodes[2].y, Nodes[2].z },});
             GetB_N(new Matrix(new double[,] { { 0,0,0 } }), xe, out Be, out N);
             //I DONT KNOW WHY BUT DIVISION OF THICKNESS IS NEEDED
-            DBe =(1/thickness)* D * Be;
+           // DBe =(1/thickness)* D * Be;
+            this.DBe = (1 / this.Section.totalThickness) * D * Be;
 
 
             //Te = T.Transpose();
-            Te = T;
+            // Te = T;
+            this.Te = T;
 
             Vector3D q = Getq();
 
@@ -90,7 +93,7 @@ namespace MiStrAnEngine
                 GetB_N(gp.GetRow(i), xe,out B, out N);
                 Matrix DKe = gw[i]* B.Transpose() * D * B;
                 Ke[activeDofs, activeDofs] = Ke[activeDofs, activeDofs] + elementArea*DKe; 
-                Matrix DMe= thickness*gw[i] * N.Transpose() * q.ToMatrix();
+                Matrix DMe= this.Section.totalThickness * gw[i] * N.Transpose() * q.ToMatrix();
                 fe[activeDofs] = fe[activeDofs] + elementArea*DMe.ToVector();
             }
 

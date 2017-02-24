@@ -94,6 +94,8 @@ namespace MiStrAnGH
             throw new NotImplementedException();
         }
 
+
+
         public static StructureType CreateFromMesh(Rhino.Geometry.Mesh mesh)
         {
             List<Node> nodes = new List<Node>(mesh.Vertices.Count);
@@ -116,6 +118,7 @@ namespace MiStrAnGH
                 ShellElement element = new ShellElement(elementNodes, i);
                 elements.Add(element);
             }
+            
 
             return new StructureType(nodes, elements);
         }

@@ -88,7 +88,7 @@ namespace MiStrAnGH
                     principalStresses.Add(new Vector3d(pStress[i].X, pStress[i].Y, 0));
 
                 //Get outputs
-                //StaticFunctions.GetDefMesh(meshes[0], aList, out outMesh);
+               // StaticFunctions.GetDefMesh(meshes[0], aList,1, out outMesh);
                 StaticFunctions.GetDefRotVector(aList, out defList, out rotList);
 
 

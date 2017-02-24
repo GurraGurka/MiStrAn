@@ -30,7 +30,7 @@ namespace MiStrAnGH
             pManager.AddGeometryParameter("Mesh", "Mesh", "Mesh to analyze", GH_ParamAccess.item);
             pManager.AddParameter(new SupportParameter(), "MiStrAn Supports", "Supports", "MiStranSupports (use Create Support", GH_ParamAccess.list);
             pManager.AddParameter(new LoadParameter(), "MiStrAn Loads", "Loads", "MiStrAn Loads, (use loadcomponents)", GH_ParamAccess.list);
-            pManager.AddNumberParameter("Thickness", "Thcikness", "Plate thickness (sson material input)", GH_ParamAccess.item);
+            pManager.AddParameter(new SectionParameter(), "Generated Section", "Section", "Section with thickness, indexes and material ", GH_ParamAccess.list);
 
         }
 
@@ -53,16 +53,20 @@ namespace MiStrAnGH
             List<SupportType> supports = new List<SupportType>();
             List<LoadType> loads = new List<LoadType>();
             double thick = new double();
+            List<MiStrAnEngine.Section> sections = new List<MiStrAnEngine.Section>();
+            bool run = false;
 
             if (!DA.GetData(0, ref mesh)) { return;  }
             if (!DA.GetDataList(1, supports)) { return; }
             if (!DA.GetDataList(2, loads)) { return; }
-            if (!DA.GetData(3, ref thick)) { return; }
+            if (!DA.GetDataList(3, sections)) { return; }
 
             StructureType S = StructureType.CreateFromMesh(mesh);
             S.AddSupports(supports.ConvertAll(x => (MiStrAnEngine.Support)x));
+            S.SetSections(sections);
 
-            S.SetSteelSections(thick);
+
+          //  S.SetSteelSections(thick);
 
             foreach (LoadType lt in loads)
             {

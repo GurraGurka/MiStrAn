@@ -95,7 +95,15 @@ namespace MiStrAnGH
 
 
             List<SectionType> section = new List<SectionType>();
-             section.Add(new SectionType(thickness, angles, Exs, Eys,Gxys, vs, faceIndexes, density));
+
+            //Flytta denna
+            double totalThick = 0;
+            foreach(double t in thickness)
+            {
+                totalThick += t;
+            }
+
+             section.Add(new SectionType(thickness, angles, Exs, Eys,Gxys, vs, faceIndexes, density, totalThick));
 
             DA.SetDataList(0, section);
 

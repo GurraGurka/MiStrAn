@@ -17,10 +17,11 @@ namespace MiStrAnEngine
         public List<double> vs;
         public List<int> faceIndexes;
         public double density;
+        public double totalThickness;
 
 
         //Constructor
-        public Section(List<double> _thickness, List<double> _angles, List<double> _Exs, List<double> _Eys, List<double> _Gxys, List<double> _vs, List<int> _faceIndexes, double _density )
+        public Section(List<double> _thickness, List<double> _angles, List<double> _Exs, List<double> _Eys, List<double> _Gxys, List<double> _vs, List<int> _faceIndexes, double _density, double _totalThickness )
         {
             thickness = _thickness;
             angles = _angles;
@@ -30,6 +31,7 @@ namespace MiStrAnEngine
             vs = _vs;
             faceIndexes = _faceIndexes;
             density = _density;
+            totalThickness = _totalThickness;
         }
 
         public Section()

@@ -16,8 +16,6 @@ namespace MiStrAnEngine
         public SparseMatrix K;
         public Vector f;
         public Matrix bc;
-        public Matrix DB;
-        public Matrix T;
 
         //public Structure(List<Node> _nodes, List<ShellElement> _elements, List<Support> _bcs, List<PointLoad> _loads, List<DistributedLoad> _distLoads)
         //{
@@ -53,11 +51,6 @@ namespace MiStrAnEngine
             int nDofs = nodes.Count * 6;
             K = new SparseMatrix(nDofs, nDofs);
             f = new Vector(nDofs);
-            DB = Matrix.ZeroMatrix(elements.Count * 6,15);
-            T = Matrix.ZeroMatrix(elements.Count * 18, 18);
-
-
-            //Maybe make B calcs a seperate function
 
 
             for (int i=0; i<elements.Count; i++)
@@ -65,9 +58,7 @@ namespace MiStrAnEngine
                 int[] dofs = elements[i].GetElementDofs();
                 Matrix Ke, q,DBe, Te;
                 Vector fe;
-                elements[i].GenerateKefe(out Ke, out fe, out DBe, out Te);
-                DB[SF.intSrs(i * 6, 5 * (i + 1) + i), SF.intSrs(0, 14)] = DBe;
-                T[SF.intSrs(i * 18, 17 * (i + 1) + i), SF.intSrs(0, 17)] = Te;
+                elements[i].GenerateKefe(out Ke, out fe);
                 K.AddStiffnessContribution(Ke, dofs);
                 f[dofs] = f[dofs] + fe;
 
@@ -113,76 +104,51 @@ namespace MiStrAnEngine
 
         }
 
-        public void SetSteelSections(double t)
-        {
-            foreach (ShellElement el in elements)
-            {
-                el.thickness = t;
-                el.SetSteelSection();
-            }
 
-
-        }
-
-
+        //Calculate principal tresses for all the elements
         public void CalcStresses(List<double> a, out List<Vector3D> principalStresses)
         {
-            //Folllowing plants in MATlab
-            //each element 15 dofs
+            //Folllowing plants in MATlab, each element 15 dofs
+
+            //the 15 active dofs used in each element (with 18 dofs in total)
             int[] activeDofs = new int[] { 0, 1, 2, 3, 4, 6, 7, 8, 9, 10, 12, 13, 14, 15, 16 };
-            List<double> vMstresses = new List<double>();
-            Matrix ed = new Matrix(elements.Count, 15);
-            Matrix edDebug = new Matrix(elements.Count, 15);
             principalStresses = new List<Vector3D>();
 
-            for (int i =0; i<elements.Count; i++)
+            for (int i = 0; i < elements.Count; i++)
             {
+                //Get all the 18 element dofs from the global
                 int[] dofsFull = elements[i].GetElementDofs();
 
-                //Transform a with local T matrix
+                //Take the deformations from the element dofs
                 Matrix aTrans = new Matrix(18, 1);
-                Matrix aDEBUG = new Matrix(18, 1);
                 for (int j = 0; j < dofsFull.Count(); j++)
                     aTrans[j] = a[dofsFull[j]];
 
-                 aDEBUG = aTrans;
-                int tttette = 17 * (i + 1) + i;
-                Matrix tTest = T[SF.intSrs(i * 18, 17 * (i + 1) + i), SF.intSrs(0, 17)];
-                
-                aTrans = T[SF.intSrs(i * 18, 17 * (i + 1) + i), SF.intSrs(0, 17)].Invert()* aTrans;
-                
-                 
-                int[] dofs = new int[activeDofs.Count()];
-                //Fixa hehe
+                //Transform the local coordinates to global
+                aTrans = elements[i].Te.Invert() * aTrans; //tror inte invert behövs
+
+                //Take the 15 active dofs that should be used from the transformed defrormations 
+                Matrix ed = new Matrix(1, 15);
                 for (int j = 0; j < activeDofs.Count(); j++)
-                    dofs[j] = dofsFull[activeDofs[j]];
+                    ed[0, j] = aTrans[activeDofs[j]];
 
-                //Detta kan förbättras
-                for (int j =0; j< activeDofs.Count();j++)
-                {
-                    ed[i, j] = aTrans[activeDofs[j]];
-                    edDebug[i, j] = aDEBUG[activeDofs[j]];
-                }
-                    
 
-                //fixa lite
-                Matrix test = DB[SF.intSrs(i * 6, 5 * (i + 1) + i), SF.intSrs(0, 14)];
-                Matrix ss = DB[SF.intSrs(i * 6, 5 * (i + 1) + i), SF.intSrs(0, 14)] * ed[i, SF.intSrs(0, 14)].Transpose();
-                //ss[i, SF.intSrs(0, 5)] = ssTranspose.Transpose();
+                //Stresses (D*B*a)
+                Matrix ss = elements[i].DBe * ed[0, SF.intSrs(0, 14)].Transpose();
 
                 //Von mises
-             //   double vM = Math.Sqrt(Math.Pow(ss[i,0],2)+ Math.Pow(ss[i,1], 2)-ss[i,0]*ss[i,1]+3*Math.Pow(ss[i,2],2));
-              //  vMstresses.Add(vM);
+                //   double vM = Math.Sqrt(Math.Pow(ss[i,0],2)+ Math.Pow(ss[i,1], 2)-ss[i,0]*ss[i,1]+3*Math.Pow(ss[i,2],2));
+                //  vMstresses.Add(vM);
 
                 //Principle stresses
-                double p1 = (ss[0] + ss[1]) / 2.0 + Math.Sqrt(Math.Pow((ss[0]-ss[1])/2,2)+Math.Pow(ss[2],2));
+                double p1 = (ss[0] + ss[1]) / 2.0 + Math.Sqrt(Math.Pow((ss[0] - ss[1]) / 2, 2) + Math.Pow(ss[2], 2));
                 double p2 = (ss[0] + ss[1]) / 2.0 - Math.Sqrt(Math.Pow((ss[0] - ss[1]) / 2, 2) + Math.Pow(ss[2], 2));
                 principalStresses.Add(new Vector3D(p1, p2, 0));
-
-
             }
 
         }
+
+    
 
         public void AddSupports(List<Support> supports)
         {
@@ -255,6 +221,25 @@ namespace MiStrAnEngine
             {
                 ShellElement element = GetElementByCentroid(load.Pos);
                 element.Loads.Add(load);
+            }
+        }
+
+        public void SetSections(List<Section> sections)
+        {
+            //Set a section for each shell
+            foreach (Section s in sections)
+            {
+                foreach(ShellElement elem in elements)
+                {
+                    if (s.faceIndexes.Contains(elem.Id))
+                    {
+                        elem.Section = s;
+                        elem.GenerateD();
+                        break;
+                    }
+                }
+                
+
             }
         }
 
