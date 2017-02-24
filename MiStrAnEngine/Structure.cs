@@ -235,7 +235,6 @@ namespace MiStrAnEngine
                     {
                         elem.Section = s;
                         elem.GenerateD();
-                        break;
                     }
                 }
                 

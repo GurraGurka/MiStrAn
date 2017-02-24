@@ -40,7 +40,7 @@ namespace MiStrAnEngine
 
         private void UpdateCentroid()
         {
-            Vector3D centroid = Nodes[0].Pos + Nodes[1].Pos + Nodes[2].Pos;
+            centroid = Nodes[0].Pos + Nodes[1].Pos + Nodes[2].Pos;
             centroid = centroid / 3;
 
         }

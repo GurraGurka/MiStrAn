@@ -65,21 +65,22 @@ namespace MiStrAnGH
             List<double> vs = new List<double>();
             double density = new double();
 
-            List<double> ExsDef = new List<double>(new double[] { 39 * Math.Pow(10, 9) });
-            List<double> EysDef = new List<double>(new double[] { 8.6 * Math.Pow(10, 9) }); ;
-            List<double> GxysDef = new List<double>(new double[] { 2.9 * Math.Pow(10, 9) });
+            List<double> ExsDef = new List<double>(new double[] { 210e9 });
+            List<double> EysDef = new List<double>(new double[] { 210e9 }); ;
+            List<double> GxysDef = new List<double>(new double[] { 79.3e9 });
             List<double> thicknessDef = new List<double>(new double[] { 0.01 });
             List<double> anglesDef = new List<double>(new double[] { 0 });
             List<double> vsDef = new List<double>(new double[] { 0.3 });
-            double densityDef = 2100;
+            double densityDef = 7800;
 
             if (!DA.GetDataList(0, faceIndexes)) { return; }
             if (!DA.GetDataList(1, Exs)) {Exs = ExsDef; }
             if (!DA.GetDataList(2, Eys)) { Eys = EysDef; }
             if (!DA.GetDataList(3, Gxys)) { Gxys = GxysDef; }
-            if (!DA.GetDataList(4, thickness)) { thickness = thicknessDef; }
-            if (!DA.GetDataList(5, angles)) { angles = anglesDef; }
-            if (!DA.GetDataList(6, vs)) { vs = vsDef; }
+            if (!DA.GetDataList(4, vs)) { vs = vsDef; }
+            if (!DA.GetDataList(5, thickness)) { thickness = thicknessDef; }
+            if (!DA.GetDataList(6, angles)) { angles = anglesDef; }
+           
             if (!DA.GetData(7, ref density)) { density = densityDef; }
 
             int[] lenghts = { Exs.Count, Eys.Count, Gxys.Count, thickness.Count, angles.Count, vs.Count };

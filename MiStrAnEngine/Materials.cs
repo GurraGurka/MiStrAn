@@ -40,7 +40,7 @@ namespace MiStrAnEngine
             angles = SF.checkPlyListLength(angles, listLength);
             thickness = SF.checkPlyListLength(thickness, listLength);
             v12s = SF.checkPlyListLength(v12s, listLength);
-            v12s = SF.checkPlyListLength(Gxys, listLength);
+            Gxys = SF.checkPlyListLength(Gxys, listLength);
 
             //if odd numbers of numbers
             double iterations = Math.Ceiling(listLength / 2.0);
