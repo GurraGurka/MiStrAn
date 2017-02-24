@@ -12,7 +12,7 @@ namespace MiStrAnEngine
         List<Node> nodes;
         List<ShellElement> elements;
         List<DistributedLoad> distLoads;
-        List<BC> bcs;
+        List<Support> bcs;
         List<PointLoad> loads;
         public SparseMatrix K;
         public Vector f;
@@ -20,7 +20,7 @@ namespace MiStrAnEngine
         public Matrix DB;
         public Matrix T;
 
-        public Structure(List<Node> _nodes, List<ShellElement> _elements, List<BC> _bcs, List<PointLoad> _loads, List<DistributedLoad> _distLoads)
+        public Structure(List<Node> _nodes, List<ShellElement> _elements, List<Support> _bcs, List<PointLoad> _loads, List<DistributedLoad> _distLoads)
         {
             nodes = _nodes;
             elements = _elements;

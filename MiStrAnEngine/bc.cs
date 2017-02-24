@@ -5,11 +5,11 @@ using System.Text;
 
 namespace MiStrAnEngine
 {
-    public class BC
+    public class Support
     {
         public Node node;
 
-        public BC(Node _node)
+        public Support(Node _node)
         {
             node = _node;   
         }

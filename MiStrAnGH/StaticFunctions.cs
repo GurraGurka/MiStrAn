@@ -19,7 +19,7 @@ namespace MiStrAnGH
         {
             List<MiStrAnEngine.Node> mistranNodes = new List<MiStrAnEngine.Node>();
             List<MiStrAnEngine.ShellElement> mistranShells = new List<MiStrAnEngine.ShellElement>();
-            List<MiStrAnEngine.BC> mistranBCs = new List<MiStrAnEngine.BC>();
+            List<MiStrAnEngine.Support> mistranBCs = new List<MiStrAnEngine.Support>();
             List<MiStrAnEngine.PointLoad> mistranLoads = new List<MiStrAnEngine.PointLoad>();
             List<MiStrAnEngine.DistributedLoad> mistranDistLoads = new List<MiStrAnEngine.DistributedLoad>();
 
@@ -41,7 +41,7 @@ namespace MiStrAnGH
                 {
                     Point3d closePt = mPt;
                     if(closePt.DistanceTo(bcs[j])<0.001)
-                        mistranBCs.Add(new MiStrAnEngine.BC(mistranNodes[i]));      
+                        mistranBCs.Add(new MiStrAnEngine.Support(mistranNodes[i]));      
                 }
 
                 //LOADS
