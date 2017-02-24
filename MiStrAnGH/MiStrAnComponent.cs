@@ -34,7 +34,7 @@ namespace MiStrAnGH
             pManager.AddVectorParameter("LoadVectors", "LoadVectors", " One Load vector for each node", GH_ParamAccess.list);
             pManager.AddMeshFaceParameter("DistLoadVFaces", "DistLoadFaces", " Distributed load mesh faces", GH_ParamAccess.list);
             pManager.AddVectorParameter("DistLoadVecs", "DistLoadVecs", "Nodes for distributed loads", GH_ParamAccess.list);
-            pManager.AddNumberParameter("Thickness", "Thcikness", "Plate thickness (sson material input)", GH_ParamAccess.item);
+            pManager.AddNumberParameter("Thickness", "Thickness", "Plate thickness (sson material input)", GH_ParamAccess.item);
 
         }
 
@@ -71,8 +71,6 @@ namespace MiStrAnGH
             if (!DA.GetDataList(2, bcNodes)) { return; }
             if (!DA.GetDataList(3, LoadPts)) { return; }
             if (!DA.GetDataList(4, LoadVecs)) { return; }
-            //  if (!DA.GetDataList(5, distLoadFaces)) { return; }
-            // if (!DA.GetDataList(6, distLoadVecs)) { return; }
             DA.GetDataList(5, distLoadFaces);
             DA.GetDataList(6, distLoadVecs);
             if (!DA.GetData(7, ref thick)) { return; }

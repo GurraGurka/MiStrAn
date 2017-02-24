@@ -49,6 +49,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="SectionComponent.cs" />
     <Compile Include="MiStrAnComponent.cs" />
     <Compile Include="MiStrAnInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
