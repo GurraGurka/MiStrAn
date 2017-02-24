@@ -15,7 +15,7 @@ namespace MiStrAnGH
     public static class StaticFunctions
     {
 
-        public static MiStrAnEngine.Structure ConvertGHMeshToStructure(Mesh m, List<Point3d> bcs, List<Point3d> loadsPts, List<Vector3d> loadVecs, List<MeshFace> loadFaces, List<Vector3d> distLoadVecs, double thickness )
+        public static StructureType ConvertGHMeshToStructure(Mesh m, List<Point3d> bcs, List<Point3d> loadsPts, List<Vector3d> loadVecs, List<MeshFace> loadFaces, List<Vector3d> distLoadVecs, double thickness )
         {
             List<MiStrAnEngine.Node> mistranNodes = new List<MiStrAnEngine.Node>();
             List<MiStrAnEngine.ShellElement> mistranShells = new List<MiStrAnEngine.ShellElement>();
@@ -84,7 +84,7 @@ namespace MiStrAnGH
                 mistranShells.Add(mistShell);
             }
 
-            return new MiStrAnEngine.Structure(mistranNodes, mistranShells, mistranBCs, mistranLoads, mistranDistLoads);
+            return new StructureType(mistranNodes, mistranShells, mistranBCs, mistranLoads, mistranDistLoads);
         }
 
         public static void GetDefMesh(Mesh undefMesh,List<double> defs, out Mesh defMesh)
