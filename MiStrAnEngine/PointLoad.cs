@@ -5,7 +5,7 @@ using System.Text;
 
 namespace MiStrAnEngine
 {
-    public class Load
+    public class PointLoad
     {
         public Node node;
 
@@ -14,7 +14,7 @@ namespace MiStrAnEngine
 
 
         //Constructor
-        public Load(Node _node, Vector3D _loadVec)
+        public PointLoad(Node _node, Vector3D _loadVec)
         {
             node = _node;
             LoadVec = _loadVec;

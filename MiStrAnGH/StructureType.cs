@@ -13,7 +13,7 @@ namespace MiStrAnGH
         public StructureType() : base()
         { }
 
-        public StructureType(List<Node> _nodes, List<ShellElement> _elements, List<BC> _bcs, List<Load> _loads, List<DistributedLoad> _distLoads)
+        public StructureType(List<Node> _nodes, List<ShellElement> _elements, List<BC> _bcs, List<PointLoad> _loads, List<DistributedLoad> _distLoads)
             : base(_nodes, _elements, _bcs, _loads, _distLoads)
         {
 

@@ -50,14 +50,13 @@
   <ItemGroup>
     <Compile Include="BC.cs" />
     <Compile Include="DistributedLoad.cs" />
-    <Compile Include="Load.cs" />
+    <Compile Include="PointLoad.cs" />
     <Compile Include="Materials.cs" />
     <Compile Include="Matrix.cs" />
     <Compile Include="Node.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Section.cs" />
     <Compile Include="ShellElement.cs" />
-    <Compile Include="solveq.cs" />
     <Compile Include="SparseMatrix.cs" />
     <Compile Include="StaticFunctions.cs" />
     <Compile Include="Structure.cs" />

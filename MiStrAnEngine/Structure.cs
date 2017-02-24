@@ -13,14 +13,14 @@ namespace MiStrAnEngine
         List<ShellElement> elements;
         List<DistributedLoad> distLoads;
         List<BC> bcs;
-        List<Load> loads;
+        List<PointLoad> loads;
         public SparseMatrix K;
         public Vector f;
         public Matrix bc;
         public Matrix DB;
         public Matrix T;
 
-        public Structure(List<Node> _nodes, List<ShellElement> _elements, List<BC> _bcs, List<Load> _loads, List<DistributedLoad> _distLoads)
+        public Structure(List<Node> _nodes, List<ShellElement> _elements, List<BC> _bcs, List<PointLoad> _loads, List<DistributedLoad> _distLoads)
         {
             nodes = _nodes;
             elements = _elements;
@@ -70,7 +70,7 @@ namespace MiStrAnEngine
 
 
             // #TODO make it possible to have rotational loads
-            foreach (Load load in loads)
+            foreach (PointLoad load in loads)
             {
                 int[] loadDofs = new int[] {load.node.dofX, load.node.dofY, load.node.dofZ };
 
