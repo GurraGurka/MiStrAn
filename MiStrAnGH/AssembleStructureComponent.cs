@@ -69,7 +69,7 @@ namespace MiStrAnGH
             if (!DA.GetData(6, ref thick)) { return; }
 
             StructureType s = StaticFunctions.ConvertGHMeshToStructure(meshes[0], bcNodes,LoadPts,LoadVecs, distLoadFaces,distLoadVecs, thick);
-            
+            DA.SetData(0, s);
         }
 
         /// <summary>
