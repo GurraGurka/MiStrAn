@@ -48,7 +48,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BC.cs" />
+    <Compile Include="Support.cs" />
     <Compile Include="DistributedLoad.cs" />
     <Compile Include="PointLoad.cs" />
     <Compile Include="Materials.cs" />

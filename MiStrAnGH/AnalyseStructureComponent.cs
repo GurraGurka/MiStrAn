@@ -18,7 +18,7 @@ namespace MiStrAnGH
         public AnalyseStructureComponent()
           : base("MiStrAn Analyse Structure", "Analyse",
               "Calculating...",
-              "StrucAnalysis", "No SubCat")
+              "MiStrAn", "No SubCat")
         {
         }
 
