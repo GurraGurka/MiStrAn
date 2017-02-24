@@ -12,7 +12,7 @@ namespace MiStrAnEngine
         List<Node> nodes;
         List<ShellElement> elements;
         List<DistributedLoad> distLoads;
-        List<Support> bcs;
+        List<Support> supports;
         List<PointLoad> loads;
         public SparseMatrix K;
         public Vector f;
@@ -24,19 +24,30 @@ namespace MiStrAnEngine
         {
             nodes = _nodes;
             elements = _elements;
-            bcs = _bcs;
+            supports = _bcs;
             loads = _loads;
             distLoads = _distLoads;
         }
 
-        public Structure(List<Node> _nodes, List<ShellElement> _elements)
+        public Structure(List<Node> _nodes, List<ShellElement> _elements) : this()
         {
             nodes = _nodes;
             elements = _elements;
         }
 
         public Structure()
-        { }
+        {
+            InitializeLists();
+        }
+
+        private void InitializeLists()
+        {
+            nodes = new List<Node>();
+            elements = new List<ShellElement>();
+            distLoads = new List<DistributedLoad>();
+            supports = new List<Support>();
+            loads = new List<PointLoad>();
+        }
 
         public void AssembleKfbc()
         {
@@ -73,34 +84,26 @@ namespace MiStrAnEngine
             foreach (PointLoad load in loads)
             {
                 int[] loadDofs = new int[] {load.node.dofX, load.node.dofY, load.node.dofZ };
-
                 f[loadDofs] = f[loadDofs] + load.LoadVec.ToVector();
             }
 
-            // #TODO make it possible to have other bc's than fully fixed
-            bc = Matrix.ZeroMatrix(bcs.Count * 6, 2);
 
-            for (int i = 0; i < bcs.Count; i++)
+            List<int> fixedDofs = new List<int>();
+
+            foreach (Support s in supports)
             {
-                bc[(i + 1) * 6 - 6, 0] = bcs[i].node.dofX;
-                bc[(i + 1) * 6 - 6, 1] = 0;
-
-                bc[(i + 1) * 6 - 5, 0] = bcs[i].node.dofY;
-                bc[(i + 1) * 6 - 5, 1] = 0;
-
-                bc[(i + 1) * 6 - 4, 0] = bcs[i].node.dofZ;
-                bc[(i + 1) * 6 - 4, 1] = 0;
-
-                bc[(i + 1) * 6 - 3, 0] = bcs[i].node.dofXX;
-                bc[(i + 1) * 6 - 3, 1] = 0;
-
-                bc[(i + 1) * 6 - 2, 0] = bcs[i].node.dofYY;
-                bc[(i + 1) * 6 - 2, 1] = 0;
-
-                bc[(i + 1) * 6 - 1, 0] = bcs[i].node.dofZZ;
-                bc[(i + 1) * 6 - 1, 1] = 0;
+                if (s.X) fixedDofs.Add(s.node.dofX);
+                if (s.Y) fixedDofs.Add(s.node.dofY);
+                if (s.Z) fixedDofs.Add(s.node.dofZ);
+                if (s.RX) fixedDofs.Add(s.node.dofXX);
+                if (s.RY) fixedDofs.Add(s.node.dofYY);
+                if (s.RZ) fixedDofs.Add(s.node.dofZZ);
             }
 
+            bc = Matrix.ZeroMatrix(fixedDofs.Count, 2);
+
+            for (int i = 0; i < fixedDofs.Count; i++)
+                bc[i, 0] = fixedDofs[i];
         }
 
         public bool Analyze(out Vector a, out Vector r, bool useExactMethod = false)
@@ -170,6 +173,41 @@ namespace MiStrAnEngine
 
             }
 
+        }
+
+        public void AddSupports(List<Support> supports)
+        {
+            foreach (Support s in supports)
+                this.AddSupport(s);
+        }
+
+        public void AddSupport(Support support)
+        {
+            Node node = GetOrAddNode(support.node.Pos);
+            support.node = node;
+            supports.Add(support);
+        }
+
+        public Node GetOrAddNode(Vector3D pos)
+        {
+            double tol = 0.001;
+
+            for (int i = 0; i < nodes.Count; i++)
+            {
+                double dist = (nodes[i].Pos - pos).Length;
+                if (dist < tol)
+                    return nodes[i];
+            }
+
+            Node newNode = new Node(pos.X, pos.Y, pos.Z, nodes.Count);
+            nodes.Add(newNode);
+
+            return newNode;
+        }
+
+        public override string ToString()
+        {
+            return "MiStrAn Strucuture: Nodes: " + nodes.Count + ", Elements: " + elements.Count + ", Supports: " + supports.Count;
         }
     }
 }
