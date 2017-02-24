@@ -52,12 +52,16 @@
     <Compile Include="AssembleStructureComponent.cs" />
     <Compile Include="AnalyseStructureComponent.cs" />
     <Compile Include="CreateSupportComponent.cs" />
+    <Compile Include="DistributedLoadComponent.cs" />
+    <Compile Include="PointLoadComponent.cs" />
     <Compile Include="SectionComponent.cs" />
     <Compile Include="MiStrAnComponent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SectionParameter.cs" />
     <Compile Include="SectionType.cs" />
     <Compile Include="StaticFunctions.cs" />
+    <Compile Include="LoadType.cs" />
+    <Compile Include="LoadParameter.cs" />
     <Compile Include="SupportType.cs" />
     <Compile Include="SupportParameter.cs" />
     <Compile Include="StructureParameter.cs" />

@@ -29,10 +29,7 @@ namespace MiStrAnGH
         {
             pManager.AddGeometryParameter("Mesh", "Mesh", "Mesh to analyze", GH_ParamAccess.item);
             pManager.AddParameter(new SupportParameter(), "MiStrAn Supports", "Supports", "MiStranSupports (use Create Support", GH_ParamAccess.list);
-            pManager.AddGeometryParameter("LoadPoints", "LoadPoints", "Just nodes for loads", GH_ParamAccess.list);
-            pManager.AddVectorParameter("LoadVectors", "LoadVectors", " One Load vector for each node", GH_ParamAccess.list);
-            pManager.AddMeshFaceParameter("DistLoadVFaces", "DistLoadFaces", " Distributed load mesh faces", GH_ParamAccess.list);
-            pManager.AddVectorParameter("DistLoadVecs", "DistLoadVecs", "Nodes for distributed loads", GH_ParamAccess.list);
+            pManager.AddParameter(new LoadParameter(), "MiStrAn Loads", "Loads", "MiStrAn Loads, (use loadcomponents)", GH_ParamAccess.list);
             pManager.AddNumberParameter("Thickness", "Thcikness", "Plate thickness (sson material input)", GH_ParamAccess.item);
 
         }
@@ -54,22 +51,23 @@ namespace MiStrAnGH
         {
             Mesh mesh = new Mesh();
             List<SupportType> supports = new List<SupportType>();
-            List<Point3d> LoadPts = new List<Point3d>();
-            List<Vector3d> LoadVecs = new List<Vector3d>();
-            List<Vector3d> distLoadVecs = new List<Vector3d>();
-            List<MeshFace> distLoadFaces = new List<MeshFace>();
+            List<LoadType> loads = new List<LoadType>();
             double thick = new double();
 
             if (!DA.GetData(0, ref mesh)) { return;  }
             if (!DA.GetDataList(1, supports)) { return; }
-            if (!DA.GetDataList(2, LoadPts)) { return; }
-            if (!DA.GetDataList(3, LoadVecs)) { return; }
-            DA.GetDataList(4, distLoadFaces);
-            DA.GetDataList(5, distLoadVecs);
-            if (!DA.GetData(6, ref thick)) { return; }
+            if (!DA.GetDataList(2, loads)) { return; }
+            if (!DA.GetData(3, ref thick)) { return; }
 
             StructureType S = StructureType.CreateFromMesh(mesh);
             S.AddSupports(supports.ConvertAll(x => (MiStrAnEngine.Support)x));
+
+            S.SetSteelSections(thick);
+
+            foreach (LoadType lt in loads)
+            {
+                S.AddLoad(lt);
+            }
 
 
             DA.SetData(0, S);

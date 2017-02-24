@@ -20,7 +20,7 @@ namespace MiStrAnEngine
         public int dofXX;
         public int dofYY;
         public int dofZZ;
-
+        public List<Load> Loads;
 
         private int id;
 
@@ -54,6 +54,8 @@ namespace MiStrAnEngine
             z = _z;
 
             Id = _id;
+
+            Loads = new List<Load>();
         }
 
 

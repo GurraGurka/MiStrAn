@@ -11,23 +11,22 @@ namespace MiStrAnEngine
     {
         List<Node> nodes;
         List<ShellElement> elements;
-        List<DistributedLoad> distLoads;
         List<Support> supports;
-        List<PointLoad> loads;
+        List<Load> loads;
         public SparseMatrix K;
         public Vector f;
         public Matrix bc;
         public Matrix DB;
         public Matrix T;
 
-        public Structure(List<Node> _nodes, List<ShellElement> _elements, List<Support> _bcs, List<PointLoad> _loads, List<DistributedLoad> _distLoads)
-        {
-            nodes = _nodes;
-            elements = _elements;
-            supports = _bcs;
-            loads = _loads;
-            distLoads = _distLoads;
-        }
+        //public Structure(List<Node> _nodes, List<ShellElement> _elements, List<Support> _bcs, List<PointLoad> _loads, List<DistributedLoad> _distLoads)
+        //{
+        //    nodes = _nodes;
+        //    elements = _elements;
+        //    supports = _bcs;
+        //    loads = _loads;
+        //    distLoads = _distLoads;
+        //}
 
         public Structure(List<Node> _nodes, List<ShellElement> _elements) : this()
         {
@@ -44,9 +43,8 @@ namespace MiStrAnEngine
         {
             nodes = new List<Node>();
             elements = new List<ShellElement>();
-            distLoads = new List<DistributedLoad>();
             supports = new List<Support>();
-            loads = new List<PointLoad>();
+            loads = new List<Load>();
         }
 
         public void AssembleKfbc()
@@ -67,8 +65,6 @@ namespace MiStrAnEngine
                 int[] dofs = elements[i].GetElementDofs();
                 Matrix Ke, q,DBe, Te;
                 Vector fe;
-                elements[i].Getq(distLoads, out q);
-                elements[i].q = q;
                 elements[i].GenerateKefe(out Ke, out fe, out DBe, out Te);
                 DB[SF.intSrs(i * 6, 5 * (i + 1) + i), SF.intSrs(0, 14)] = DBe;
                 T[SF.intSrs(i * 18, 17 * (i + 1) + i), SF.intSrs(0, 17)] = Te;
@@ -78,13 +74,14 @@ namespace MiStrAnEngine
             }
 
 
-
-
-            // #TODO make it possible to have rotational loads
-            foreach (PointLoad load in loads)
+            // Add point loads to force vector.
+            foreach (Node node in nodes)
             {
-                int[] loadDofs = new int[] {load.node.dofX, load.node.dofY, load.node.dofZ };
-                f[loadDofs] = f[loadDofs] + load.LoadVec.ToVector();
+                foreach (Load pL in node.Loads)
+                {
+                    int[] dofs = new int[]{ node.dofX, node.dofY, node.dofZ, };
+                    f[dofs] = f[dofs] + pL.LoadVec.ToVector();
+                }
             }
 
 
@@ -115,6 +112,18 @@ namespace MiStrAnEngine
 
 
         }
+
+        public void SetSteelSections(double t)
+        {
+            foreach (ShellElement el in elements)
+            {
+                el.thickness = t;
+                el.SetSteelSection();
+            }
+
+
+        }
+
 
         public void CalcStresses(List<double> a, out List<Vector3D> principalStresses)
         {
@@ -190,7 +199,7 @@ namespace MiStrAnEngine
 
         public Node GetOrAddNode(Vector3D pos)
         {
-            double tol = 0.001;
+            double tol = 0.0001;
 
             for (int i = 0; i < nodes.Count; i++)
             {
@@ -203,6 +212,50 @@ namespace MiStrAnEngine
             nodes.Add(newNode);
 
             return newNode;
+        }
+
+        public Node GetNode(Vector3D pos)
+        {
+            double tol = 0.0001;
+
+            for (int i = 0; i < nodes.Count; i++)
+            {
+                double dist = (nodes[i].Pos - pos).Length;
+                if (dist < tol)
+                    return nodes[i];
+            }
+
+            throw new Exception("Could not find node by position");
+        }
+
+        public ShellElement GetElementByCentroid(Vector3D pos)
+        {
+            double tol = 0.0001;
+
+            for (int i = 0; i < elements.Count; i++)
+            {
+                double dist = (elements[i].Centroid - pos).Length;
+                if (dist < tol)
+                    return elements[i];
+            }
+
+            throw new Exception("Could not find element by position");
+
+        }
+
+        public void AddLoad(Load load)
+        {
+            if(load.Type == TypeOfLoad.PointLoad)
+            {
+                Node node = GetNode(load.Pos);
+                node.Loads.Add(load);
+            }
+
+            else if(load.Type == TypeOfLoad.DistributedLoad)
+            {
+                ShellElement element = GetElementByCentroid(load.Pos);
+                element.Loads.Add(load);
+            }
         }
 
         public override string ToString()

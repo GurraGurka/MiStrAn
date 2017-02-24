@@ -48,9 +48,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Load.cs" />
     <Compile Include="Support.cs" />
-    <Compile Include="DistributedLoad.cs" />
-    <Compile Include="PointLoad.cs" />
     <Compile Include="Materials.cs" />
     <Compile Include="Matrix.cs" />
     <Compile Include="Node.cs" />
