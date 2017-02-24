@@ -15,6 +15,7 @@ namespace MiStrAnEngine
         public Matrix eq; // [eqx eqy eqz]
         public Matrix D;
         public Matrix q;
+        public Section Section;
 
 
         public ShellElement(List<Node> _nodes, int _id)
