@@ -35,6 +35,9 @@ namespace MiStrAnEngine
             elements = _elements;
         }
 
+        public Structure()
+        { }
+
         public void AssembleKfbc()
         {
 

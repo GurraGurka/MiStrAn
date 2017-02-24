@@ -61,6 +61,9 @@ namespace MiStrAnEngine
         public Node(double _x, double _y, double _z) : this(_x, _y, _z, -1)
         { }
 
+        public Node(Node copy) : this(copy.x, copy.y, copy.z, copy.Id)
+        { }
+
         public Vector3D Pos
         {
             get

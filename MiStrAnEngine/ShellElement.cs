@@ -9,7 +9,7 @@ namespace MiStrAnEngine
 {
     public class ShellElement
     {
-        public List<Node> nodes;
+        public List<Node> Nodes;
         public int Id;
         public double thickness;
         public Matrix eq; // [eqx eqy eqz]
@@ -20,12 +20,17 @@ namespace MiStrAnEngine
 
         public ShellElement(List<Node> _nodes, int _id)
         {
-            nodes = _nodes;
+            Nodes = _nodes;
             Id = _id;
         }
 
+        public ShellElement(ShellElement copy)
+        {
+            
+        }
 
-       
+
+
 
         public bool GenerateKefe(out Matrix Ke, out Vector fe, out Matrix DBe, out Matrix Te)
         {
@@ -55,9 +60,9 @@ namespace MiStrAnEngine
             double elementArea = 0.5 * (b1 * c2 - b2 * c1);
 
             //Get a D*Be adn Te for calulating stresses, gauss points = 0
-            Matrix unTrans = new Matrix(new double[,] { { nodes[0].x, nodes[0].y, nodes[0].z },
-                                                            { nodes[1].x, nodes[1].y, nodes[1].z },
-                                                            { nodes[2].x, nodes[2].y, nodes[2].z },});
+            Matrix unTrans = new Matrix(new double[,] { { Nodes[0].x, Nodes[0].y, Nodes[0].z },
+                                                            { Nodes[1].x, Nodes[1].y, Nodes[1].z },
+                                                            { Nodes[2].x, Nodes[2].y, Nodes[2].z },});
             GetB_N(new Matrix(new double[,] { { 0,0,0 } }), xe, out Be, out N);
             //I DONT KNOW WHY BUT DIVISION OF THICKNESS IS NEEDED
             DBe =(1/thickness)* D * Be;
@@ -178,9 +183,9 @@ namespace MiStrAnEngine
         public int[] GetElementDofs()
         {
             int[] dofs = new int[]
-           {nodes[0].dofX, nodes[0].dofY, nodes[0].dofZ, nodes[0].dofXX, nodes[0].dofYY, nodes[0].dofZZ,
-            nodes[1].dofX, nodes[1].dofY, nodes[1].dofZ, nodes[1].dofXX, nodes[1].dofYY, nodes[1].dofZZ,
-            nodes[2].dofX, nodes[2].dofY, nodes[2].dofZ, nodes[2].dofXX, nodes[2].dofYY, nodes[2].dofZZ };
+           {Nodes[0].dofX, Nodes[0].dofY, Nodes[0].dofZ, Nodes[0].dofXX, Nodes[0].dofYY, Nodes[0].dofZZ,
+            Nodes[1].dofX, Nodes[1].dofY, Nodes[1].dofZ, Nodes[1].dofXX, Nodes[1].dofYY, Nodes[1].dofZZ,
+            Nodes[2].dofX, Nodes[2].dofY, Nodes[2].dofZ, Nodes[2].dofXX, Nodes[2].dofYY, Nodes[2].dofZZ };
 
             return dofs;
         }
@@ -189,8 +194,8 @@ namespace MiStrAnEngine
         // See slides p.44
         public void GetLocalNodeCoordinates(out Matrix xel, out Matrix Tg)
         {
-            Vector3D v1 = nodes[1].Pos - nodes[0].Pos;
-            Vector3D _v2 = nodes[2].Pos - nodes[0].Pos;
+            Vector3D v1 = Nodes[1].Pos - Nodes[0].Pos;
+            Vector3D _v2 = Nodes[2].Pos - Nodes[0].Pos;
             Vector3D v3 = Vector3D.CrossProduct(v1, _v2);
             Vector3D v2 = Vector3D.CrossProduct(v3, v1);
 
