@@ -34,7 +34,7 @@ namespace MiStrAnGH
             pManager.AddVectorParameter("LoadVectors", "LoadVectors", " One Load vector for each node", GH_ParamAccess.list);
             pManager.AddMeshFaceParameter("DistLoadVFaces", "DistLoadFaces", " Distributed load mesh faces", GH_ParamAccess.list);
             pManager.AddVectorParameter("DistLoadVecs", "DistLoadVecs", "Nodes for distributed loads", GH_ParamAccess.list);
-            pManager.AddNumberParameter("Thickness", "Thickness", "Plate thickness (sson material input)", GH_ParamAccess.item);
+            pManager.AddParameter(new SectionParameter(), "Generated Section", "Section", "Section with thickness, indexes and material ", GH_ParamAccess.list);
 
         }
 
@@ -63,7 +63,7 @@ namespace MiStrAnGH
             List<Vector3d> LoadVecs = new List<Vector3d>();
             List<Vector3d> distLoadVecs = new List<Vector3d>();
             List<MeshFace> distLoadFaces = new List<MeshFace>();
-            double thick = new double();
+            List<MiStrAnEngine.Section> sections = new List<MiStrAnEngine.Section>();
             bool run = false;
 
             DA.GetData(0, ref run);
@@ -73,7 +73,7 @@ namespace MiStrAnGH
             if (!DA.GetDataList(4, LoadVecs)) { return; }
             DA.GetDataList(5, distLoadFaces);
             DA.GetDataList(6, distLoadVecs);
-            if (!DA.GetData(7, ref thick)) { return; }
+            if (!DA.GetData(7, ref sections)) { return; }
 
 
 
@@ -83,7 +83,7 @@ namespace MiStrAnGH
             //    int trtr = a + 3;
             // MiStrAnEngine.Structure mistStruc= StaticFunctions.ConvertGHMeshToStructure(m);
 
-            MiStrAnEngine.Structure s = StaticFunctions.ConvertGHMeshToStructure(meshes[0], bcNodes,LoadPts,LoadVecs, distLoadFaces,distLoadVecs, thick);
+            MiStrAnEngine.Structure s = StaticFunctions.ConvertGHMeshToStructure(meshes[0], bcNodes,LoadPts,LoadVecs, distLoadFaces,distLoadVecs, sections);
             
             //}
 

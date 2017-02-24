@@ -15,7 +15,7 @@ namespace MiStrAnGH
     public static class StaticFunctions
     {
 
-        public static StructureType ConvertGHMeshToStructure(Mesh m, List<Point3d> bcs, List<Point3d> loadsPts, List<Vector3d> loadVecs, List<MeshFace> loadFaces, List<Vector3d> distLoadVecs, double thickness )
+        public static StructureType ConvertGHMeshToStructure(Mesh m, List<Point3d> bcs, List<Point3d> loadsPts, List<Vector3d> loadVecs, List<MeshFace> loadFaces, List<Vector3d> distLoadVecs, List<Section> sections )
         {
             List<MiStrAnEngine.Node> mistranNodes = new List<MiStrAnEngine.Node>();
             List<MiStrAnEngine.ShellElement> mistranShells = new List<MiStrAnEngine.ShellElement>();
@@ -78,8 +78,17 @@ namespace MiStrAnGH
                        
                 }
 
-                mistShell.thickness = thickness;
-                mistShell.SetSteelSection();
+                //Set a section for each shell
+                foreach(Section s in sections)
+                { 
+                    if (s.faceIndexes.Contains(mistShell.Id))
+                    {
+                        mistShell.Section = s;
+                        mistShell.GenerateD();
+                        break;
+                    }
+                        
+                }
 
                 mistranShells.Add(mistShell);
             }
@@ -127,5 +136,7 @@ namespace MiStrAnGH
             
         }
 
-        }
+        
+
+    }
     }

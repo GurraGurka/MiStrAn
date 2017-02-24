@@ -112,19 +112,25 @@ namespace MiStrAnEngine
             }
         }
 
-     
+
+        public void GenerateD()
+        {
+            Matrix d;
+            Materials.eqModulus(this, out d);
+                this.D = d;
+        }
 
         public void SetSteelSection()
         {
-            double E = 210e9;
-            double v = 0.3;
-            double G = E / (2.0 * (1 + v));
-            double density = 7800; //[kg/m^3]
+            /*    double E = 210e9;
+                double v = 0.3;
+                double G = E / (2.0 * (1 + v));
+                double density = 7800; //[kg/m^3] */
             Matrix d = new Matrix(6, 6);
-            Matrix qLoc = new Matrix(6, 1);
+            Matrix qLoc = new Matrix(6, 1); 
 
             double[] angle = new double[1] { 0}; // double[] angle = new double[] { 0};
-            Materials.eqModulus(E, E, G, v, angle, thickness, density, out d); //, out qLoc);
+            Materials.eqModulus(this, out d); //, out qLoc);
             this.D = d;
             this.q = qLoc;
 

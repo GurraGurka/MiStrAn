@@ -58,7 +58,7 @@ namespace MiStrAnGH
             List<Vector3d> LoadVecs = new List<Vector3d>();
             List<Vector3d> distLoadVecs = new List<Vector3d>();
             List<MeshFace> distLoadFaces = new List<MeshFace>();
-            double thick = new double();
+            List<MiStrAnEngine.Section> sections = new List<MiStrAnEngine.Section>();
 
             if (!DA.GetDataList(0, meshes)) { return;  }
             if (!DA.GetDataList(1, bcNodes)) { return; }
@@ -66,9 +66,9 @@ namespace MiStrAnGH
             if (!DA.GetDataList(3, LoadVecs)) { return; }
             DA.GetDataList(4, distLoadFaces);
             DA.GetDataList(5, distLoadVecs);
-            if (!DA.GetData(6, ref thick)) { return; }
+            if (!DA.GetDataList(6, sections)) { return; }
 
-            StructureType s = StaticFunctions.ConvertGHMeshToStructure(meshes[0], bcNodes,LoadPts,LoadVecs, distLoadFaces,distLoadVecs, thick);
+            StructureType s = StaticFunctions.ConvertGHMeshToStructure(meshes[0], bcNodes,LoadPts,LoadVecs, distLoadFaces,distLoadVecs, sections);
             
         }
 

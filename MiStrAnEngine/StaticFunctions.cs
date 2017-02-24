@@ -26,8 +26,22 @@ namespace MiStrAnEngine
             return series;
         }
 
+        // IF the parameter contains too few elements (or only one defined) it is filled up for every ply
+        public static List<double> checkPlyListLength(List<double> param, int listLength)
+        {
+            if (param.Count != listLength)
+            {
 
-        
+                for (int i = param.Count; i < listLength; i++)
+                {
+                    param.Add(param[0]);
+                }
+            }
+            return param;
+        }
+
+
+
 
 
         // Direct copy of CALFEM's solveq
