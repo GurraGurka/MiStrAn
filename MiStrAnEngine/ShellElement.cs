@@ -12,29 +12,39 @@ namespace MiStrAnEngine
         public List<Node> Nodes;
         public int Id;
         public double thickness;
-        public Matrix eq; // [eqx eqy eqz]
         public Matrix D;
-        public Matrix q;
         public Section Section;
-        public Matrix DBe; //D*B for the stresses
-        public Matrix Te; // Tranformation matrix for stresses
+        public List<Load> Loads;
+
+        private Vector3D centroid;
 
 
         public ShellElement(List<Node> _nodes, int _id)
         {
             Nodes = _nodes;
             Id = _id;
+            Loads = new List<Load>();
         }
 
-        public ShellElement(ShellElement copy)
+
+        public Vector3D Centroid
         {
-            
+            get
+            {
+                if (centroid == null)
+                    UpdateCentroid();
+                return centroid;
+            }
         }
 
+        private void UpdateCentroid()
+        {
+            Vector3D centroid = Nodes[0].Pos + Nodes[1].Pos + Nodes[2].Pos;
+            centroid = centroid / 3;
 
+        }
 
-
-        public bool GenerateKefe(out Matrix Ke, out Vector fe, out Matrix DBeOLD, out Matrix TeOLD)
+        public bool GenerateKefe(out Matrix Ke, out Vector fe, out Matrix DBe, out Matrix Te)
         {
             Ke = new Matrix(18, 18);
             fe = new Vector(18);
@@ -67,19 +77,20 @@ namespace MiStrAnEngine
                                                             { Nodes[2].x, Nodes[2].y, Nodes[2].z },});
             GetB_N(new Matrix(new double[,] { { 0,0,0 } }), xe, out Be, out N);
             //I DONT KNOW WHY BUT DIVISION OF THICKNESS IS NEEDED
-            DBeOLD =(1/thickness)* D * Be;
-            this.DBe = (1 / thickness) * D * Be;
+            DBe =(1/thickness)* D * Be;
+
 
             //Te = T.Transpose();
-            TeOLD = T;
-            this.Te = T;
-            int test = 0;
+            Te = T;
+
+            Vector3D q = Getq();
+
             for (int i = 0; i < ng; i++)
             {
                 GetB_N(gp.GetRow(i), xe,out B, out N);
                 Matrix DKe = gw[i]* B.Transpose() * D * B;
                 Ke[activeDofs, activeDofs] = Ke[activeDofs, activeDofs] + elementArea*DKe; 
-                Matrix DMe= thickness*gw[i] * N.Transpose() * q;
+                Matrix DMe= thickness*gw[i] * N.Transpose() * q.ToMatrix();
                 fe[activeDofs] = fe[activeDofs] + elementArea*DMe.ToVector();
             }
 
@@ -99,20 +110,16 @@ namespace MiStrAnEngine
         }
 
         //Get the distributed load for the element
-        public void Getq(List<DistributedLoad> distLoads, out Matrix qElem)
+        public Vector3D Getq()
         {
-            qElem = new Matrix(new double[,] { { 0}, { 0}, { 0 } });
-           
-            foreach(DistributedLoad load in distLoads)
+            Vector3D q = new Vector3D();
+
+            foreach (Load load in this.Loads)
             {
-                if (load.shellIndex == Id)
-                {
-                    qElem[0] = load.loadVec.X;
-                    qElem[1] = load.loadVec.Y;
-                    qElem[2] = load.loadVec.Z;
-                    break;
-                }
+                q += load.LoadVec;
             }
+
+            return q;
         }
 
 
@@ -135,7 +142,7 @@ namespace MiStrAnEngine
             double[] angle = new double[1] { 0}; // double[] angle = new double[] { 0};
             Materials.eqModulus(this, out d); //, out qLoc);
             this.D = d;
-            this.q = qLoc;
+            //this.q = qLoc;
 
         }
 
@@ -428,8 +435,7 @@ namespace MiStrAnEngine
                                                   {0,0,ddN11[0,0],ddN12[0,0],ddN13[0,0],0,0,ddN21[0,0],ddN22[0,0],ddN23[0,0],0,0,ddN31[0,0],ddN32[0,0],ddN33[0,0] },
                                                   {0,0,ddN11[1,1],ddN12[1,1],ddN13[1,1],0,0,ddN21[1,1],ddN22[1,1],ddN23[1,1],0,0,ddN31[1,1],ddN32[1,1],ddN33[1,1] },
                                                   {0,0,2*ddN11[0,1],2*ddN12[0,1],2*ddN13[0,1],0,0,2*ddN21[0,1],2*ddN22[0,1],2*ddN23[0,1],0,0,2*ddN31[0,1],2*ddN32[0,1],2*ddN33[0,1] } });
-
-           
+        
         }
 
 
