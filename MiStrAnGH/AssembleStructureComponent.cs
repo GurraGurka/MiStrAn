@@ -18,7 +18,7 @@ namespace MiStrAnGH
         public AssebleStructureComponent()
           : base("MiStrAn Assemble Structure", "Assemble",
               "Calculating...",
-              "StrucAnalysis", "No SubCat")
+              "MiStrAn", "No SubCat")
         { }
 
 
@@ -27,8 +27,8 @@ namespace MiStrAnGH
         /// </summary>
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {
-            pManager.AddGeometryParameter("Mesh", "Mesh", "Mesh to analyze", GH_ParamAccess.list);
-            pManager.AddGeometryParameter("BC", "BC", "Zero displacement nodes", GH_ParamAccess.list);
+            pManager.AddGeometryParameter("Mesh", "Mesh", "Mesh to analyze", GH_ParamAccess.item);
+            pManager.AddParameter(new SupportParameter(), "MiStrAn Supports", "Supports", "MiStranSupports (use Create Support", GH_ParamAccess.list);
             pManager.AddGeometryParameter("LoadPoints", "LoadPoints", "Just nodes for loads", GH_ParamAccess.list);
             pManager.AddVectorParameter("LoadVectors", "LoadVectors", " One Load vector for each node", GH_ParamAccess.list);
             pManager.AddMeshFaceParameter("DistLoadVFaces", "DistLoadFaces", " Distributed load mesh faces", GH_ParamAccess.list);
@@ -52,24 +52,27 @@ namespace MiStrAnGH
         /// to store data in output parameters.</param>
         protected override void SolveInstance(IGH_DataAccess DA)
         {
-            List<Mesh> meshes = new List<Mesh>();
-            List<Point3d> bcNodes = new List<Point3d>();
+            Mesh mesh = new Mesh();
+            List<SupportType> supports = new List<SupportType>();
             List<Point3d> LoadPts = new List<Point3d>();
             List<Vector3d> LoadVecs = new List<Vector3d>();
             List<Vector3d> distLoadVecs = new List<Vector3d>();
             List<MeshFace> distLoadFaces = new List<MeshFace>();
-            List<MiStrAnEngine.Section> sections = new List<MiStrAnEngine.Section>();
+            double thick = new double();
 
-            if (!DA.GetDataList(0, meshes)) { return;  }
-            if (!DA.GetDataList(1, bcNodes)) { return; }
+            if (!DA.GetData(0, ref mesh)) { return;  }
+            if (!DA.GetDataList(1, supports)) { return; }
             if (!DA.GetDataList(2, LoadPts)) { return; }
             if (!DA.GetDataList(3, LoadVecs)) { return; }
             DA.GetDataList(4, distLoadFaces);
             DA.GetDataList(5, distLoadVecs);
-            if (!DA.GetDataList(6, sections)) { return; }
+            if (!DA.GetData(6, ref thick)) { return; }
 
-            StructureType s = StaticFunctions.ConvertGHMeshToStructure(meshes[0], bcNodes,LoadPts,LoadVecs, distLoadFaces,distLoadVecs, sections);
-            
+            StructureType S = StructureType.CreateFromMesh(mesh);
+            S.AddSupports(supports.ConvertAll(x => (MiStrAnEngine.Support)x));
+
+
+            DA.SetData(0, S);
         }
 
         /// <summary>
