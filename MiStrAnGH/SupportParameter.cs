@@ -12,10 +12,10 @@ using Grasshopper.Kernel.Undo;
 
 namespace MiStrAnGH
 {
-    public class StructureParameter : GH_Param<StructureType>
+    public class SupportParameter : GH_Param<SupportType>
     {
 
-        public StructureParameter() : 
+        public SupportParameter() : 
             base("MiStrAn Structure", "Structure", "A MiStrAn structure", "MiStrAn", "no subcategory", GH_ParamAccess.item)
         { }
 
@@ -24,7 +24,7 @@ namespace MiStrAnGH
         {
             get
             {
-                return new Guid("{76f14d2b-0860-4e9a-8d2c-3913888aed8d}"); 
+                return new Guid("{507e3b4b-ffd9-4728-a6b2-6c1ba84f76f3}"); 
             }
         }
     }

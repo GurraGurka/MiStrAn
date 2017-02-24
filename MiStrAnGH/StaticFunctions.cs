@@ -19,8 +19,8 @@ namespace MiStrAnGH
         {
             List<MiStrAnEngine.Node> mistranNodes = new List<MiStrAnEngine.Node>();
             List<MiStrAnEngine.ShellElement> mistranShells = new List<MiStrAnEngine.ShellElement>();
-            List<MiStrAnEngine.BC> mistranBCs = new List<MiStrAnEngine.BC>();
-            List<MiStrAnEngine.Load> mistranLoads = new List<MiStrAnEngine.Load>();
+            List<MiStrAnEngine.Support> mistranBCs = new List<MiStrAnEngine.Support>();
+            List<MiStrAnEngine.PointLoad> mistranLoads = new List<MiStrAnEngine.PointLoad>();
             List<MiStrAnEngine.DistributedLoad> mistranDistLoads = new List<MiStrAnEngine.DistributedLoad>();
 
             MeshVertexList meshPts = m.Vertices;
@@ -41,7 +41,7 @@ namespace MiStrAnGH
                 {
                     Point3d closePt = mPt;
                     if(closePt.DistanceTo(bcs[j])<0.001)
-                        mistranBCs.Add(new MiStrAnEngine.BC(mistranNodes[i]));      
+                        mistranBCs.Add(new MiStrAnEngine.Support(mistranNodes[i]));      
                 }
 
                 //LOADS
@@ -50,7 +50,7 @@ namespace MiStrAnGH
                 {
                     Point3d closePt = mPt;
                     if (closePt.DistanceTo(loadsPts[j]) < 0.001)
-                        mistranLoads.Add(new MiStrAnEngine.Load(mistranNodes[i], new MiStrAnEngine.Vector3D(loadVecs[j].X, loadVecs[j].Y, loadVecs[j].Z))); //TEMP JUST 1000 
+                        mistranLoads.Add(new MiStrAnEngine.PointLoad(mistranNodes[i], new MiStrAnEngine.Vector3D(loadVecs[j].X, loadVecs[j].Y, loadVecs[j].Z))); //TEMP JUST 1000 
                 }
             }
               

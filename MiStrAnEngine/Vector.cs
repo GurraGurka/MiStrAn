@@ -12,7 +12,6 @@ namespace MiStrAnEngine
         public Vector(int length)
         {
             values = new double[length];
-
         }
 
         public Vector(Vector copy) : this(copy.Length)
