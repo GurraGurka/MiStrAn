@@ -27,8 +27,8 @@ namespace MiStrAnEngine
             Matrix BB = new Matrix(3, 3); //Coupling stiffness terms of a laminate
             Matrix DD = new Matrix(3, 3); //Bending stiffness n therms of a laminate
 
-            //Global bodyforces matrices for the laminate
-          //  double II0 = 0;
+            //Global bodyforces matrices for the laminate (not used now)
+            //double II0 = 0;
             //double II1 = 0;
             //double II2 = 0;
 
@@ -47,12 +47,10 @@ namespace MiStrAnEngine
             //if odd numbers of numbers
             double iterations = Math.Ceiling(listLength / 2.0);
 
-            //For the moment only half of the layers are iterated thorough, it is necessary that the
-            //Layer are symmetrical
+            //For the moment only half of the layers are iterated thorough (and then doubled), it is necessary that the
+            //layers are symmetrical. A check is done for this in Section GH-component. Should be changed later
             for (int i=0; i< iterations; i++)
             { 
-                
-                
                 double v21 = v12s[i] * E2s[i] / E1s[i]; // Stiffness and strength analysis (Bokmärke) 4.2
 
                 //Reduced stiffness terms (EUROCOMP eq4.50)
