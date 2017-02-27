@@ -93,7 +93,7 @@ namespace MiStrAnEngine
                 GetB_N(gp.GetRow(i), xe,out B, out N);
                 Matrix DKe = gw[i]* B.Transpose() * D * B;
                 Ke[activeDofs, activeDofs] = Ke[activeDofs, activeDofs] + elementArea*DKe; 
-                Matrix DMe= this.Section.totalThickness * gw[i] * N.Transpose() * q.ToMatrix();
+                Matrix DMe= gw[i] * N.Transpose() * q.ToMatrix();
                 fe[activeDofs] = fe[activeDofs] + elementArea*DMe.ToVector();
             }
             // Adding small stiffness to rotational dofs
