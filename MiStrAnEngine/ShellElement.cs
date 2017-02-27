@@ -54,7 +54,6 @@ namespace MiStrAnEngine
 
             Matrix B, N, gp, gw, xe, T;
 
-           // q =new Matrix(new double[,] { { 0 }, { 0 }, { 0 } });
 
             int ng = 4; // Number of gauss points
 
@@ -96,19 +95,10 @@ namespace MiStrAnEngine
                 Matrix DMe= this.Section.totalThickness * gw[i] * N.Transpose() * q.ToMatrix();
                 fe[activeDofs] = fe[activeDofs] + elementArea*DMe.ToVector();
             }
-
-            //  GetB_N(gp.GetRow(0), xe, out B, out N);
-            // Matrix DMe = N.Transpose() * q;
-            //  fe[activeDofs, 0] = fe[activeDofs, 0] + elementArea*DMe;
-
-            // Adding max stiffness to rotational dofs
+            // Adding small stiffness to rotational dofs
             Ke[passiveDofs, passiveDofs] =  Matrix.Ones(3, 3);
-           // fe[passiveDofs, 0] = 0 * Matrix.Ones(3, 1); ;
 
-            // Transforming to global dofs
             Ke = T * Ke * T.Transpose();
-           // fe = T.Transpose() * fe;
-           //snnsnsns
             return true;
         }
 
@@ -217,6 +207,9 @@ namespace MiStrAnEngine
             Vector3D _v2 = Nodes[2].Pos - Nodes[0].Pos;
             Vector3D v3 = Vector3D.CrossProduct(v1, _v2);
             Vector3D v2 = Vector3D.CrossProduct(v3, v1);
+
+            if (v1.IsZeroVector() || v2.IsZeroVector() || v3.IsZeroVector())
+                throw new Exception("Bad element, ID: " + this.Id.ToString());
 
             Vector3D e1 = v1.Normalize(false);
             Vector3D e2 = v2.Normalize(false);

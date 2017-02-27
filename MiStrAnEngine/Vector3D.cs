@@ -100,6 +100,11 @@ namespace MiStrAnEngine
             get { return new Vector3D(0, 0, 1); }
         }
 
+        public bool IsZeroVector()
+        {
+            return (X == 0 && Y == 0 && Z == 0);
+
+        }
 
 
     }
