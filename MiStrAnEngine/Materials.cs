@@ -11,6 +11,7 @@ namespace MiStrAnEngine
         //Only verified to MATLAB-cod with configurations: 4 laminas (all 0 degrees), 4 laminas (45,30,30,45) degrees
         public static void eqModulus(ShellElement shell, out Matrix D) //, out Matrix q)
         {
+            //Just used for the shorter name
             List<double> E1s = shell.Section.Exs;
             List<double> E2s = shell.Section.Eys;
             List<double> angles = shell.Section.angles;
@@ -19,7 +20,7 @@ namespace MiStrAnEngine
             List<double> Gxys = shell.Section.Gxys;
             double density = shell.Section.density;
 
-            double gravity = 9.82;
+           // double gravity = 9.82;
 
             //Global stiffness  matrices for the laminate
             Matrix AA = new Matrix(3, 3); //Extensional or membrane stiffness terms of a laminate
@@ -27,14 +28,15 @@ namespace MiStrAnEngine
             Matrix DD = new Matrix(3, 3); //Bending stiffness n therms of a laminate
 
             //Global bodyforces matrices for the laminate
-            double II0 = 0;
+          //  double II0 = 0;
             //double II1 = 0;
             //double II2 = 0;
 
+            //Get the maximum of the different inputs 
             int[] lengths = { E1s.Count, E2s.Count, angles.Count, thickness.Count, v12s.Count};
             int listLength = lengths.Max();
             
-            //Check if length is one or the same as the maximum
+            //Check if number of inputs is one or the same as the maximum
             E1s = SF.checkPlyListLength(E1s, listLength);
             E2s = SF.checkPlyListLength(E2s, listLength);
             angles = SF.checkPlyListLength(angles, listLength);
@@ -108,7 +110,7 @@ namespace MiStrAnEngine
                 DD =DD+ 2*(Math.Pow(hk, 3) - Math.Pow(hkMinus1, 3)) * Q_;
 
                 //Same but for the masses (Gravity 9.82)
-                II0 =II0+  2 * (hk - hkMinus1);
+                //II0 =II0+  2 * (hk - hkMinus1);
              // II2 = II2 + 2 * (Math.Pow(hk, 3) - Math.Pow(hkMinus1, 3)) * density*9.82;
 
 
@@ -118,7 +120,7 @@ namespace MiStrAnEngine
             BB = (1.0 / 2.0) * BB;
             DD = (1.0 / 3.0) * DD;
             // II2 = (1.0 / 3.0) * II2;
-            II0 = II0 * density * gravity;
+          //  II0 = II0 * density * gravity;
 
             //Step 5 i euroCOMP
             //   Matrix a = AA.Invert();
