@@ -235,20 +235,35 @@ namespace MiStrAnEngine
             }
         }
 
+        //Denna bör nog fixas till lite sen 
         public void SetSections(List<Section> sections)
         {
             //Set a section for each shell
             foreach (Section s in sections)
             {
-                foreach(ShellElement elem in elements)
+                if(!s.applyToAll)
                 {
-                    if (s.faceIndexes.Contains(elem.Id))
+                    foreach (Vector3D vec in s.faceIndexes)
                     {
-                        elem.Section = s;
-                        elem.GenerateD();
+                        ShellElement element = GetElementByCentroid(vec);
+                        element.Section = s;
+                        element.GenerateD();
                     }
                 }
-                
+
+                else
+                {
+                    //Detta blir ju då lite konstigt om man inte fyller i några värden och har 2 sektioner
+                    //men det ska man inte göra, kanske sätta någon varning
+                    foreach (ShellElement element in elements)
+                    {
+                        element.Section = s;
+                        element.GenerateD();
+                    }
+
+                }
+
+
 
             }
         }
@@ -259,3 +274,4 @@ namespace MiStrAnEngine
         }
     }
 }
+

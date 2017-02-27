@@ -23,7 +23,7 @@ namespace MiStrAnGH
         /// </summary>
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {
-            pManager.AddIntegerParameter("Indexes of faces", "FacIndexes", "Select face-indexes to give section", GH_ParamAccess.list);
+            pManager.AddPointParameter("Face center points", "FaceCentPt", "Select face-center points to give section", GH_ParamAccess.list);
             pManager.AddNumberParameter("E modulus in longitudinal direction [GPa]", "Ex", "Define one for all or for each ply", GH_ParamAccess.list, 210);
             pManager.AddNumberParameter("E modulus in transverse direction [GPA]", "Ey", "Define one for all or for each ply", GH_ParamAccess.list,210);
             pManager.AddNumberParameter("Longitudinal shear modulus [GPA]", "Gxy", " Define one for all or for each ply", GH_ParamAccess.list,79.3);
@@ -32,6 +32,7 @@ namespace MiStrAnGH
             pManager.AddNumberParameter("Angles [degree]", "Angles", " Define one for all or for each ply", GH_ParamAccess.list,0);
             pManager.AddNumberParameter("Density [kg/m^3]", "Density", " Density of the meshfaces", GH_ParamAccess.item,7800);
 
+            pManager[0].Optional = true;
             pManager[1].Optional = true;
             pManager[2].Optional = true;
             pManager[3].Optional = true;
@@ -47,7 +48,7 @@ namespace MiStrAnGH
         /// </summary>
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
         {
-            pManager.AddParameter(new SectionParameter(), "Generated", "Section", "Section with thickness, indexes and material ", GH_ParamAccess.list);
+            pManager.AddParameter(new SectionParameter(), "Generated", "Section", "Section with thickness, indexes and material ", GH_ParamAccess.item);
         }
 
         /// <summary>
@@ -56,7 +57,7 @@ namespace MiStrAnGH
         /// <param name="DA">The DA object is used to retrieve from inputs and store in outputs.</param>
         protected override void SolveInstance(IGH_DataAccess DA)
         {
-            List<int> faceIndexes = new List<int>();
+            List<Point3d> faceIndexes = new List<Point3d>();
             List<double> Exs = new List<double>();
             List<double> Eys = new List<double>();
             List<double> Gxys = new List<double>();
@@ -65,15 +66,9 @@ namespace MiStrAnGH
             List<double> vs = new List<double>();
             double density = new double();
 
-            //List<double> ExsDef = new List<double>(new double[] { 210e9 });
-            //List<double> EysDef = new List<double>(new double[] { 210e9 }); ;
-            //List<double> GxysDef = new List<double>(new double[] { 79.3e9 });
-            //List<double> thicknessDef = new List<double>(new double[] { 0.01 });
-            //List<double> anglesDef = new List<double>(new double[] { 0 });
-            //List<double> vsDef = new List<double>(new double[] { 0.3 });
-            //double densityDef = 7800;
-
-            if (!DA.GetDataList(0, faceIndexes)) { return; }
+            bool applyToAll = false;
+            
+            if (!DA.GetDataList(0,faceIndexes)) applyToAll = true;
             if (!DA.GetDataList(1, Exs)) {} //Exs = ExsDef;
             if (!DA.GetDataList(2, Eys)) { } //Eys = EysDef;
             if (!DA.GetDataList(3, Gxys)) { } // Gxys = GxysDef; 
@@ -82,7 +77,11 @@ namespace MiStrAnGH
             if (!DA.GetDataList(6, angles)) { } //angles = anglesDef;
             if (!DA.GetData(7, ref density)) { } //density = densityDef;
 
-            int[] lenghts = { Exs.Count, Eys.Count, Gxys.Count, thickness.Count, angles.Count, vs.Count };
+            
+ 
+
+
+                int[] lenghts = { Exs.Count, Eys.Count, Gxys.Count, thickness.Count, angles.Count, vs.Count };
             int listlength = lenghts.Max();
 
             //Check list length and that the layers are symmetrical
@@ -107,17 +106,29 @@ namespace MiStrAnGH
             if (thickness.Count == listlength)
             {
                 foreach (double t in thickness)
-                {
                     totalThick += t;
-                }
             }
             else
                 totalThick = thickness[0]*listlength;
 
-            List<SectionType> section = new List<SectionType>();
-            section.Add(new SectionType(thickness, angles, Exs, Eys,Gxys, vs, faceIndexes, density, totalThick));
+            SectionType section = new SectionType();
+            //Fixa detta senare
+            if (!applyToAll)
+            {
+                List<MiStrAnEngine.Vector3D> vecs = new List<MiStrAnEngine.Vector3D>();
+                foreach (Point3d pt in faceIndexes)
+                    vecs.Add(new MiStrAnEngine.Vector3D(pt.X, pt.Y, pt.Z));
+                
+                section = new SectionType(thickness, angles, Exs, Eys, Gxys, vs, vecs, density, totalThick);
+            }
+                
+            else
+            {
+                section= new SectionType(thickness, angles, Exs, Eys, Gxys, vs, new List<MiStrAnEngine.Vector3D>(), density, totalThick);
+                section.applyToAll = true;
+            }
 
-            DA.SetDataList(0, section);
+            DA.SetData(0, section);
 
         }
 

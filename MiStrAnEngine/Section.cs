@@ -15,13 +15,14 @@ namespace MiStrAnEngine
         public List<double> Eys;
         public List<double> Gxys;
         public List<double> vs;
-        public List<int> faceIndexes;
+        public List<Vector3D> faceIndexes;
         public double density;
         public double totalThickness;
+        public bool applyToAll = false;
 
 
         //Constructor
-        public Section(List<double> _thickness, List<double> _angles, List<double> _Exs, List<double> _Eys, List<double> _Gxys, List<double> _vs, List<int> _faceIndexes, double _density, double _totalThickness )
+        public Section(List<double> _thickness, List<double> _angles, List<double> _Exs, List<double> _Eys, List<double> _Gxys, List<double> _vs, List<Vector3D> _faceIndexes, double _density, double _totalThickness )
         {
             thickness = _thickness;
             angles = _angles;
