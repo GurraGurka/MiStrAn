@@ -53,7 +53,7 @@ namespace MiStrAnGH
         //                mistranLoads.Add(new MiStrAnEngine.PointLoad(mistranNodes[i], new MiStrAnEngine.Vector3D(loadVecs[j].X, loadVecs[j].Y, loadVecs[j].Z))); //TEMP JUST 1000 
         //        }
         //    }
-              
+
         //    //Create shellelements from all the meshfaces. Add them to one list
         //    for(int i=0; i< m.Faces.Count;i++)
         //    {
@@ -70,12 +70,12 @@ namespace MiStrAnGH
         //        //Set index for load shells and the vector
         //        for(int j=0; j<loadFaces.Count; j++)
         //        {
-                    
+
         //            //This only works for triangular
         //            if(m.Faces[i].A ==loadFaces[j].A && m.Faces[i].B == loadFaces[j].B && m.Faces[i].C == loadFaces[j].C)
         //                mistranDistLoads.Add(new MiStrAnEngine.DistributedLoad(i, new MiStrAnEngine.Vector3D(distLoadVecs[j].X, distLoadVecs[j].Y, distLoadVecs[j].Z)));
 
-                       
+
         //        }
 
         //        //Set a section for each shell
@@ -87,7 +87,7 @@ namespace MiStrAnGH
         //                mistShell.GenerateD();
         //                break;
         //            }
-                        
+
         //        }
 
         //        mistranShells.Add(mistShell);
@@ -95,6 +95,15 @@ namespace MiStrAnGH
 
         //    return new StructureType(mistranNodes, mistranShells, mistranBCs, mistranLoads, mistranDistLoads);
         //}
+
+        public static List<double> CorrectUnits(List<double> inputList, double corrValue)
+        {
+            List<double> outputDoubles = new List<double>();
+            foreach (double val in inputList)
+                outputDoubles.Add(val * corrValue);
+            
+            return outputDoubles;
+        }
 
         public static void GetDefMesh(Mesh undefMesh,List<double> defs, double scalFac, out Mesh defMesh )
         {

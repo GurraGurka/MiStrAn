@@ -24,13 +24,13 @@ namespace MiStrAnGH
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {
             pManager.AddIntegerParameter("Indexes of faces", "FacIndexes", "Select face-indexes to give section", GH_ParamAccess.list);
-            pManager.AddNumberParameter("E modulus in longitudinal direction", "Ex", "Define one for all or for each ply", GH_ParamAccess.list);
-            pManager.AddNumberParameter("E modulus in transverse direction", "Ey", "Define one for all or for each ply", GH_ParamAccess.list);
-            pManager.AddNumberParameter("Longitudinal shear modulus", "Gxy", " Define one for all or for each ply", GH_ParamAccess.list);
-            pManager.AddNumberParameter("Poissons Ratio", "v", "Define one for all or for each ply", GH_ParamAccess.list);
-            pManager.AddNumberParameter("Lamina Thickness", "Thickness", "Define one for all or for each ply", GH_ParamAccess.list);
-            pManager.AddNumberParameter("Angles in degree", "Angles", " Define one for all or for each ply", GH_ParamAccess.list);
-            pManager.AddNumberParameter("Density [kg/m^3]", "Density", " Density of the meshfaces", GH_ParamAccess.item);
+            pManager.AddNumberParameter("E modulus in longitudinal direction [GPa]", "Ex", "Define one for all or for each ply", GH_ParamAccess.list, 210);
+            pManager.AddNumberParameter("E modulus in transverse direction [GPA]", "Ey", "Define one for all or for each ply", GH_ParamAccess.list,210);
+            pManager.AddNumberParameter("Longitudinal shear modulus [GPA]", "Gxy", " Define one for all or for each ply", GH_ParamAccess.list,79.3);
+            pManager.AddNumberParameter("Poissons Ratio", "v", "Define one for all or for each ply", GH_ParamAccess.list,0.3);
+            pManager.AddNumberParameter("Lamina Thickness [mm]", "Thickness", "Define one for all or for each ply", GH_ParamAccess.list,10);
+            pManager.AddNumberParameter("Angles [degree]", "Angles", " Define one for all or for each ply", GH_ParamAccess.list,0);
+            pManager.AddNumberParameter("Density [kg/m^3]", "Density", " Density of the meshfaces", GH_ParamAccess.item,7800);
 
             pManager[1].Optional = true;
             pManager[2].Optional = true;
@@ -65,23 +65,22 @@ namespace MiStrAnGH
             List<double> vs = new List<double>();
             double density = new double();
 
-            List<double> ExsDef = new List<double>(new double[] { 210e9 });
-            List<double> EysDef = new List<double>(new double[] { 210e9 }); ;
-            List<double> GxysDef = new List<double>(new double[] { 79.3e9 });
-            List<double> thicknessDef = new List<double>(new double[] { 0.01 });
-            List<double> anglesDef = new List<double>(new double[] { 0 });
-            List<double> vsDef = new List<double>(new double[] { 0.3 });
-            double densityDef = 7800;
+            //List<double> ExsDef = new List<double>(new double[] { 210e9 });
+            //List<double> EysDef = new List<double>(new double[] { 210e9 }); ;
+            //List<double> GxysDef = new List<double>(new double[] { 79.3e9 });
+            //List<double> thicknessDef = new List<double>(new double[] { 0.01 });
+            //List<double> anglesDef = new List<double>(new double[] { 0 });
+            //List<double> vsDef = new List<double>(new double[] { 0.3 });
+            //double densityDef = 7800;
 
             if (!DA.GetDataList(0, faceIndexes)) { return; }
-            if (!DA.GetDataList(1, Exs)) {Exs = ExsDef; }
-            if (!DA.GetDataList(2, Eys)) { Eys = EysDef; }
-            if (!DA.GetDataList(3, Gxys)) { Gxys = GxysDef; }
-            if (!DA.GetDataList(4, vs)) { vs = vsDef; }
-            if (!DA.GetDataList(5, thickness)) { thickness = thicknessDef; }
-            if (!DA.GetDataList(6, angles)) { angles = anglesDef; }
-           
-            if (!DA.GetData(7, ref density)) { density = densityDef; }
+            if (!DA.GetDataList(1, Exs)) {} //Exs = ExsDef;
+            if (!DA.GetDataList(2, Eys)) { } //Eys = EysDef;
+            if (!DA.GetDataList(3, Gxys)) { } // Gxys = GxysDef; 
+            if (!DA.GetDataList(4, vs)) { } // vs = vsDef;
+            if (!DA.GetDataList(5, thickness)) { } //thickness = thicknessDef;
+            if (!DA.GetDataList(6, angles)) { } //angles = anglesDef;
+            if (!DA.GetData(7, ref density)) { } //density = densityDef;
 
             int[] lenghts = { Exs.Count, Eys.Count, Gxys.Count, thickness.Count, angles.Count, vs.Count };
             int listlength = lenghts.Max();
@@ -95,8 +94,13 @@ namespace MiStrAnGH
             checkListLength(vs, listlength);
 
 
-          
-            
+            //Correct units
+            Exs = StaticFunctions.CorrectUnits(Exs, 1e9); //From GPa tp Pa
+            Eys = StaticFunctions.CorrectUnits(Eys, 1e9); //From GPa tp Pa
+            Gxys = StaticFunctions.CorrectUnits(Gxys, 1e9); //From GPa tp Pa
+            thickness = StaticFunctions.CorrectUnits(thickness, 0.001); //From mm to m
+
+
 
             double totalThick = 0;
             //If thickness is not defined for every layer, the single input thickness is defined for all layers
