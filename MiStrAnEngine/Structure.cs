@@ -17,14 +17,6 @@ namespace MiStrAnEngine
         public Vector f;
         public Matrix bc;
 
-        //public Structure(List<Node> _nodes, List<ShellElement> _elements, List<Support> _bcs, List<PointLoad> _loads, List<DistributedLoad> _distLoads)
-        //{
-        //    nodes = _nodes;
-        //    elements = _elements;
-        //    supports = _bcs;
-        //    loads = _loads;
-        //    distLoads = _distLoads;
-        //}
 
         public Structure(List<Node> _nodes, List<ShellElement> _elements) : this()
         {
