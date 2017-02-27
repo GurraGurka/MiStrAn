@@ -16,6 +16,7 @@ namespace MiStrAnEngine
         public List<Load> Loads;
         public Matrix DBe; //D*B for the stresses
         public Matrix Te; // Tranformation matrix for stresses
+        public Vector3D qGravity; // Gravity load
 
         private Vector3D centroid;
 
@@ -109,8 +110,13 @@ namespace MiStrAnEngine
 
             foreach (Load load in this.Loads)
             {
+                if (load.Type == TypeOfLoad.GravityLoad)
+                    q += qGravity;
+
+                // gravity load sets loadVec to zero, so don't worry about double addition
                 q += load.LoadVec;
             }
+
 
             return q;
         }
@@ -121,6 +127,7 @@ namespace MiStrAnEngine
             Matrix d,q;
             Materials.eqModulus(this, out d, out q);
                 this.D = d;
+            this.qGravity = q.ToVector3D();
         }
 
         public void SetSteelSection()

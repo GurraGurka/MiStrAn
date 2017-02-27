@@ -12,7 +12,7 @@ namespace MiStrAnEngine
         List<Node> nodes;
         List<ShellElement> elements;
         List<Support> supports;
-        List<Load> loads;
+       // List<Load> loads;
         public SparseMatrix K;
         public Vector f;
         public Matrix bc;
@@ -34,7 +34,7 @@ namespace MiStrAnEngine
             nodes = new List<Node>();
             elements = new List<ShellElement>();
             supports = new List<Support>();
-            loads = new List<Load>();
+          //  loads = new List<Load>();
         }
 
         public void AssembleKfbc()
@@ -204,16 +204,34 @@ namespace MiStrAnEngine
 
         public void AddLoad(Load load)
         {
-            if(load.Type == TypeOfLoad.PointLoad)
+            if (load.Type == TypeOfLoad.PointLoad)
             {
                 Node node = GetNode(load.Pos);
                 node.Loads.Add(load);
             }
 
-            else if(load.Type == TypeOfLoad.DistributedLoad)
+            else if (load.Type == TypeOfLoad.DistributedLoad)
             {
+
                 ShellElement element = GetElementByCentroid(load.Pos);
                 element.Loads.Add(load);
+            }
+
+            else if (load.Type == TypeOfLoad.GravityLoad)
+            {
+                if (!load.ApplyToAllElements)
+                {
+                    ShellElement element = GetElementByCentroid(load.Pos);
+                    element.Loads.Add(load);
+                }
+                else
+                {
+                    foreach (ShellElement elem in elements)
+                    {
+                        elem.Loads.Add(load);
+                    }
+
+                }
             }
         }
 

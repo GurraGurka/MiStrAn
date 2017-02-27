@@ -9,8 +9,9 @@ namespace MiStrAnEngine
     {
         public Vector3D LoadVec;
         public Vector3D Pos;
-        public int ParentIndex;
+        public int ParentIndex; 
         public TypeOfLoad Type;
+        public bool ApplyToAllElements = false;
 
         public Load(Vector3D pos, Vector3D loadVec, TypeOfLoad type)
         {
@@ -18,6 +19,8 @@ namespace MiStrAnEngine
             Pos = pos;
             Type = type;
 
+            if (type == TypeOfLoad.GravityLoad) // This load is handeled by the element
+                LoadVec = Vector3D.ZeroVector;
         }
 
         public override string ToString()

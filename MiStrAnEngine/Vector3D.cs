@@ -106,6 +106,11 @@ namespace MiStrAnEngine
 
         }
 
+        public static Vector3D ZeroVector
+        {
+            get { return new Vector3D(); }
+        }
+
 
     }
 }
