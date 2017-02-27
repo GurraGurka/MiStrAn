@@ -9,7 +9,7 @@ namespace MiStrAnEngine
     public class Materials
     {
         //Only verified to MATLAB-cod with configurations: 4 laminas (all 0 degrees), 4 laminas (45,30,30,45) degrees
-        public static void eqModulus(ShellElement shell, out Matrix D) //, out Matrix q)
+        public static void eqModulus(ShellElement shell, out Matrix D, out Matrix q)
         {
             //Just used for the shorter name
             List<double> E1s = shell.Section.Exs;
@@ -20,7 +20,8 @@ namespace MiStrAnEngine
             List<double> Gxys = shell.Section.Gxys;
             double density = shell.Section.density;
 
-           // double gravity = 9.82;
+            //Used for gravity load
+            double gravity = 9.81;
 
             //Global stiffness  matrices for the laminate
             Matrix AA = new Matrix(3, 3); //Extensional or membrane stiffness terms of a laminate
@@ -28,7 +29,7 @@ namespace MiStrAnEngine
             Matrix DD = new Matrix(3, 3); //Bending stiffness n therms of a laminate
 
             //Global bodyforces matrices for the laminate (not used now)
-            //double II0 = 0;
+            double II0 = 0;
             //double II1 = 0;
             //double II2 = 0;
 
@@ -108,7 +109,7 @@ namespace MiStrAnEngine
                 DD =DD+ 2*(Math.Pow(hk, 3) - Math.Pow(hkMinus1, 3)) * Q_;
 
                 //Same but for the masses (Gravity 9.82)
-                //II0 =II0+  2 * (hk - hkMinus1);
+                II0 =II0+  2 * (hk - hkMinus1);
              // II2 = II2 + 2 * (Math.Pow(hk, 3) - Math.Pow(hkMinus1, 3)) * density*9.82;
 
 
@@ -118,7 +119,7 @@ namespace MiStrAnEngine
             BB = (1.0 / 2.0) * BB;
             DD = (1.0 / 3.0) * DD;
             // II2 = (1.0 / 3.0) * II2;
-          //  II0 = II0 * density * gravity;
+            II0 = II0 * density * gravity;
 
             //Step 5 i euroCOMP
             //   Matrix a = AA.Invert();
@@ -145,7 +146,7 @@ namespace MiStrAnEngine
             D[new int[] { 3, 4, 5 }, new int[] { 0, 1, 2 }] = -BB;
 
             //Total q matrix (NOT USED FOR THE MOMENT)
-          //  q = new Matrix(new double[,] { { 0 } , { 0 }, { -II0 } }); //Gravity works in negative direction
+            q = new Matrix(new double[,] { { 0 } , { 0 }, { -II0 } }); //Gravity works in negative direction
 
 
             
