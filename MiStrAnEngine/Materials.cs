@@ -19,6 +19,7 @@ namespace MiStrAnEngine
             List<double> v12s = shell.Section.vs;
             List<double> Gxys = shell.Section.Gxys;
             double density = shell.Section.density;
+            double totThick = shell.Section.totalThickness;
 
             //Used for gravity load
             double gravity = 9.81;
@@ -37,7 +38,7 @@ namespace MiStrAnEngine
             int[] lengths = { E1s.Count, E2s.Count, angles.Count, thickness.Count, v12s.Count};
             int listLength = lengths.Max();
             
-            //Check if number of inputs is one or the same as the maximum
+            //Check if number of inputs is one or the same as the maximum And make the lists same length
             E1s = SF.checkPlyListLength(E1s, listLength);
             E2s = SF.checkPlyListLength(E2s, listLength);
             angles = SF.checkPlyListLength(angles, listLength);
@@ -47,7 +48,7 @@ namespace MiStrAnEngine
 
             //if odd numbers of numbers
             double iterations = Math.Ceiling(listLength / 2.0);
-
+            iterations = listLength;
             //For the moment only half of the layers are iterated thorough (and then doubled), it is necessary that the
             //layers are symmetrical. A check is done for this in Section GH-component. Should be changed later
             for (int i=0; i< iterations; i++)
@@ -56,8 +57,7 @@ namespace MiStrAnEngine
 
                 //Reduced stiffness terms (EUROCOMP eq4.50)
                 double Q11 = E1s[i] / (1 - v12s[i] * v21);
-                double Q12 = v21 * E1s[i] / (1 - v12s[i] * v21);
-                //ADD Q21 porbably with E2 instead of E1
+                double Q12 = v21 * E1s[i] / (1 - v12s[i] * v21); //= Q21
                 double Q22 = E2s[i] / (1 - v12s[i] * v21);
                 double Q66 = Gxys[i];
 
@@ -69,7 +69,6 @@ namespace MiStrAnEngine
                 double Q_11 = Q11 * Math.Pow(m, 4) + Q22 * Math.Pow(n, 4) + Q12 * 2 * Math.Pow(m, 2) * Math.Pow(n, 2) + Q66*4 * Math.Pow(m, 2) * Math.Pow(n, 2);
                 double Q_22 = Q11* Math.Pow(n, 4) + Q22 * Math.Pow(m, 4) + Q12 * 2 * Math.Pow(m, 2) * Math.Pow(n, 2) + Q66 * 4 * Math.Pow(m, 2) * Math.Pow(n, 2);
                 double Q_66 = (Q11 + Q22 - 2 * Q12) * Math.Pow(m, 2) * Math.Pow(n, 2) + Q66 * Math.Pow(Math.Pow(m, 2) - Math.Pow(n, 2), 2);
-                //double Q_12 = Q11 * Math.Pow(n, 4) + Q22 * Math.Pow(m, 2) * Math.Pow(n, 2) + Q12 * (Math.Pow(m, 4) + Math.Pow(n, 4)) - Q66 * 4 * Math.Pow(m, 2) * Math.Pow(n, 2);
                 double Q_12 = (Q11 + Q22 - 4 * Q66) * Math.Pow(n, 2) * Math.Pow(m, 2) + Q12 * (Math.Pow(n, 4) + Math.Pow(m, 4));
                 double Q_16 = Q11 * Math.Pow(m, 3) * n - Q22 * Math.Pow(n, 3) * m + Q12 * (Math.Pow(n, 3) * m - Math.Pow(m, 3) * n) + Q66 * 2 * (Math.Pow(n, 3) * m - Math.Pow(m, 3) * n);
                 double Q_26 = Q11 * Math.Pow(n, 3) * m - Q22 * Math.Pow(m, 3) * n + Q12 * (Math.Pow(m, 3) * n - Math.Pow(n, 3) * m) + Q66 * 2 * (Math.Pow(m, 3) * n - Math.Pow(n, 3) * m);
@@ -80,15 +79,26 @@ namespace MiStrAnEngine
                 //Determine distances from the mid-plane
                 //Good picture in laminatedComposite PDF
 
-                double hk =  thickness[i] / 2.0; //TEMP
-                double hkMinus1 = 0; //-hk; //TEMP
+                double hkNew = totThick / 2.0;
+                double hkMinus1New = totThick / 2.0 - thickness[i];
+             //   double midPlaneCount = 0;
+
+                for (int j = 0; j < i; j++)
+                {
+                    hkNew -= thickness[j];
+                    hkMinus1New -= thickness[j];                
+                }
+
+
+                //Only valid if i=0
+                double hk =  thickness[i] / 2.0; 
+                double hkMinus1 = 0;
 
                 //Only symmetrical cases(from neutral axis)
-
                 ///// LAMELAS DEFINED FROM MIDDLE AND OUT TOWARDS OUTER LAMELAS
                 /////  BUT INPUT IS TAKING OUTER SURFACE FIRST, CHANGE THIS (ONLY MATTERS IF DIFFERENT LAMINA THICKNESS)
 
-                //even
+                //even number of laminas
                 if (listLength % 2 == 0)
                 {
                     hk = (i +1)* thickness[i];
@@ -104,14 +114,22 @@ namespace MiStrAnEngine
 
                 //Add local modulus to globals (times 2 to account for both sides of neutral axes)
                 //THIS IS ONLY HALF BUT IT WORKS IN THE END
-                AA =AA+ 2*(hk - hkMinus1) * Q_;
-                BB = BB;//+ 2*(Math.Pow(hk,2) - Math.Pow(hkMinus1,2)) * Q_;
-                DD =DD+ 2*(Math.Pow(hk, 3) - Math.Pow(hkMinus1, 3)) * Q_;
+              //  AA =AA+ 2*(hk - hkMinus1) * Q_;
+               // BB = BB;//+ 2*(Math.Pow(hk,2) - Math.Pow(hkMinus1,2)) * Q_;
+               // DD =DD+ 2*(Math.Pow(hk, 3) - Math.Pow(hkMinus1, 3)) * Q_;
 
-                //Same but for the masses (Gravity 9.82)
-                II0 =II0+  2 * (hk - hkMinus1);
-             // II2 = II2 + 2 * (Math.Pow(hk, 3) - Math.Pow(hkMinus1, 3)) * density*9.82;
+                //Same but for the masses 
+              //  II0 =II0+  2 * (hk - hkMinus1);
+                // II2 = II2 + 2 * (Math.Pow(hk, 3) - Math.Pow(hkMinus1, 3)) * density*9.82;
 
+
+                //NEW
+                AA = AA + (hkNew - hkMinus1New) * Q_;
+                BB = BB +(Math.Pow(hkNew,2) - Math.Pow(hkMinus1New,2)) * Q_;
+                DD = DD +(Math.Pow(hkNew, 3) - Math.Pow(hkMinus1New, 3)) * Q_;
+
+                //Same but for the masses 
+                II0 = II0 + thickness[i];
 
             }
 
@@ -145,7 +163,7 @@ namespace MiStrAnEngine
             D[new int[] { 0, 1, 2 }, new int[] { 3, 4, 5 }] = -BB;
             D[new int[] { 3, 4, 5 }, new int[] { 0, 1, 2 }] = -BB;
 
-            //Total q matrix (NOT USED FOR THE MOMENT)
+            //Total Gravity load matrix
             q = new Matrix(new double[,] { { 0 } , { 0 }, { -II0 } }); //Gravity works in negative direction
 
 
