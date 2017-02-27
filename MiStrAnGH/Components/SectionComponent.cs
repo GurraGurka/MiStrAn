@@ -95,16 +95,23 @@ namespace MiStrAnGH
             checkListLength(vs, listlength);
 
 
-            List<SectionType> section = new List<SectionType>();
+          
+            
 
-            //Flytta denna
             double totalThick = 0;
-            foreach(double t in thickness)
+            //If thickness is not defined for every layer, the single input thickness is defined for all layers
+            if (thickness.Count == listlength)
             {
-                totalThick += t;
+                foreach (double t in thickness)
+                {
+                    totalThick += t;
+                }
             }
+            else
+                totalThick = thickness[0]*listlength;
 
-             section.Add(new SectionType(thickness, angles, Exs, Eys,Gxys, vs, faceIndexes, density, totalThick));
+            List<SectionType> section = new List<SectionType>();
+            section.Add(new SectionType(thickness, angles, Exs, Eys,Gxys, vs, faceIndexes, density, totalThick));
 
             DA.SetDataList(0, section);
 
