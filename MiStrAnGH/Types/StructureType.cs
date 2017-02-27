@@ -5,6 +5,7 @@ using System.Text;
 using GH_IO.Serialization;
 using Grasshopper.Kernel.Types;
 using MiStrAnEngine;
+using Rhino.Geometry;
 
 namespace MiStrAnGH
 {
@@ -12,12 +13,6 @@ namespace MiStrAnGH
     {
         public StructureType() : base()
         { }
-
-        //public StructureType(List<Node> _nodes, List<ShellElement> _elements, List<Support> _bcs, List<PointLoad> _loads, List<DistributedLoad> _distLoads)
-        //    : base(_nodes, _elements, _bcs, _loads, _distLoads)
-        //{
-
-        //}
 
         public StructureType(List<Node> _nodes, List<ShellElement> _elements) : base(_nodes, _elements)
         { }
@@ -122,5 +117,90 @@ namespace MiStrAnGH
 
             return new StructureType(nodes, elements);
         }
+
+        public Mesh GenereateDeformedMesh(List<double> a, double t)
+        {
+            Mesh mesh = new Mesh();
+            List<Vector3D> dispVecs = new List<Vector3D>();
+
+            foreach (Node node in nodes)
+            {
+                Vector3D dispVec = new Vector3D(a[node.dofX], a[node.dofY], a[node.dofZ]);
+                dispVec = dispVec * t;
+                dispVecs.Add(dispVec);
+                mesh.Vertices.Add(node.x + dispVec.X, node.y + dispVec.Y, node.z + dispVec.Z);
+            }
+
+            double max = dispVecs.Max(x => x.Length);
+
+            Grasshopper.GUI.Gradient.GH_Gradient grad = StaticFunctions.GetStandardGradient();
+
+            foreach (Vector3D vec in dispVecs)
+            {
+                double normVal = vec.Length / max;
+                System.Drawing.Color color = grad.ColourAt(normVal);
+                mesh.VertexColors.Add(color.R, color.G, color.B);
+            }
+
+            foreach (ShellElement elem in this.elements)
+            {
+                MeshFace face = new MeshFace(elem.Nodes[0].Id, elem.Nodes[1].Id, elem.Nodes[2].Id);
+                mesh.Faces.AddFace(face);
+            }
+
+            return mesh;
+
+
+        }
+
+        public Mesh GenerateStressMesh(List<double> a, List<Vector3d> prinicpalStress)
+        {
+            Mesh mesh = new Mesh();
+            List<double> vonMises = new List<double>();
+
+            foreach (Node node in nodes)
+                mesh.Vertices.Add(node.x, node.y, node.z);
+
+            for (int i = 0; i < prinicpalStress.Count; i++)
+               // vonMises.Add(prinicpalStress[i].Length);
+                vonMises.Add(Math.Sqrt(prinicpalStress[i].X * prinicpalStress[i].X - prinicpalStress[i].X * prinicpalStress[i].Y + prinicpalStress[i].Y * prinicpalStress[i].Y));
+
+            Grasshopper.GUI.Gradient.GH_Gradient grad = StaticFunctions.GetStandardGradient();
+
+            double max = vonMises.Max();
+
+            foreach (ShellElement elem in this.elements)
+            {
+                MeshFace face = new MeshFace(elem.Nodes[0].Id, elem.Nodes[1].Id, elem.Nodes[2].Id);
+                mesh.Faces.AddFace(face);
+            }
+
+            for (int i = 0; i < nodes.Count; i++)
+            {
+                int index = mesh.TopologyVertices.TopologyVertexIndex(i);
+                int[] connectedFaces = mesh.TopologyVertices.ConnectedFaces(index);
+
+                double sum = 0;
+                for (int j = 0; j < connectedFaces.Length; j++)
+                {
+                    sum += vonMises[connectedFaces[j]];
+                }
+
+                double mean = sum / connectedFaces.Length;
+
+                double normVal = mean / max;
+
+                System.Drawing.Color color = grad.ColourAt(normVal);
+                mesh.VertexColors.Add(color.R, color.G, color.B);
+            }
+
+            return mesh;
+
+
+        }
+
+       
+
+
     }
 }

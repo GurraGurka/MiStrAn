@@ -141,7 +141,19 @@ namespace MiStrAnGH
             
         }
 
-        
+        public static Grasshopper.GUI.Gradient.GH_Gradient GetStandardGradient()
+        {
+
+            Grasshopper.GUI.Gradient.GH_Gradient grad = new Grasshopper.GUI.Gradient.GH_Gradient();
+            grad.AddGrip(0, System.Drawing.Color.Blue);
+            grad.AddGrip(0.25, System.Drawing.Color.Cyan);
+            grad.AddGrip(0.5, System.Drawing.Color.LimeGreen);
+            grad.AddGrip(0.75, System.Drawing.Color.Yellow);
+            grad.AddGrip(1, System.Drawing.Color.Red);
+
+
+            return grad;
+        }
 
     }
     }

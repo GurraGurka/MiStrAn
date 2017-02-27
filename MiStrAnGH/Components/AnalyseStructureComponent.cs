@@ -42,6 +42,7 @@ namespace MiStrAnGH
             pManager.AddNumberParameter("r [N]", "Reactions", "solved reactions", GH_ParamAccess.list);
             pManager.AddGeometryParameter("DefMesh", "DeformedMesh", "Deformed mesh", GH_ParamAccess.item);
             pManager.AddVectorParameter("P1 P2 0", "PrincipalStresses", "Principal stresses", GH_ParamAccess.list);
+            pManager.AddGeometryParameter("Stress plot", "VonMisesMesh", "von Mises stress plot", GH_ParamAccess.item);
         }
 
         /// <summary>
@@ -90,14 +91,15 @@ namespace MiStrAnGH
                 //Get outputs
                // StaticFunctions.GetDefMesh(meshes[0], aList,1, out outMesh);
                 StaticFunctions.GetDefRotVector(aList, out defList, out rotList);
-
-
+                outMesh = s.GenereateDeformedMesh(aList, 100);
+                Mesh stressMesh = s.GenerateStressMesh(aList, principalStresses);
 
                 DA.SetDataList(0, defList);
                 DA.SetDataList(1, rotList);
                 DA.SetDataList(2, rList);
                 DA.SetData(3, outMesh);
                 DA.SetDataList(4, principalStresses);
+                DA.SetData(5, stressMesh);
             }
 
         }

@@ -9,8 +9,8 @@ namespace MiStrAnEngine
 {
     public class Structure 
     {
-        List<Node> nodes;
-        List<ShellElement> elements;
+        protected List<Node> nodes;
+        protected List<ShellElement> elements;
         List<Support> supports;
        // List<Load> loads;
         public SparseMatrix K;
