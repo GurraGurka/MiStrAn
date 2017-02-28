@@ -7,7 +7,7 @@ using System.Windows.Forms;
 namespace MiStrAnEngine
 {
 
-    // Sparse symmetric matrix
+    // Sparse matrix
     public class SparseMatrix
     {
         public alglib.sparsematrix mat;
@@ -56,6 +56,46 @@ namespace MiStrAnEngine
                 return subMat;
 
             }
+        }
+
+        public SparseMatrix ExtractLargeSubMatrix(int[] _rows, int[] _cols)
+        {
+
+            SparseMatrix A = this;
+            SparseMatrix ret = new SparseMatrix(_rows.Length, _cols.Length);
+            A.ConvertToCRS();
+
+            bool[] rowsBool = new bool[rows];
+            bool[] colsBool = new bool[cols];
+            int[] remapRows =  Enumerable.Repeat(-1,rows).ToArray();
+            int[] remapCols = Enumerable.Repeat(-1, cols).ToArray();
+
+            for (int i = 0; i < _rows.Length; i++)
+            {
+                rowsBool[_rows[i]] = true;
+                remapRows[_rows[i]] = i;
+            }
+
+            for (int i = 0; i < _cols.Length; i++)
+            {
+                colsBool[_cols[i]] = true;
+                remapCols[_cols[i]] = i;
+            }
+
+            int t0 = 0, t1 = 0;
+            int r, k;
+            double v;
+
+            for (int i = 0; i < A.nnz; i++)
+            {
+                alglib.sparseenumerate(A.mat, ref t0, ref t1, out r, out k, out v);
+                if (rowsBool[r] && colsBool[k])
+                    ret[remapRows[r], remapCols[k]] = v;
+            }
+            
+
+            return ret;
+
         }
 
         public SparseMatrix Transpose()
@@ -237,48 +277,6 @@ namespace MiStrAnEngine
 
         }
 
-        public Vector SolveDnAnalytics_PCG(Vector b)
-        {
-            dnAnalytics.LinearAlgebra.Matrix A = this.ToDnAnalytics();
-            dnAnalytics.LinearAlgebra.Vector v = b.ToDnAnalytics();
-
-            dnAnalytics.LinearAlgebra.Solvers.IPreConditioner p = new dnAnalytics.LinearAlgebra.Solvers.Preconditioners.Diagonal();
-      
-            dnAnalytics.LinearAlgebra.Solvers.IIterator I = dnAnalytics.LinearAlgebra.Solvers.Iterator.CreateDefault();
-
-            dnAnalytics.LinearAlgebra.Solvers.Iterative.MlkBiCgStab solver = new dnAnalytics.LinearAlgebra.Solvers.Iterative.MlkBiCgStab(p, I);
-
-
-            dnAnalytics.LinearAlgebra.Vector X = solver.Solve(A, v);
-
-
-
-            dnAnalytics.LinearAlgebra.Solvers.ICalculationStatus status = I.Status;
-            MessageBox.Show(status.ToString());
-            
-
-            return new Vector(X.ToArray());
-
-
-            
-
-
-        }
-
-        public dnAnalytics.LinearAlgebra.Matrix ToDnAnalytics()
-        {
-            dnAnalytics.LinearAlgebra.Matrix M = new dnAnalytics.LinearAlgebra.SparseMatrix(rows);
-
-            for (int i = 0; i < rows; i++)
-            {
-                for (int j = 0; j < cols; j++)
-                {
-                    M[i, j] = this[i, j];
-                }
-            }
-
-            return M;
-        }
 
         public SparseMatrix GetPreconditioningMatrixCholesky()
         {
@@ -489,29 +487,57 @@ namespace MiStrAnEngine
             bool converged = false;
             double bNorm = b.Norm;
 
+            System.Diagnostics.Stopwatch sw1 = new System.Diagnostics.Stopwatch();
+            System.Diagnostics.Stopwatch sw2 = new System.Diagnostics.Stopwatch();
+            System.Diagnostics.Stopwatch sw3 = new System.Diagnostics.Stopwatch();
+            System.Diagnostics.Stopwatch sw4 = new System.Diagnostics.Stopwatch();
+            System.Diagnostics.Stopwatch sw5 = new System.Diagnostics.Stopwatch();
+            System.Diagnostics.Stopwatch sw6 = new System.Diagnostics.Stopwatch();
+            System.Diagnostics.Stopwatch sw7 = new System.Diagnostics.Stopwatch();
+            System.Diagnostics.Stopwatch sw8 = new System.Diagnostics.Stopwatch();
+
             for (int i = 0; i < maxIterations; i++)
             {
+                sw1.Start();
                 Vector Ap = A * p;
+                sw1.Stop();
 
+                sw2.Start();
                 double alpha_k = (r*z) / (p * Ap);
+                sw2.Stop();
+
+                sw3.Start();
                 x = x + alpha_k * p;
+                sw3.Stop();
 
+                sw4.Start();
                 old_r = new Vector(r);
-                r = r - alpha_k * (A * p);
+                r = r - alpha_k * (Ap);
+                sw4.Stop();
 
+                sw5.Start();
                 double relNorm = r.Norm / bNorm;
                 if (relNorm < tol)
                 {
+                    sw5.Stop();
                     converged = true;
                     break;
                 }
+                sw5.Stop();
 
                 old_z = new Vector(z);
-                z = Minv * r;
 
-                
+                sw6.Start();
+                z = Minv * r;
+                sw6.Stop();
+
+                sw7.Start();
                 double beta_k = (z * r) / (old_z * old_r);
+                sw7.Stop();
+
+                sw8.Start();
                 p = z + beta_k * p;
+                sw8.Stop();
             }
 
             if (!converged)

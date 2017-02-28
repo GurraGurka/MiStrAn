@@ -63,15 +63,18 @@ namespace MiStrAnEngine
             Vector dp = bc.GetCol(1).ToVector();
 
 
-            SparseMatrix Kff = K[fdof, fdof];
-            Vector b = f[fdof] - K[fdof, pdof] * dp;
+            SparseMatrix Kff = K.ExtractLargeSubMatrix(fdof, fdof);
+            SparseMatrix Kfp = K.ExtractLargeSubMatrix(fdof, pdof);
+
+            Vector b = f[fdof] - Kfp * dp;
 
             Vector s;
 
             Kff.ConvertToCRS();
 
             if (!useExactMethod)
-                 s = Kff.SolveWith_Preconditioned_CG(b);
+                s = Kff.SolveWith_Preconditioned_CG(b);
+                //s = Kff.SolveMathNET_PCG(b);
             else
             {
                 Matrix s_ = Kff.ToMatrix().SolveWith_LL(b.ToMatrix());

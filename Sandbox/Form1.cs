@@ -185,24 +185,26 @@ namespace Sandbox
             //x = M.SolveWith_CG(b);
             //Vector y = M.SolveWith_LL(b);
 
-            Vector v = new Vector(3);
-            v[0] = 0;
-            v[1] = 0;
-            v[2] = 5;
+            //Vector v = new Vector(3);
+            //v[0] = 0;
+            //v[1] = 0;
+            //v[2] = 5;
 
-            SparseMatrix M = new SparseMatrix(3, 3);
-            M[0, 0] = 1;
-            M[0, 1] = 1;
-            M[0, 2] = 1;
-            M[1, 0] = 1;
-            M[1, 1] = 1;
-            M[1, 2] = 1;
-            M[2, 0] = 1;
-            M[2, 1] = 1;
-            M[2, 2] = 1;
+            //SparseMatrix M = new SparseMatrix(3, 3);
+            //M[0, 0] = 1;
+            //M[0, 1] = 1;
+            //M[0, 2] = 1;
+            //M[1, 0] = 1;
+            //M[1, 1] = 1;
+            //M[1, 2] = 1;
+            //M[2, 0] = 1;
+            //M[2, 1] = 1;
+            //M[2, 2] = 1;
 
 
-            Vector a = M * v;
+            //Vector a = M * v;
+
+
 
 
 

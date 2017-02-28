@@ -27,8 +27,16 @@ namespace MiStrAnEngine
 
         public double Norm
         {
-            get { return values.Sum(x => Math.Pow(x, 2)); }
+            get
+            {
+                double sum = 0;
+                for (int i = 0; i < Length; i++)
+                {
+                    sum += values[i] * values[i];
+                }
 
+                return Math.Sqrt(sum);
+            }
         }
 
         public double this[int i]
@@ -115,13 +123,6 @@ namespace MiStrAnEngine
             return sum;
         }
 
-        public dnAnalytics.LinearAlgebra.Vector ToDnAnalytics()
-        {
-            dnAnalytics.LinearAlgebra.Vector ret = new dnAnalytics.LinearAlgebra.DenseVector(this.values);
-
-            return ret;
-
-        }
 
         public List<double> ToList()
         {
