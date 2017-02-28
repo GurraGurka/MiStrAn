@@ -17,6 +17,10 @@ namespace MiStrAnEngine
         public Vector f;
         public Matrix bc;
 
+        public Vector a;
+        public Vector r;
+        public List<Vector3D> PrincipalStresses;
+
 
         public Structure(List<Node> _nodes, List<ShellElement> _elements) : this()
         {
@@ -87,7 +91,7 @@ namespace MiStrAnEngine
                 bc[i, 0] = fixedDofs[i];
         }
 
-        public bool Analyze(out Vector a, out Vector r, bool useExactMethod = false)
+        public bool Analyze(bool useExactMethod = false)
         {
             AssembleKfbc();
 
@@ -99,13 +103,13 @@ namespace MiStrAnEngine
 
 
         //Calculate principal tresses for all the elements
-        public void CalcStresses(List<double> a, out List<Vector3D> principalStresses)
+        public void CalcStresses()
         {
             //Folllowing plants in MATlab, each element 15 dofs
 
             //the 15 active dofs used in each element (with 18 dofs in total)
             int[] activeDofs = new int[] { 0, 1, 2, 3, 4, 6, 7, 8, 9, 10, 12, 13, 14, 15, 16 };
-            principalStresses = new List<Vector3D>();
+            PrincipalStresses = new List<Vector3D>();
 
             for (int i = 0; i < elements.Count; i++)
             {
@@ -136,7 +140,7 @@ namespace MiStrAnEngine
                 //Principle stresses
                 double p1 = (ss[0] + ss[1]) / 2.0 + Math.Sqrt(Math.Pow((ss[0] - ss[1]) / 2, 2) + Math.Pow(ss[2], 2));
                 double p2 = (ss[0] + ss[1]) / 2.0 - Math.Sqrt(Math.Pow((ss[0] - ss[1]) / 2, 2) + Math.Pow(ss[2], 2));
-                principalStresses.Add(new Vector3D(p1, p2, 0));
+                PrincipalStresses.Add(new Vector3D(p1, p2, 0));
             }
 
         }

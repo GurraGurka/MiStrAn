@@ -123,6 +123,14 @@ namespace MiStrAnEngine
 
         }
 
+        public List<double> ToList()
+        {
+            List<double> ret = new List<double>(values.Length);
+            ret.AddRange(values);
+
+            return ret;
+        }
+
         //   O P E R A T O R S
 
         public static Vector operator -(Vector v)

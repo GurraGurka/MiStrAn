@@ -91,7 +91,7 @@ namespace MiStrAnGH
 
 
 
-        public static StructureType CreateFromMesh(Rhino.Geometry.Mesh mesh)
+        public static StructureType CreateFromMesh(Mesh mesh)
         {
             List<Node> nodes = new List<Node>(mesh.Vertices.Count);
 
@@ -153,7 +153,7 @@ namespace MiStrAnGH
 
         }
 
-        public Mesh GenerateStressMesh(List<double> a, List<Vector3d> prinicpalStress)
+        public Mesh GenerateStressMesh(List<double> a, List<Vector3D> prinicpalStress)
         {
             Mesh mesh = new Mesh();
             List<double> vonMises = new List<double>();
@@ -162,7 +162,6 @@ namespace MiStrAnGH
                 mesh.Vertices.Add(node.x, node.y, node.z);
 
             for (int i = 0; i < prinicpalStress.Count; i++)
-               // vonMises.Add(prinicpalStress[i].Length);
                 vonMises.Add(Math.Sqrt(prinicpalStress[i].X * prinicpalStress[i].X - prinicpalStress[i].X * prinicpalStress[i].Y + prinicpalStress[i].Y * prinicpalStress[i].Y));
 
             Grasshopper.GUI.Gradient.GH_Gradient grad = StaticFunctions.GetStandardGradient();

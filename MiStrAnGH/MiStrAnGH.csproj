@@ -57,6 +57,7 @@
     <Compile Include="Components\PointLoadComponent.cs" />
     <Compile Include="Components\SectionComponent.cs" />
     <Compile Include="Components\MiStrAnComponent.cs" />
+    <Compile Include="Components\VisualiseResultsComponent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Parameters\SectionParameter.cs" />
     <Compile Include="Types\SectionType.cs" />
