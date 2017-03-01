@@ -54,6 +54,7 @@
     <Compile Include="Components\CreateSupportComponent.cs" />
     <Compile Include="Components\DistributedLoadComponent.cs" />
     <Compile Include="Components\GravityLoadComponent.cs" />
+    <Compile Include="Components\PardisoTesingComponent.cs" />
     <Compile Include="Components\PointLoadComponent.cs" />
     <Compile Include="Components\SectionComponent.cs" />
     <Compile Include="Components\MiStrAnComponent.cs" />

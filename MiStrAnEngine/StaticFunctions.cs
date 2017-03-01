@@ -71,7 +71,7 @@ namespace MiStrAnEngine
             Vector s;
 
             Kff.ConvertToCRS();
-
+           
             if (!useExactMethod)
                 // s = Kff.SolveWith_Preconditioned_CG(b);
                 //s = Kff.SolveMathNET_PCG(b);

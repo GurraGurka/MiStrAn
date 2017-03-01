@@ -194,7 +194,7 @@ namespace MiStrAnEngine
     {
         private Pardiso() { }
 
-        public static int pardiso(IntPtr[] handle,
+        public static Int64 pardiso(IntPtr[] handle,
             ref int maxfct, ref int mnum,
             ref int mtype, ref int phase, ref int n,
             double[] a, int[] ia, int[] ja, int[] perm,
@@ -216,7 +216,7 @@ namespace MiStrAnEngine
 
         [DllImport("mkl_rt.dll", CallingConvention = CallingConvention.Cdecl,
              ExactSpelling = true, SetLastError = false)]
-        internal static extern int pardiso([In, Out] IntPtr[] handle,
+        internal static extern Int64 pardiso([In, Out] IntPtr[] handle,
             ref int maxfct, ref int mnum,
             ref int mtype, ref int phase, ref int n,
             [In] double[] a, [In] int[] ia, [In] int[] ja, [In] int[] perm,
