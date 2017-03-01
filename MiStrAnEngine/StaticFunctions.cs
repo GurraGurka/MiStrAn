@@ -73,15 +73,16 @@ namespace MiStrAnEngine
             Kff.ConvertToCRS();
 
             if (!useExactMethod)
-                s = Kff.SolveWith_Preconditioned_CG(b);
+                // s = Kff.SolveWith_Preconditioned_CG(b);
                 //s = Kff.SolveMathNET_PCG(b);
+                s = Kff.testSolveALGLIB(b);
             else
             {
                 Matrix s_ = Kff.ToMatrix().SolveWith_LL(b.ToMatrix());
                 s = s_.ToVector();
             }
-                
 
+            
 
             d[pdof] = dp;
             d[fdof] = s;

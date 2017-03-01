@@ -487,62 +487,47 @@ namespace MiStrAnEngine
             bool converged = false;
             double bNorm = b.Norm;
 
-            System.Diagnostics.Stopwatch sw1 = new System.Diagnostics.Stopwatch();
-            System.Diagnostics.Stopwatch sw2 = new System.Diagnostics.Stopwatch();
-            System.Diagnostics.Stopwatch sw3 = new System.Diagnostics.Stopwatch();
-            System.Diagnostics.Stopwatch sw4 = new System.Diagnostics.Stopwatch();
-            System.Diagnostics.Stopwatch sw5 = new System.Diagnostics.Stopwatch();
-            System.Diagnostics.Stopwatch sw6 = new System.Diagnostics.Stopwatch();
-            System.Diagnostics.Stopwatch sw7 = new System.Diagnostics.Stopwatch();
-            System.Diagnostics.Stopwatch sw8 = new System.Diagnostics.Stopwatch();
-
             for (int i = 0; i < maxIterations; i++)
             {
-                sw1.Start();
                 Vector Ap = A * p;
-                sw1.Stop();
 
-                sw2.Start();
                 double alpha_k = (r*z) / (p * Ap);
-                sw2.Stop();
 
-                sw3.Start();
                 x = x + alpha_k * p;
-                sw3.Stop();
 
-                sw4.Start();
                 old_r = new Vector(r);
                 r = r - alpha_k * (Ap);
-                sw4.Stop();
 
-                sw5.Start();
                 double relNorm = r.Norm / bNorm;
                 if (relNorm < tol)
                 {
-                    sw5.Stop();
                     converged = true;
                     break;
                 }
-                sw5.Stop();
 
                 old_z = new Vector(z);
 
-                sw6.Start();
                 z = Minv * r;
-                sw6.Stop();
-
-                sw7.Start();
                 double beta_k = (z * r) / (old_z * old_r);
-                sw7.Stop();
-
-                sw8.Start();
                 p = z + beta_k * p;
-                sw8.Stop();
             }
 
             if (!converged)
                 MessageBox.Show("Warning! Solver did not converge");
             return x;
+        }
+
+        public Vector testSolveALGLIB(Vector b)
+        {
+
+            alglib.lincgstate s;
+            alglib.lincgreport rep;
+            double[] x;
+            alglib.lincgcreate(b.Length, out s);
+            alglib.lincgsolvesparse(s, mat, true, b.values);
+            alglib.lincgresults(s, out x, out rep);
+
+            return new Vector(x);
         }
 
         private static double scalarProduct(double[] a, double[] b)

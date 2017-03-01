@@ -204,8 +204,12 @@ namespace Sandbox
 
             //Vector a = M * v;
 
+            SparseMatrix test = new SparseMatrix(5, 5);
+            test[0, 3] = 1;
+            test[2, 4] = 2;
+            test.ConvertToCRS();
 
-
+            test_pardiso.test_run();
 
 
             // Matrix test = StaticFunctions.SolveWith_CG_alglib(C.ToAlglibSparse(), b);
