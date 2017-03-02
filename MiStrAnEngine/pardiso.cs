@@ -15,7 +15,7 @@
 !   property rights must be express and approved by Intel in writing.
 !*******************************************************************************
 !   Content : MKL PARDISO C# example
-!        http://www.pardiso-project.org/manual/pardiso_sym.c
+!       h ttp://www.pardiso-project.org/manual/pardiso_sym.c
 !*******************************************************************************
 */
 /* -------------------------------------------------------------------- */
@@ -113,7 +113,7 @@ namespace MiStrAnEngine
             iparm[19] = 0; /* Output: Numbers of CG Iterations */
             maxfct = 1; /* Maximum number of numerical factorizations. */
             mnum = 1; /* Which factorization to use. */
-            msglvl = 1; /* Print statistical information in file */
+            msglvl = 0; /* Print statistical information in file */
             error = 0; /* Initialize error flag */
                        /* ----------------------------------------------------------------- */
                        /* .. Initialize the internal solver memory pointer. This is only */
@@ -194,7 +194,7 @@ namespace MiStrAnEngine
     {
         private Pardiso() { }
 
-        public static Int64 pardiso(IntPtr[] handle,
+        public static int pardiso(IntPtr[] handle,
             ref int maxfct, ref int mnum,
             ref int mtype, ref int phase, ref int n,
             double[] a, int[] ia, int[] ja, int[] perm,
@@ -216,7 +216,7 @@ namespace MiStrAnEngine
 
         [DllImport("mkl_rt.dll", CallingConvention = CallingConvention.Cdecl,
              ExactSpelling = true, SetLastError = false)]
-        internal static extern Int64 pardiso([In, Out] IntPtr[] handle,
+        internal static extern int pardiso([In, Out] IntPtr[] handle,
             ref int maxfct, ref int mnum,
             ref int mtype, ref int phase, ref int n,
             [In] double[] a, [In] int[] ia, [In] int[] ja, [In] int[] perm,

@@ -17,7 +17,7 @@ namespace MiStrAnEngine
         public Matrix DBe; //D*B for the stresses
         public Matrix Te; // Tranformation matrix for stresses
         public Vector3D qGravity; // Gravity load
-
+        public double MaterialOrientationAngle = -45;
         private Vector3D centroid;
 
 
@@ -206,6 +206,17 @@ namespace MiStrAnEngine
             return dofs;
         }
 
+        public void GetLocalCoordinateSystem(out Vector3D e1, out Vector3D e2, out Vector3D e3)
+        {
+            Vector3D v1 = Nodes[1].Pos - Nodes[0].Pos;
+            Vector3D _v2 = Nodes[2].Pos - Nodes[0].Pos;
+            Vector3D v3 = Vector3D.CrossProduct(v1, _v2);
+            Vector3D v2 = Vector3D.CrossProduct(v3, v1);
+
+            e1 = v1.Normalize(false);
+            e2 = v2.Normalize(false);
+            e3 = v3.Normalize(false);
+        }
 
         // See slides p.44
         public void GetLocalNodeCoordinates(out Matrix xel, out Matrix Tg)

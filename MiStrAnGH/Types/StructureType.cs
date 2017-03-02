@@ -11,6 +11,12 @@ namespace MiStrAnGH
 {
     public class StructureType : Structure, IGH_Goo
     {
+        public List<Line> XAxisLines;
+        public List<Line> YAxisLines;
+        public List<Line> ZAxisLines;
+        public List<Line> MaterialAxisLines;
+        public BoundingBox boundingBox;
+
         public StructureType() : base()
         { }
 
@@ -198,8 +204,95 @@ namespace MiStrAnGH
 
         }
 
-       
+        public void GenerateElementAxisLines()
+        {
+            XAxisLines = new List<Line>();
+            YAxisLines = new List<Line>();
+            ZAxisLines = new List<Line>();
+            MaterialAxisLines = new List<Line>();
+
+            Vector3D[] centroids = GetElementCentroids();
+            Vector3D[] _e1, _e2, _e3;
+
+            GetElementCoordinateSystems(out _e1, out _e2, out _e3);
+
+            for (int i = 0; i < NumberOfElements; i++)
+            {
+                Point3d C = centroids[i].ToRhinoPoint3d();
+                Point3d node2 = elements[i].Nodes[1].Pos.ToRhinoPoint3d();
+                Point3d node3 = elements[i].Nodes[2].Pos.ToRhinoPoint3d();
+                Vector3d e1 = _e1[i].ToRhinoVector3d();
+                Vector3d e2 = _e2[i].ToRhinoVector3d();
+                Vector3d e3 = _e3[i].ToRhinoVector3d();
 
 
+                Line B = new Line(node2, node3);
+                double x, b;
+
+                Line X = new Line(C, C + e1);
+
+                Rhino.Geometry.Intersect.Intersection.LineLine(X, B, out x, out b, 0.001, false);
+                X = new Line(C, B.PointAt(b));
+
+                Line Y = new Line(C, C + e2 * X.Length);
+                Line Z = new Line(C, C + e3 * X.Length);
+
+                XAxisLines.Add(X);
+                YAxisLines.Add(Y);
+                ZAxisLines.Add(Z);
+
+                double alpha = elements[i].MaterialOrientationAngle * 2 * Math.PI / 360;
+
+                Transform T = Transform.Rotation(alpha, e3, C);
+
+                Line M = new Line(X.From, X.To);
+                M.Transform(T);
+                MaterialAxisLines.Add(M);
+
+            }
+
+            GenerateBoundingboxFromAxisLines();
+
+
+        }
+
+        private void GenerateBoundingboxFromAxisLines()
+        {
+            List<Point3d> pts = new List<Point3d>();
+
+            for (int i = 0; i < NumberOfElements; i++)
+            {
+                pts.Add(XAxisLines[i].From);
+                pts.Add(XAxisLines[i].To);
+                pts.Add(YAxisLines[i].From);
+                pts.Add(YAxisLines[i].To);
+                pts.Add(ZAxisLines[i].From);
+                pts.Add(ZAxisLines[i].To);
+            }
+
+            boundingBox = new BoundingBox(pts);
+        }
+
+        public void SetDefaultMaterialOrientationAngles()
+        {
+            Vector3D e1, e2, e3, C;
+
+            for (int i = 0; i < NumberOfElements; i++)
+            {
+                ShellElement ele = elements[i];
+                ele.GetLocalCoordinateSystem(out e1, out e2, out e3);
+                C = ele.Centroid;
+
+                Plane P = new Plane(C.ToRhinoPoint3d(), e3.ToRhinoVector3d());
+                double alpha = Vector3d.VectorAngle(e1.ToRhinoVector3d(), Vector3d.XAxis, P);
+
+                if(Double.IsNaN(alpha))
+                    alpha = Vector3d.VectorAngle(e1.ToRhinoVector3d(), Vector3d.YAxis, P);
+
+                ele.MaterialOrientationAngle = (alpha / (2 * Math.PI)) * 360;
+            }
+            
+
+        }
     }
 }

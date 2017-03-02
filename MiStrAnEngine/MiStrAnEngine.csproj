@@ -45,6 +45,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="dgeev.cs" />
     <Compile Include="Load.cs" />
     <Compile Include="pardiso.cs" />
     <Compile Include="Support.cs" />

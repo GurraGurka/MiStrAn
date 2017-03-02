@@ -209,7 +209,7 @@ namespace Sandbox
             test[2, 4] = 2;
             test.ConvertToCRS();
 
-            test_pardiso.test_run();
+            dgeev.test_run();
 
 
             // Matrix test = StaticFunctions.SolveWith_CG_alglib(C.ToAlglibSparse(), b);

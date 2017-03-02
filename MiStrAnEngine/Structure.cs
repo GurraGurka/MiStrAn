@@ -22,6 +22,7 @@ namespace MiStrAnEngine
         public List<Vector3D> PrincipalStresses;
 
 
+
         public Structure(List<Node> _nodes, List<ShellElement> _elements) : this()
         {
             nodes = _nodes;
@@ -32,6 +33,8 @@ namespace MiStrAnEngine
         {
             InitializeLists();
         }
+
+        public int NumberOfElements { get { return elements.Count; } }
 
         private void InitializeLists()
         {
@@ -272,6 +275,39 @@ namespace MiStrAnEngine
 
             }
         }
+
+        public Vector3D[] GetElementCentroids()
+        {
+            Vector3D[] centroids = new Vector3D[elements.Count];
+
+            for (int i = 0; i < elements.Count; i++)
+            {
+                Vector3D cen = elements[i].Centroid;
+                centroids[i] = cen;
+            }
+
+            return centroids;
+        }
+
+        public void GetElementCoordinateSystems(out Vector3D[] e1, out Vector3D[] e2, out Vector3D[] e3)
+        {
+            int n = elements.Count;
+            e1 = new Vector3D[n];
+            e2 = new Vector3D[n];
+            e3 = new Vector3D[n];
+
+            for (int i = 0; i < n; i++)
+            {
+                Vector3D e1_, e2_, e3_;
+
+                elements[i].GetLocalCoordinateSystem(out e1_, out e2_, out e3_);
+                e1[i] = e1_;
+                e2[i] = e2_;
+                e3[i] = e3_;
+            }
+        }
+
+        
 
         public override string ToString()
         {
