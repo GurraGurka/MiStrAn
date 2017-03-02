@@ -61,9 +61,12 @@ namespace MiStrAnEngine
                 double Q22 = E2s[i] / (1 - v12s[i] * v21);
                 double Q66 = Gxys[i];
 
+                //Take local coordinate system into account
+                double angle = angles[i] + shell.MaterialOrientationAngle;
+
                 //angle in degree
-                double m = Math.Cos(angles[i] * 2 * Math.PI / 360); //Math.Cos uses radians
-                double n = Math.Sin(angles[i] * 2 * Math.PI / 360); //Math.Cos uses radians
+                double m = Math.Cos(angle * 2 * Math.PI / 360); //Math.Cos uses radians
+                double n = Math.Sin(angle * 2 * Math.PI / 360); //Math.Cos uses radians
 
                 //EUROCOMP, fast första är fel där (m^4) (Step 2)
                 double Q_11 = Q11 * Math.Pow(m, 4) + Q22 * Math.Pow(n, 4) + Q12 * 2 * Math.Pow(m, 2) * Math.Pow(n, 2) + Q66*4 * Math.Pow(m, 2) * Math.Pow(n, 2);

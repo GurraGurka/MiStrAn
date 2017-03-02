@@ -63,10 +63,10 @@ namespace MiStrAnGH
 
             StructureType S = StructureType.CreateFromMesh(mesh);
             S.AddSupports(supports.ConvertAll(x => (MiStrAnEngine.Support)x));
-            S.SetSections(sections);
             S.SetDefaultMaterialOrientationAngles();
+            S.SetSections(sections);
 
-          //  S.SetSteelSections(thick);
+            //  S.SetSteelSections(thick);
 
             foreach (LoadType lt in loads)
             {
