@@ -23,7 +23,7 @@ namespace MiStrAnGH
         /// </summary>
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {
-            pManager.AddPointParameter("Face center points", "FaceCentPt", "Select face-center points to give section", GH_ParamAccess.list);
+            pManager.AddPointParameter("Face center points", "FaceCentPt", "Select face-center points to give section", GH_ParamAccess.item);
             pManager.AddNumberParameter("E modulus in longitudinal direction [GPa]", "Ex", "Define one for all or for each ply", GH_ParamAccess.list, 210);
             pManager.AddNumberParameter("E modulus in transverse direction [GPA]", "Ey", "Define one for all or for each ply", GH_ParamAccess.list,210);
             pManager.AddNumberParameter("Longitudinal shear modulus [GPA]", "Gxy", " Define one for all or for each ply", GH_ParamAccess.list,79.3);
@@ -57,7 +57,8 @@ namespace MiStrAnGH
         /// <param name="DA">The DA object is used to retrieve from inputs and store in outputs.</param>
         protected override void SolveInstance(IGH_DataAccess DA)
         {
-            List<Point3d> faceIndexes = new List<Point3d>();
+            //   List<Point3d> faceIndexes = new List<Point3d>();
+            Point3d centerPt = new Point3d();
             List<double> Exs = new List<double>();
             List<double> Eys = new List<double>();
             List<double> Gxys = new List<double>();
@@ -68,7 +69,7 @@ namespace MiStrAnGH
 
             bool applyToAll = false;
             
-            if (!DA.GetDataList(0,faceIndexes)) applyToAll = true;
+            if (!DA.GetData(0,ref centerPt)) applyToAll = true;
             if (!DA.GetDataList(1, Exs)) {} //Exs = ExsDef;
             if (!DA.GetDataList(2, Eys)) { } //Eys = EysDef;
             if (!DA.GetDataList(3, Gxys)) { } // Gxys = GxysDef; 
@@ -81,7 +82,7 @@ namespace MiStrAnGH
  
 
 
-                int[] lenghts = { Exs.Count, Eys.Count, Gxys.Count, thickness.Count, angles.Count, vs.Count };
+            int[] lenghts = { Exs.Count, Eys.Count, Gxys.Count, thickness.Count, angles.Count, vs.Count };
             int listlength = lenghts.Max();
 
             //Check list length and that the layers are symmetrical
@@ -115,16 +116,17 @@ namespace MiStrAnGH
             //Fixa detta senare
             if (!applyToAll)
             {
-                List<MiStrAnEngine.Vector3D> vecs = new List<MiStrAnEngine.Vector3D>();
-                foreach (Point3d pt in faceIndexes)
-                    vecs.Add(new MiStrAnEngine.Vector3D(pt.X, pt.Y, pt.Z));
+               // List<MiStrAnEngine.Vector3D> vecs = new List<MiStrAnEngine.Vector3D>();
+               // foreach (Point3d pt in faceIndexes)
+                  //  vecs.Add(new MiStrAnEngine.Vector3D(pt.X, pt.Y, pt.Z));
                 
-                section = new SectionType(thickness, angles, Exs, Eys, Gxys, vs, vecs, density, totalThick);
+
+                section = new SectionType(thickness, angles, Exs, Eys, Gxys, vs, new MiStrAnEngine.Vector3D(centerPt.X, centerPt.Y, centerPt.Z), density, totalThick);
             }
                 
             else
             {
-                section= new SectionType(thickness, angles, Exs, Eys, Gxys, vs, new List<MiStrAnEngine.Vector3D>(), density, totalThick);
+                section= new SectionType(thickness, angles, Exs, Eys, Gxys, vs, new MiStrAnEngine.Vector3D(0,0,0), density, totalThick);
                 section.applyToAll = true;
             }
 

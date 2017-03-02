@@ -78,12 +78,12 @@ namespace MiStrAnEngine
                                                             { Nodes[2].x, Nodes[2].y, Nodes[2].z },});
             GetB_N(new Matrix(new double[,] { { 0,0,0 } }), xe, out Be, out N);
             //I DONT KNOW WHY BUT DIVISION OF THICKNESS IS NEEDED
-           // DBe =(1/thickness)* D * Be;
+            // DBe =(1/thickness)* D * Be;
+
+          //  GetStiffnessTransMatrix(localT, out G);
+          //  Dtrans = G * D * G.Transpose();
+
             this.DBe = (1 / this.Section.totalThickness) * D * Be;
-
-
-            //Te = T.Transpose();
-            // Te = T;
             this.Te = T;
 
             Vector3D q = Getq();
@@ -248,6 +248,24 @@ namespace MiStrAnEngine
             Tg[pos5, pos5] = T;
             Tg[pos6, pos6] = T;
 
+
+        }
+
+        public void GetStiffnessTransMatrix(Matrix T, out Matrix G)
+        {
+            G = new Matrix(new double[,] { { Math.Pow(T[0,0],2),Math.Pow(T[1,0],2),Math.Pow(T[2,0],2),2*T[1,0]*T[0,0],2*T[2,0]*T[0,0],2*T[1,0]*T[2,0]},
+                                           { Math.Pow(T[0,1],2),Math.Pow(T[1,1],2),Math.Pow(T[2,1],2),2*T[1,1]*T[0,1],2*T[0,1]*T[2,1],2*T[2,1]*T[1,1]},
+                                           { Math.Pow(T[0,2],2),Math.Pow(T[1,2],2),Math.Pow(T[2,2],2),2*T[1,2]*T[0,2],2*T[0,2]*T[2,2],2*T[2,1]*T[2,2]},
+                                           {T[0,1]*T[0,0],T[1,0]*T[1,1],T[2,0]*T[2,1],T[0,0]*T[1,1]+T[1,0]*T[0,1],T[2,0]*T[0,1]+T[0,0]*T[2,1],T[2,0]*T[1,1]+T[1,0]*T[2,1]},
+                                           {T[0,0]*T[0,2],T[1,0]*T[1,2],T[2,0]*T[2,2],T[0,2]*T[1,0]+T[1,2]*T[0,0],T[0,0]*T[2,2]+T[2,0]*T[0,2],T[2,2]*T[1,0]+T[1,2]*T[2,0]},
+                                           {T[0,2]*T[0,1],T[1,2]*T[1,1],T[2,2]*T[2,1],T[0,2]*T[1,1]+T[1,2]*T[0,1],T[0,1]*T[2,2]+T[0,2]*T[2,1],T[2,2]*T[1,1]+T[1,2]*T[2,1]} }); 
+
+          /*  G = new Matrix(new double[,] { { Math.Pow(T[0,0],2),Math.Pow(T[1,0],2),Math.Pow(T[2,0],2),T[0,1]*T[0,0],T[1,0]*T[1,1],T[2,0]*T[2,1]},
+                                           { Math.Pow(T[0,1],2),Math.Pow(T[1,1],2),Math.Pow(T[2,1],2),T[0,0]*T[0,2],T[1,0]*T[1,2],T[2,0]*T[2,2]},
+                                           { Math.Pow(T[0,2],2),Math.Pow(T[1,2],2),Math.Pow(T[2,2],2),T[0,2]*T[0,1],T[1,2]*T[1,1],T[2,2]*T[2,1]},
+                                           {2*T[1,0]*T[0,0],2*T[2,0]*T[0,0],2*T[1,0]*T[2,0],T[0,0]*T[1,1]+T[1,0]*T[0,1],T[2,0]*T[0,1]+T[0,0]*T[2,1],T[2,0]*T[1,1]+T[1,0]*T[2,1]},
+                                           {2*T[1,1]*T[0,1],2*T[0,1]*T[2,1],2*T[2,1]*T[1,1],T[0,2]*T[1,0]+T[1,2]*T[0,0],T[0,0]*T[2,2]+T[2,0]*T[0,2],T[2,2]*T[1,0]+T[1,2]*T[2,0]},
+                                           {2*T[1,2]*T[0,2],2*T[0,2]*T[2,2],2*T[2,1]*T[2,2],T[0,2]*T[1,1]+T[1,2]*T[0,1],T[0,1]*T[2,2]+T[0,2]*T[2,1],T[2,2]*T[1,1]+T[1,2]*T[2,1]} }); */
 
         }
 

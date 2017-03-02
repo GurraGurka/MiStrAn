@@ -243,16 +243,17 @@ namespace MiStrAnEngine
         public void SetSections(List<Section> sections)
         {
             //Set a section for each shell
-            foreach (Section s in sections)
+            foreach(Section s in sections)
             {
                 if(!s.applyToAll)
                 {
-                    foreach (Vector3D vec in s.faceIndexes)
-                    {
-                        ShellElement element = GetElementByCentroid(vec);
+                    //DEtta är för testing just nu!!
+                  //  foreach (Vector3D vec in s.faceIndexes)
+                 //   {
+                        ShellElement element = GetElementByCentroid(s.faceCenterPt);
                         element.Section = s;
                         element.GenerateD();
-                    }
+                 //   }
                 }
 
                 else
