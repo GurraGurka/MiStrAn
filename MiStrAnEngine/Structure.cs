@@ -20,6 +20,8 @@ namespace MiStrAnEngine
         public Vector a;
         public Vector r;
         public List<Vector3D> PrincipalStresses;
+        public List<Matrix> stresses;
+        public List<double> PrincipalAngles;
 
 
 
@@ -113,6 +115,8 @@ namespace MiStrAnEngine
             //the 15 active dofs used in each element (with 18 dofs in total)
             int[] activeDofs = new int[] { 0, 1, 2, 3, 4, 6, 7, 8, 9, 10, 12, 13, 14, 15, 16 };
             PrincipalStresses = new List<Vector3D>();
+            stresses = new List<Matrix>();
+            PrincipalAngles = new List<double>();
 
             for (int i = 0; i < elements.Count; i++)
             {
@@ -135,6 +139,10 @@ namespace MiStrAnEngine
 
                 //Stresses (D*B*a)
                 Matrix ss = elements[i].DBe * ed[0, SF.intSrs(0, 14)].Transpose();
+                stresses.Add(ss);
+
+                double theta = 0.5 * Math.Atan(2 * ss[2] / (ss[0] - ss[1]));
+                PrincipalAngles.Add(theta);
 
                 //Von mises
                 //   double vM = Math.Sqrt(Math.Pow(ss[i,0],2)+ Math.Pow(ss[i,1], 2)-ss[i,0]*ss[i,1]+3*Math.Pow(ss[i,2],2));

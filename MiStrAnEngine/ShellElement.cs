@@ -17,8 +17,9 @@ namespace MiStrAnEngine
         public Matrix DBe; //D*B for the stresses
         public Matrix Te; // Tranformation matrix for stresses
         public Vector3D qGravity; // Gravity load
-        public double MaterialOrientationAngle = -45;
+        public double MaterialOrientationAngle = 0;
         private Vector3D centroid;
+
 
 
         public ShellElement(List<Node> _nodes, int _id)
@@ -194,7 +195,14 @@ namespace MiStrAnEngine
 
         }
 
-       
+       public double GetPerimeterLength()
+        {
+            double A = (Nodes[2].Pos - Nodes[1].Pos).Length;
+            double B = (Nodes[1].Pos - Nodes[0].Pos).Length;
+            double C = (Nodes[2].Pos - Nodes[0].Pos).Length;
+
+            return A + B + C;
+        }
 
         public int[] GetElementDofs()
         {

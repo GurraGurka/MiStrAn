@@ -16,6 +16,9 @@ namespace MiStrAnGH
         public List<Line> ZAxisLines;
         public List<Line> MaterialAxisLines;
         public BoundingBox boundingBox;
+        public List<Line> PrincipalStressLinesX;
+        public List<Line> PrincipalStressLinesY;
+
 
         public StructureType() : base()
         { }
@@ -273,6 +276,45 @@ namespace MiStrAnGH
             boundingBox = new BoundingBox(pts);
         }
 
+        public void GeneratePrincipalStressLines()
+        {
+            PrincipalStressLinesX = new List<Line>();
+            PrincipalStressLinesY = new List<Line>();
+
+
+            for (int i = 0; i < NumberOfElements; i++)
+            {
+                Vector3D e1, e2, e3;
+                ShellElement ele = elements[i];
+
+                ele.GetLocalCoordinateSystem(out e1, out e2, out e3);
+
+                double L = ele.GetPerimeterLength();
+                double scaler = 0.1 * L;
+
+                Point3d C = ele.Centroid.ToRhinoPoint3d();
+
+                Transform T = Transform.Rotation(PrincipalAngles[i], e3.ToRhinoVector3d(), C);
+
+                //Vector3d p1 = e1.ToRhinoVector3d();
+                //Vector3d p2 = e2.ToRhinoVector3d();
+                //p1.Transform(T);
+                //p2.Transform(T);
+
+                Line X = new Line(C - scaler * e1.ToRhinoVector3d(), C + scaler * e1.ToRhinoVector3d());
+                Line Y = new Line(C - scaler * e2.ToRhinoVector3d(), C + scaler * e2.ToRhinoVector3d());
+
+                X.Transform(T);
+                Y.Transform(T);
+
+                PrincipalStressLinesX.Add(X);
+                PrincipalStressLinesY.Add(Y);
+
+            }
+
+
+        }
+
         public void SetDefaultMaterialOrientationAngles()
         {
             Vector3D e1, e2, e3, C;
@@ -292,7 +334,6 @@ namespace MiStrAnGH
                 ele.MaterialOrientationAngle = (alpha / (2 * Math.PI)) * 360;
             }
             
-
         }
     }
 }

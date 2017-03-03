@@ -55,6 +55,7 @@
     <Compile Include="Components\AnalyseStructureComponent.cs" />
     <Compile Include="Components\CreateSupportComponent.cs" />
     <Compile Include="Components\DistributedLoadComponent.cs" />
+    <Compile Include="Components\DrawPrincipalstressArrows.cs" />
     <Compile Include="Components\DrawElementCoordinateSystem.cs" />
     <Compile Include="Components\GravityLoadComponent.cs" />
     <Compile Include="Components\PardisoTesingComponent.cs" />
