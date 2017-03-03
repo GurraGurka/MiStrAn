@@ -16,7 +16,7 @@ namespace MiStrAnGH
     {
 
         public SupportParameter() : 
-            base("MiStrAn Structure", "Structure", "A MiStrAn structure", "MiStrAn", "no subcategory", GH_ParamAccess.item)
+            base("MiStrAn Structure", "Structure", "A MiStrAn structure", "MiStrAn", "Params", GH_ParamAccess.item)
         { }
 
 

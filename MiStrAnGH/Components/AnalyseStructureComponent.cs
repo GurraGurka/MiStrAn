@@ -38,9 +38,9 @@ namespace MiStrAnGH
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
         {
             pManager.AddParameter(new StructureParameter(), "Analysed structure", "Structure", "Use visualise results to view", GH_ParamAccess.item);
-            pManager.AddVectorParameter("Tx Ty Tz", "Displacements", "Solved displacements", GH_ParamAccess.list);
+            pManager.AddVectorParameter("Tx Ty Tz [m]", "Displacements", "Solved displacements in m", GH_ParamAccess.list);
             pManager.AddVectorParameter("Rx Ry Rz", "Rotations", "Solved rotations", GH_ParamAccess.list);
-            pManager.AddNumberParameter("r [N]", "Reactions", "solved reactions", GH_ParamAccess.list);
+            pManager.AddNumberParameter("r [kN]", "Reactions", "solved reactions in kN", GH_ParamAccess.list);
             pManager.AddVectorParameter("P1 P2 0 [MPa]", "PrincipalStresses", "Principal stresses in MPa", GH_ParamAccess.list);
             
         }

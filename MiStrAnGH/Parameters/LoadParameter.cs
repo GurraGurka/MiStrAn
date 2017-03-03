@@ -16,7 +16,7 @@ namespace MiStrAnGH
     {
 
         public LoadParameter() : 
-            base("MiStrAn Load", "Load", "A MiStrAn Load", "MiStrAn", "no subcategory", GH_ParamAccess.item)
+            base("MiStrAn Load", "Load", "A MiStrAn Load", "MiStrAn", "Params", GH_ParamAccess.item)
         { }
 
 

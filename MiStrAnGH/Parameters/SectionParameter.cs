@@ -16,7 +16,7 @@ namespace MiStrAnGH
     {
 
         public SectionParameter() :
-            base("MiStrAn Section", "Section", "A MiStrAn section", "StrucAnalysis", "no subcategory", GH_ParamAccess.item)
+            base("MiStrAn Section", "Section", "A MiStrAn section", "StrucAnalysis", "Params", GH_ParamAccess.item)
         { }
 
 
