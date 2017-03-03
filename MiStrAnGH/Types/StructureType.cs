@@ -19,6 +19,7 @@ namespace MiStrAnGH
         public BoundingBox boundingBox;
         public List<Line> PrincipalStressLinesX;
         public List<Line> PrincipalStressLinesY;
+        
 
 
         public StructureType() : base()
@@ -166,13 +167,10 @@ namespace MiStrAnGH
         public Mesh GenerateStressMesh(List<double> a, List<Vector3D> prinicpalStress)
         {
             Mesh mesh = new Mesh();
-            List<double> vonMises = new List<double>();
+            
 
             foreach (Node node in nodes)
-                mesh.Vertices.Add(node.x, node.y, node.z);
-
-            for (int i = 0; i < prinicpalStress.Count; i++)
-                vonMises.Add(Math.Sqrt(prinicpalStress[i].X * prinicpalStress[i].X - prinicpalStress[i].X * prinicpalStress[i].Y + prinicpalStress[i].Y * prinicpalStress[i].Y));
+                mesh.Vertices.Add(node.x, node.y, node.z); 
 
             Grasshopper.GUI.Gradient.GH_Gradient grad = StaticFunctions.GetStandardGradient();
 

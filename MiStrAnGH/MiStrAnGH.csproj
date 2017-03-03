@@ -58,6 +58,7 @@
     <Compile Include="Components\DrawPrincipalstressArrows.cs" />
     <Compile Include="Components\DrawElementCoordinateSystem.cs" />
     <Compile Include="Components\GravityLoadComponent.cs" />
+    <Compile Include="Components\ChangeMaterialAnglesComponent.cs" />
     <Compile Include="Components\PardisoTesingComponent.cs" />
     <Compile Include="Components\PointLoadComponent.cs" />
     <Compile Include="Components\SectionComponent.cs" />

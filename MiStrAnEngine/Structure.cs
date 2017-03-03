@@ -23,6 +23,7 @@ namespace MiStrAnEngine
         public List<Vector3D> PrincipalStresses;
         public List<Matrix> stresses;
         public List<double> PrincipalAngles;
+        public List<double> vonMises;
 
 
 
@@ -118,6 +119,7 @@ namespace MiStrAnEngine
             PrincipalStresses = new List<Vector3D>();
             stresses = new List<Matrix>();
             PrincipalAngles = new List<double>();
+            vonMises = new List<double>();
 
             for (int i = 0; i < elements.Count; i++)
             {
@@ -153,6 +155,8 @@ namespace MiStrAnEngine
                 double p1 = (ss[0] + ss[1]) / 2.0 + Math.Sqrt(Math.Pow((ss[0] - ss[1]) / 2, 2) + Math.Pow(ss[2], 2));
                 double p2 = (ss[0] + ss[1]) / 2.0 - Math.Sqrt(Math.Pow((ss[0] - ss[1]) / 2, 2) + Math.Pow(ss[2], 2));
                 PrincipalStresses.Add(new Vector3D(p1, p2, 0));
+
+                vonMises.Add(Math.Sqrt(p1 * p1 - p1 * p2 + p2 * p2));
             }
 
         }
@@ -316,7 +320,32 @@ namespace MiStrAnEngine
             }
         }
 
-        
+        public void SetMaterialOrientationAngles(double alpha)
+        {
+            for (int i = 0; i < NumberOfElements; i++)
+            {
+                elements[i].MaterialOrientationAngle = alpha;
+            }
+
+        }
+
+        public void SetMaterialOrientationAngles(List<double> alpha)
+        {
+            for (int i = 0; i < NumberOfElements; i++)
+            {
+                elements[i].MaterialOrientationAngle = alpha[i];
+            }
+
+        }
+
+        public void RegenerateDMatrices()
+        {
+            for (int i = 0; i < NumberOfElements; i++)
+            {
+                elements[i].GenerateD();
+            }
+
+        }
 
         public override string ToString()
         {

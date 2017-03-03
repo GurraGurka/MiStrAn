@@ -42,7 +42,9 @@ namespace MiStrAnGH
             pManager.AddVectorParameter("Rx Ry Rz", "Rotations", "Solved rotations", GH_ParamAccess.list);
             pManager.AddNumberParameter("r [kN]", "Reactions", "solved reactions in kN", GH_ParamAccess.list);
             pManager.AddVectorParameter("P1 P2 0 [MPa]", "PrincipalStresses", "Principal stresses in MPa", GH_ParamAccess.list);
-            
+            pManager.AddNumberParameter("Principal stress angles", "PS Angles", "Angles for principal stresses in each element [degrees]", GH_ParamAccess.list);
+            pManager.AddNumberParameter("von Mises stresses", "vMis", "von Mises stresses in each element", GH_ParamAccess.list);
+
         }
 
         /// <summary>
@@ -98,6 +100,8 @@ namespace MiStrAnGH
                 DA.SetDataList(2, rotList);
                 DA.SetDataList(3, rList);
                 DA.SetDataList(4, principalStresses);
+                DA.SetDataList(5, s.PrincipalAngles);
+                DA.SetDataList(6, s.vonMises);
                 
             }
 
