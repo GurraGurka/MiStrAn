@@ -41,6 +41,7 @@ using System.Collections.Generic;
 
 namespace MiStrAnEngine
 {
+    [Serializable]
     public class Matrix
     {
         public int rows;

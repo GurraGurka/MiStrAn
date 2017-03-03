@@ -9,6 +9,7 @@ using Rhino.Geometry;
 
 namespace MiStrAnGH
 {
+    [Serializable]
     public class StructureType : Structure, IGH_Goo
     {
         public List<Line> XAxisLines;

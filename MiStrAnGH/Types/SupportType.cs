@@ -8,6 +8,7 @@ using MiStrAnEngine;
 
 namespace MiStrAnGH
 {
+    [Serializable]
     public class SupportType : Support, IGH_Goo
     {
 

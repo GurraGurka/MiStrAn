@@ -8,6 +8,7 @@ using MiStrAnEngine;
 
 namespace MiStrAnGH
 {
+    [Serializable]
     public class SectionType : Section, IGH_Goo
     {
         public SectionType() : base()

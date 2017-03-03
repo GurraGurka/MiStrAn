@@ -5,6 +5,7 @@ using System.Text;
 
 namespace MiStrAnEngine
 {
+    [Serializable]
     public class Vector3D
     {
         public double X, Y, Z;

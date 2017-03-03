@@ -7,6 +7,7 @@ using SF = MiStrAnEngine.StaticFunctions;
 
 namespace MiStrAnEngine
 {
+    [Serializable]
     public class Structure 
     {
         protected List<Node> nodes;

@@ -8,6 +8,7 @@ using MiStrAnEngine;
 
 namespace MiStrAnGH
 {
+    [Serializable]
     public class LoadType : Load, IGH_Goo
     {
         public LoadType(Vector3D pos, Vector3D loadVec, TypeOfLoad type) : base(pos, loadVec, type)

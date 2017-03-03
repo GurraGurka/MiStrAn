@@ -5,6 +5,7 @@ using System.Text;
 
 namespace MiStrAnEngine
 {
+    [Serializable]
     public class Support
     {
         public Node node;

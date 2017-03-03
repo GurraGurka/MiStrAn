@@ -8,6 +8,7 @@ namespace MiStrAnEngine
 {
 
     // Sparse matrix
+    [Serializable]
     public class SparseMatrix
     {
         public alglib.sparsematrix mat;

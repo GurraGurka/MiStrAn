@@ -6,6 +6,7 @@ using SF = MiStrAnEngine.StaticFunctions;
 
 namespace MiStrAnEngine
 {
+    [Serializable]
     public class Materials
     {
         //Only verified to MATLAB-cod with configurations: 4 laminas (all 0 degrees), 4 laminas (45,30,30,45) degrees

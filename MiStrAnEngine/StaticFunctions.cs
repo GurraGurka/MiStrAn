@@ -6,6 +6,7 @@ using System.Text;
 
 namespace MiStrAnEngine
 {
+    [Serializable]
     public static class StaticFunctions
     {
 
