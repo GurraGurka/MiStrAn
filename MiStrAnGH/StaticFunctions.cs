@@ -155,5 +155,52 @@ namespace MiStrAnGH
             return grad;
         }
 
+        public static void GetStressesElemPoints(Mesh mesh, List<Vector3d> prinStresses, int nbElements, out List<Point3d> high, out List<Point3d> low)
+        {
+            List<double> vLengths = new List<double>();
+            List<int> indexes = new List<int>();
+            high = new List<Point3d>();
+            low = new List<Point3d>();
+
+            foreach (Vector3d v in prinStresses)
+                vLengths.Add(v.Length);
+
+            //List sorted by elements with highest principle stress
+            List<double> sortedvLengths = vLengths.OrderByDescending(d => d).ToList();
+
+            //This can certainly be improved
+            for (int i = 0; i < sortedvLengths.Count; i++)
+            {
+                for(int j = 0; j< vLengths.Count;j++)
+                {
+                    if (vLengths [j]== sortedvLengths[i])
+                    {
+                        indexes.Add(j);
+                        break; 
+                    }
+                }
+            }
+
+            indexes = indexes.Take(nbElements).ToList();
+
+            MeshFaceList faceList = mesh.Faces;
+            
+
+            for (int i = 0; i < faceList.Count; i++)
+            {
+                if (indexes.Contains(i))
+                   high.Add(faceList.GetFaceCenter(i));
+                else
+                    low.Add(faceList.GetFaceCenter(i));
+
+            }
+                
+
+
+
+        }
+
+        
+
     }
     }
