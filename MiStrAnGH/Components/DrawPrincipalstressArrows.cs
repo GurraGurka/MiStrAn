@@ -20,6 +20,7 @@ namespace MiStrAnGH.Components
 
         public StructureType structure;
 
+
         /// <summary>
         /// Registers all the input parameters for this component.
         /// </summary>
