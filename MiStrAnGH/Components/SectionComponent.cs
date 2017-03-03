@@ -14,7 +14,7 @@ namespace MiStrAnGH
         public SectionComponent()
           : base("Section", "Section",
               "Materializing...",
-              "MiStrAn", "No SubCat")
+              "MiStrAn", "Model")
         {
         }
 

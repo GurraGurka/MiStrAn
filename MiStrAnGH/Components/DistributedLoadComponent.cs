@@ -14,7 +14,7 @@ namespace MiStrAnGH
         public DistributedLoadComponent()
           : base("MiStrAn Distributed Load", "DistLoad",
               "Create a Distributed load",
-              "MiStrAn", "Subcategory")
+              "MiStrAn", "Loads")
         {
         }
 
@@ -24,7 +24,7 @@ namespace MiStrAnGH
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {
             pManager.AddPointParameter("Center Point", "CenPt", "Point close to centroid of mesh face", GH_ParamAccess.item);
-            pManager.AddVectorParameter("Force Vector", "q", "Force vector to be applied to element", GH_ParamAccess.item);
+            pManager.AddVectorParameter("Force Vector [kN]", "q", "Force vector in kN to be applied to element", GH_ParamAccess.item);
         }
 
         /// <summary>
@@ -46,6 +46,9 @@ namespace MiStrAnGH
 
             if (!DA.GetData(0, ref pt)) return;
             if (!DA.GetData(1, ref vec)) return;
+
+            //account for unit (kN)
+            vec *= 1000;
 
             LoadType load = new LoadType(new MiStrAnEngine.Vector3D(pt.X, pt.Y, pt.Z), new MiStrAnEngine.Vector3D(vec.X, vec.Y, vec.Z), MiStrAnEngine.TypeOfLoad.DistributedLoad);
 

@@ -18,7 +18,7 @@ namespace MiStrAnGH
         public AssebleStructureComponent()
           : base("MiStrAn Assemble Structure", "Assemble",
               "Calculating...",
-              "MiStrAn", "No SubCat")
+              "MiStrAn", "Model")
         { }
 
 

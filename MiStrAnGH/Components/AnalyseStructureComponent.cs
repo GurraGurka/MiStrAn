@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-
+using System.Linq;
 using Grasshopper.Kernel;
 using Rhino.Geometry;
 
@@ -18,7 +18,7 @@ namespace MiStrAnGH
         public AnalyseStructureComponent()
           : base("MiStrAn Analyse Structure", "Analyse",
               "Analyse a MiStrAn structure",
-              "MiStrAn", "No SubCat")
+              "MiStrAn", "Model")
         {
         }
 
@@ -41,7 +41,7 @@ namespace MiStrAnGH
             pManager.AddVectorParameter("Tx Ty Tz", "Displacements", "Solved displacements", GH_ParamAccess.list);
             pManager.AddVectorParameter("Rx Ry Rz", "Rotations", "Solved rotations", GH_ParamAccess.list);
             pManager.AddNumberParameter("r [N]", "Reactions", "solved reactions", GH_ParamAccess.list);
-            pManager.AddVectorParameter("P1 P2 0", "PrincipalStresses", "Principal stresses", GH_ParamAccess.list);
+            pManager.AddVectorParameter("P1 P2 0 [MPa]", "PrincipalStresses", "Principal stresses in MPa", GH_ParamAccess.list);
             
         }
 
@@ -73,13 +73,22 @@ namespace MiStrAnGH
                 aList = s.a.ToList();
                 rList = s.r.ToList();
 
+                //Account for unit (kN)
+                rList= rList.Select(x => x / 1000).ToList();
+
+
                 List<MiStrAnEngine.Vector3D> pStress;
                 s.CalcStresses();
                 pStress = s.PrincipalStresses;
 
                 //Convert to rhino.vector3d
                 for (int i = 0; i < pStress.Count; i++)
+                {
+                    //account for unit (MPa)
+                    pStress[i] /= 1e6;
                     principalStresses.Add(new Vector3d(pStress[i].X, pStress[i].Y, 0));
+                }
+                   
 
                 //Get outputs
                 StaticFunctions.GetDefRotVector(aList, out defList, out rotList);

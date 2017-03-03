@@ -14,7 +14,7 @@ namespace MiStrAnGH
         public CreateSupportComponent()
           : base("Create Support", "Support",
               "Creates a support from a point",
-              "MiStrAn", "Subcategory")
+              "MiStrAn", "Model")
         {
         }
 

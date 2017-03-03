@@ -14,7 +14,7 @@ namespace MiStrAnGH
         public GravityLoadComponent()
           : base("MiStrAn Gravity load", "Gravity",
               "Create aMiStrAn Gravity load",
-              "MiStrAn", "Subcategory")
+              "MiStrAn", "Loads")
         {
         }
 

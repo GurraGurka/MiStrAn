@@ -14,7 +14,7 @@ namespace MiStrAnGH.Components
         public VisualiseResultsComponent()
           : base("Visualise Results", "VisRes",
               "Description",
-              "MiStrAn", "Subcategory")
+              "MiStrAn", "Visualise")
         {
         }
 

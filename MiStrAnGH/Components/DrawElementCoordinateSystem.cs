@@ -14,7 +14,7 @@ namespace MiStrAnGH.Components
         public DrawElementCoordinateSystem()
           : base("DrawElementCoordinateSystem", "DrawCoordSys",
               "Draws a strucutres elements coordinate systems",
-              "MiStrAn", "Subcategory")
+              "MiStrAn", "Visualise")
         {
         }
 
