@@ -145,7 +145,9 @@ namespace MiStrAnEngine
                 stresses.Add(ss);
 
                 double theta = 0.5 * Math.Atan(2 * ss[2] / (ss[0] - ss[1]));
+                if (ss[0] < ss[1]) theta = theta + Math.PI / 2;
                 PrincipalAngles.Add(theta);
+                
 
                 //Von mises
                 //   double vM = Math.Sqrt(Math.Pow(ss[i,0],2)+ Math.Pow(ss[i,1], 2)-ss[i,0]*ss[i,1]+3*Math.Pow(ss[i,2],2));

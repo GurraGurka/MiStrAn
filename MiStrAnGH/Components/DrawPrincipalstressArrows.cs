@@ -34,6 +34,7 @@ namespace MiStrAnGH.Components
         /// </summary>
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
         {
+            pManager.AddNumberParameter("bla", "bla", "bla", GH_ParamAccess.list);
         }
 
         /// <summary>
@@ -47,6 +48,7 @@ namespace MiStrAnGH.Components
             if (!DA.GetData(0, ref structure)) return;
 
             structure.GeneratePrincipalStressLines();
+            DA.SetDataList(0, structure.PrincipalAngles);
         }
 
         /// <summary>
@@ -76,6 +78,9 @@ namespace MiStrAnGH.Components
             {
                 System.Drawing.Color X = structure.PrincipalStresses[i].X <= 0 ? System.Drawing.Color.Blue : System.Drawing.Color.Red;
                 System.Drawing.Color Y = structure.PrincipalStresses[i].Y <= 0 ? System.Drawing.Color.Blue : System.Drawing.Color.Red;
+
+                //System.Drawing.Color X = structure.PrincipalStresses[i].X <= 0 ? System.Drawing.Color.Red : System.Drawing.Color.Red;
+                //System.Drawing.Color Y = structure.PrincipalStresses[i].Y <= 0 ? System.Drawing.Color.Blue : System.Drawing.Color.Blue;
 
                 args.Display.DrawLine(structure.PrincipalStressLinesX[i], X);
                 args.Display.DrawLine(structure.PrincipalStressLinesY[i], Y);
