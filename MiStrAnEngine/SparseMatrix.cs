@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using System.Diagnostics;
 
 namespace MiStrAnEngine
 {
@@ -518,9 +519,9 @@ namespace MiStrAnEngine
             return x;
         }
 
-        public Vector testSolveALGLIB(Vector b)
+        public Vector SolveAlglibCG(Vector b)
         {
-
+            ConvertToCRS();
             alglib.lincgstate s;
             alglib.lincgreport rep;
             double[] x;
@@ -530,6 +531,152 @@ namespace MiStrAnEngine
 
             return new Vector(x);
         }
+
+        public Vector SolvePARDISO(Vector b)
+        {
+            SparseMatrix K = this;
+           //   K.CleanLowerTriangle();
+
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+            K.ConvertToCRS();
+            /* Matrix data. */
+            int n = b.Length;
+
+            int[] ia/*[9]*/ = new int[K.mat.innerobj.ridx.Length];//new int[] { 1, 5, 8, 10, 12, 15, 17, 18, 19 };
+            int[] ja/*[18]*/ = new int[K.mat.innerobj.idx.Length];//new int[] { 1, 3, 6, 7,
+                                                                  //                             2, 3, 5,
+                                                                  //                             3, 8,
+                                                                  //                             4, 7,
+                                                                  //                             5, 6, 7,
+                                                                  //                             6, 8,
+                                                                  //                             7,
+                                                                  //                             8 };
+            double[] a = new double[K.mat.innerobj.vals.Length];//a/*[18]*/ = new double[] { 7.0, 1.0, 2.0, 7.0,
+            //                                      -4.0, 8.0, 2.0,
+            //                                      1.0, 5.0,
+            //                                      7.0, 9.0,
+            //                                      5.0, 1.0, 5.0,
+            //                                      -1.0, 5.0,
+            //                                      11.0,
+            //                                      5.0 };
+            double[] b_ = new double[n];
+            K.mat.innerobj.ridx.CopyTo(ia, 0);
+            K.mat.innerobj.idx.CopyTo(ja, 0);
+            K.mat.innerobj.vals.CopyTo(a, 0);
+            b.values.CopyTo(b_, 0);
+            double[] x = new double[n];
+            int mtype = 11; /* Real symmetric matrix */
+                            /* RHS and solution vectors. */
+
+            int nrhs = 1; /* Number of right hand sides. */
+                          /* Internal solver memory pointer pt, */
+                          /* 32-bit: int pt[64]; 64-bit: long int pt[64] */
+                          /* or void *pt[64] should be OK on both architectures */
+                          /* void *pt[64]; */
+            IntPtr[] pt = new IntPtr[64];
+            /* Pardiso control parameters. */
+            int[] iparm = new int[64];
+            int maxfct, mnum, phase, error, msglvl;
+            /* Auxiliary variables. */
+            int i;
+            double[] ddum = new double[1]; /* Double dummy */
+            int[] idum = new int[1]; /* Integer dummy. */
+                                     /* ----------------------------------------------------------------- */
+                                     /* .. Setup Pardiso control parameters. */
+                                     /* ----------------------------------------------------------------- */
+            for (i = 0; i < 64; i++)
+            {
+                iparm[i] = 0;
+            }
+            iparm[0] = 1; /* No solver default */
+            iparm[1] = 2; /* Fill-in reordering from METIS */
+                          /* Numbers of processors, value of OMP_NUM_THREADS */
+            iparm[2] = 1;
+            iparm[3] = 0; /* No iterative-direct algorithm */
+            iparm[4] = 0; /* No user fill-in reducing permutation */
+            iparm[5] = 0; /* Write solution into x */
+            iparm[6] = 0; /* Not in use */
+            iparm[7] = 10; /* Max numbers of iterative refinement steps */
+            iparm[8] = 0; /* Not in use */
+            iparm[9] = 13; /* Perturb the pivot elements with 1E-13 */
+            iparm[10] = 1; /* Use nonsymmetric permutation and scaling MPS */
+            iparm[11] = 0; /* Not in use */
+            iparm[12] = 0; /* Maximum weighted matching algorithm is switched-off
+                            * (default for symmetric). Try iparm[12] = 1 in case of
+                            *  inappropriate accuracy */
+            iparm[13] = 0; /* Output: Number of perturbed pivots */
+            iparm[14] = 0; /* Not in use */
+            iparm[15] = 0; /* Not in use */
+            iparm[16] = 0; /* Not in use */
+            iparm[17] = -1; /* Output: Number of nonzeros in the factor LU */
+            iparm[18] = -1; /* Output: Mflops for LU factorization */
+            iparm[19] = 0; /* Output: Numbers of CG Iterations */
+            iparm[34] = 1;
+            maxfct = 1; /* Maximum number of numerical factorizations. */
+            mnum = 1; /* Which factorization to use. */
+            msglvl = 0; /* Print statistical information in file */
+            error = 0; /* Initialize error flag */
+                       /* ----------------------------------------------------------------- */
+                       /* .. Initialize the internal solver memory pointer. This is only */
+                       /* necessary for the FIRST call of the PARDISO solver. */
+                       /* ----------------------------------------------------------------- */
+            for (i = 0; i < 64; i++)
+            {
+                pt[i] = IntPtr.Zero;
+            }
+            /* ----------------------------------------------------------------- */
+            /* .. Reordering and Symbolic Factorization. This step also allocates */
+            /* all memory that is necessary for the factorization. */
+            /* ----------------------------------------------------------------- */
+            phase = 11;
+            MKL.pardiso(pt, ref maxfct, ref mnum, ref mtype, ref phase,
+                ref n, a, ia, ja, idum, ref nrhs,
+                iparm, ref msglvl, ddum, ddum, ref error);
+            if (error != 0)
+            {
+                MessageBox.Show("\nERROR during symbolic factorization: " + error);
+            }
+
+            /* ----------------------------------------------------------------- */
+            /* .. Numerical factorization. */
+            /* ----------------------------------------------------------------- */
+            phase = 22;
+            MKL.pardiso(pt, ref maxfct, ref mnum, ref mtype, ref phase,
+                ref n, a, ia, ja, idum, ref nrhs,
+                iparm, ref msglvl, ddum, ddum, ref error);
+            if (error != 0)
+            {
+                MessageBox.Show("\nERROR during numerical factorization: " + error);
+            }
+
+            /* ----------------------------------------------------------------- */
+            /* .. Back substitution and iterative refinement. */
+            /* ----------------------------------------------------------------- */
+            phase = 33;
+            iparm[7] = 5; /* Max numbers of iterative refinement steps. */
+                          /* Set right hand side to one. */
+
+            MKL.pardiso(pt, ref maxfct, ref mnum, ref mtype, ref phase,
+                ref n, a, ia, ja, idum, ref nrhs,
+                iparm, ref msglvl, b_, x, ref error);
+            if (error != 0)
+            {
+                MessageBox.Show("\nERROR during solution: " + error);
+            }
+
+            /* ----------------------------------------------------------------- */
+            /* .. Termination and release of memory. */
+            /* ----------------------------------------------------------------- */
+            phase = -1; /* Release internal memory. */
+            MKL.pardiso(pt, ref maxfct, ref mnum, ref mtype, ref phase,
+                ref n, ddum, ia, ja, idum, ref nrhs,
+                iparm, ref msglvl, ddum, ddum, ref error);
+
+            sw.Stop();
+            return new Vector(x);
+        
+    }
 
         private static double scalarProduct(double[] a, double[] b)
         {
@@ -550,6 +697,18 @@ namespace MiStrAnEngine
             colidx = new int[nzcnt];
 
             alglib.sparsegetcompressedrow(mat, i, ref colidx, ref rowValues, out nzcnt);
+        }
+
+        public void CleanLowerTriangle()
+        {
+            for (int i = 0; i < rows; i++)
+            {
+                for (int j = 0; j < i; j++)
+                {
+                    this[i, j] = 0;
+                }
+            }
+
         }
 
         public void AddStiffnessContribution(Matrix A, int[] dofs)

@@ -153,14 +153,14 @@ namespace Sandbox
             //v[1] = 3;
             //v[2] = 4;
 
-            //SparseMatrix M = new SparseMatrix(3, 3);
-            //M[0, 0] = 2;
-            //M[0, 1] = -1;
-            //M[1, 0] = -1;
-            //M[1, 1] = 2;
-            //M[1, 2] = -1;
-            //M[2, 1] = -1;
-            //M[2, 2] = 2;
+            SparseMatrix M = new SparseMatrix(3, 3);
+            M[0, 0] = 2;
+            M[0, 1] = -1;
+            M[1, 0] = -1;
+            M[1, 1] = 2;
+            M[1, 2] = -1;
+            M[2, 1] = -1;
+            M[2, 2] = 2;
 
 
             //SparseMatrix L = M.MakeCholesky();
@@ -171,8 +171,8 @@ namespace Sandbox
             //L.ConvertToCRS();
             //iL.ConvertToCRS();
 
-            //Vector b = new Vector(3);
-            //b[2] = 4;
+            Vector b = new Vector(3);
+            b[2] = 4;
 
             //SparseMatrix Minv = M.GetPreconditioningMatrix();
             //Matrix blaha = Minv.ToMatrix();
@@ -181,8 +181,8 @@ namespace Sandbox
             //Matrix fu = (blaha2 * blaha2.Transpose()) * blaha;
 
 
-            //Vector x = M.SolveWith_Preconditioned_CG(b);
-            //x = M.SolveWith_CG(b);
+            Vector x = M.SolveWith_Preconditioned_CG(b);
+            x = M.SolveWith_CG(b);
             //Vector y = M.SolveWith_LL(b);
 
             //Vector v = new Vector(3);
@@ -204,12 +204,13 @@ namespace Sandbox
 
             //Vector a = M * v;
 
-            SparseMatrix test = new SparseMatrix(5, 5);
-            test[0, 3] = 1;
-            test[2, 4] = 2;
-            test.ConvertToCRS();
 
-            dgeev.test_run();
+
+          //  x = test_pardiso.Solve(M, b);
+
+            Vector c = M * x;
+
+
 
 
             // Matrix test = StaticFunctions.SolveWith_CG_alglib(C.ToAlglibSparse(), b);

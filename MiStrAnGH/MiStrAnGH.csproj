@@ -93,7 +93,11 @@
   -->
   <PropertyGroup>
     <PostBuildEvent>copy /Y "$(TargetDir)$(ProjectName).dll" "C:\Users\$(Username)\AppData\Roaming\Grasshopper\Libraries\$(ProjectName).gha"
-copy /Y "C:\Users\$(Username)\Documents\GitHub\MiStrAn\ExternalDLL\alglibnet2.dll" "C:\Users\$(Username)\AppData\Roaming\Grasshopper\Libraries\alglibnet2.dll"</PostBuildEvent>
+copy /Y "C:\Users\$(Username)\Documents\GitHub\MiStrAn\ExternalDLL\alglibnet2.dll" "C:\Users\$(Username)\AppData\Roaming\Grasshopper\Libraries\alglibnet2.dll"
+copy /Y "C:\Users\$(Username)\Documents\GitHub\MiStrAn\ExternalDLL\mkl_core.dll" "C:\Users\$(Username)\AppData\Roaming\Grasshopper\Libraries\mkl_core.dll"
+copy /Y "C:\Users\$(Username)\Documents\GitHub\MiStrAn\ExternalDLL\mkl_def.dll" "C:\Users\$(Username)\AppData\Roaming\Grasshopper\Libraries\mkl_def.dll"
+copy /Y "C:\Users\$(Username)\Documents\GitHub\MiStrAn\ExternalDLL\mkl_intel_thread.dll" "C:\Users\$(Username)\AppData\Roaming\Grasshopper\Libraries\mkl_intel_thread.dll"
+copy /Y "C:\Users\$(Username)\Documents\GitHub\MiStrAn\ExternalDLL\mkl_rt.dll" "C:\Users\$(Username)\AppData\Roaming\Grasshopper\Libraries\mkl_rt.dll"</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
     <FallbackCulture>en-US</FallbackCulture>

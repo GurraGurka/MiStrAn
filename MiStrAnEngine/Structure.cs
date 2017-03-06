@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SF = MiStrAnEngine.StaticFunctions;
+using System.Diagnostics;
 
 namespace MiStrAnEngine
 {
@@ -55,17 +56,19 @@ namespace MiStrAnEngine
             K = new SparseMatrix(nDofs, nDofs);
             f = new Vector(nDofs);
 
+            Stopwatch sw1 = new Stopwatch();
+            Stopwatch sw2 = new Stopwatch();
+            Stopwatch sw3 = new Stopwatch();
 
             for (int i=0; i<elements.Count; i++)
             {
                 int[] dofs = elements[i].GetElementDofs();
                 Matrix Ke;
                 Vector fe;
-                elements[i].GenerateKefe(out Ke, out fe);
+                elements[i].GenerateKefe(out Ke, out fe,sw1,sw2,sw3);
 
                 K.AddStiffnessContribution(Ke, dofs);
                 f[dofs] = f[dofs] + fe;
-
             }
 
 
@@ -141,7 +144,7 @@ namespace MiStrAnEngine
 
 
                 //Stresses (D*B*a)
-                Matrix ss = elements[i].DBe * ed[0, SF.intSrs(0, 14)].Transpose();
+                Matrix ss = elements[i].DBe * ed.Transpose();
                 stresses.Add(ss);
 
                 double theta = 0.5 * Math.Atan(2 * ss[2] / (ss[0] - ss[1]));

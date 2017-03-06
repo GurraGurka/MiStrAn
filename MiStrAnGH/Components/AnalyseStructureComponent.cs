@@ -64,6 +64,7 @@ namespace MiStrAnGH
             if (run)
             {
 
+                StaticFunctions.ForceloadMKLCORE();
                 s.Analyze();
 
                 List<double> aList = new List<double>();
