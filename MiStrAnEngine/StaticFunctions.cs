@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
+using System.Diagnostics;
 
 
 namespace MiStrAnEngine
@@ -71,19 +73,16 @@ namespace MiStrAnEngine
 
             Vector s;
 
-            Kff.ConvertToCRS();
-           
             if (!useExactMethod)
                 // s = Kff.SolveWith_Preconditioned_CG(b);
                 //s = Kff.SolveMathNET_PCG(b);
-                s = Kff.testSolveALGLIB(b);
+                // s = Kff.SolveAlglibCG(b);
+               s = Kff.SolvePARDISO(b);
             else
             {
                 Matrix s_ = Kff.ToMatrix().SolveWith_LL(b.ToMatrix());
                 s = s_.ToVector();
             }
-
-            
 
             d[pdof] = dp;
             d[fdof] = s;
@@ -93,8 +92,13 @@ namespace MiStrAnEngine
             return true;
     }
 
-
+        [DllImport("kernel32", SetLastError = true, CharSet = CharSet.Ansi)]
+        public static extern IntPtr LoadLibrary([MarshalAs(UnmanagedType.LPStr)]string lpFileName);
 
 
     }
+
+
+
+
 }

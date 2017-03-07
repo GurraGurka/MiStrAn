@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SF = MiStrAnEngine.StaticFunctions;
+using System.Diagnostics;
 
 namespace MiStrAnEngine
 {
@@ -22,6 +23,7 @@ namespace MiStrAnEngine
         private Vector3D centroid;
         public List<Matrix> Qstress;
         public List<double> zs;
+
 
 
 
@@ -52,6 +54,8 @@ namespace MiStrAnEngine
 
         public bool GenerateKefe(out Matrix Ke, out Vector fe)
         {
+
+
             Ke = new Matrix(18, 18);
             fe = new Vector(18);
             DBe = new List<Matrix>();
@@ -99,18 +103,25 @@ namespace MiStrAnEngine
 
             Vector3D q = Getq();
 
+
             for (int i = 0; i < ng; i++)
             {
+
                 GetB_N(gp.GetRow(i), xe,out B, out N);
                 Matrix DKe = gw[i]* B.Transpose() * D * B;
-                Ke[activeDofs, activeDofs] = Ke[activeDofs, activeDofs] + elementArea*DKe; 
-                Matrix DMe= gw[i] * N.Transpose() * q.ToMatrix();
-                fe[activeDofs] = fe[activeDofs] + elementArea*DMe.ToVector();
+                Vector DMe = gw[i] * N.Transpose() * q.ToVector();
+
+                Ke[activeDofs, activeDofs] = Ke[activeDofs, activeDofs] + elementArea*DKe;              
+                fe[activeDofs] = fe[activeDofs] + elementArea*DMe;
             }
+
+
+
+            
             // Adding small stiffness to rotational dofs
             Ke[passiveDofs, passiveDofs] =  Matrix.Ones(3, 3);
-
             Ke = T * Ke * T.Transpose();
+
             return true;
         }
 

@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using SF = MiStrAnEngine.StaticFunctions;
 using mat = MiStrAnEngine.Materials;
 using MiStrAnEngine;
+using System.Diagnostics;
 
 namespace Sandbox
 {
@@ -122,99 +123,119 @@ namespace Sandbox
             //SparseMatrix B = new SparseMatrix(3, 3);
             //Matrix C = new Matrix(3, 3);
 
-            //A[0, 0] = 1;
-            ////A[0, 2] = 3;
-            //A[0, 2] = 1;
-            //A[1, 1] = 1;
-            //A[1, 2] = 1;
-            //A[2, 2] = 1;
+            //  //A[0, 0] = 1;
+            //  ////A[0, 2] = 3;
+            //  //A[0, 2] = 1;
+            //  //A[1, 1] = 1;
+            //  //A[1, 2] = 1;
+            //  //A[2, 2] = 1;
 
-            //B[0, 0] = 3;
-            //B[0, 1] = 5;
-            //B[1, 0] = 6;
-            //B[1, 2] = 7;
-            //B[2, 2] = 2;
+            //  //B[0, 0] = 3;
+            //  //B[0, 1] = 5;
+            //  //B[1, 0] = 6;
+            //  //B[1, 2] = 7;
+            //  //B[2, 2] = 2;
 
-            //C[0, 0] = 1;
-            //C[0, 1] = 1;
-            //C[0, 2] = 1;
-            //C[1, 0] = 1;
-            //C[1, 1] = 1;
-            //C[2, 0] = 1;
-            //C[2, 2] = 1;
+            //  //C[0, 0] = 1;
+            //  //C[0, 1] = 1;
+            //  //C[0, 2] = 1;
+            //  //C[1, 0] = 1;
+            //  //C[1, 1] = 1;
+            //  //C[2, 0] = 1;
+            //  //C[2, 2] = 1;
 
-            //Vector b = new Vector(3);
-            //b[0] = 2;
-            //b[1] = 2;
-            //b[2] = 1;
+            //  //Vector b = new Vector(3);
+            //  //b[0] = 2;
+            //  //b[1] = 2;
+            //  //b[2] = 1;
 
-            //Matrix v = new Matrix(3, 1);
-            //v[0] = 6;
-            //v[1] = 3;
-            //v[2] = 4;
+            //  //Matrix v = new Matrix(3, 1);
+            //  //v[0] = 6;
+            //  //v[1] = 3;
+            //  //v[2] = 4;
 
-            //SparseMatrix M = new SparseMatrix(3, 3);
-            //M[0, 0] = 2;
-            //M[0, 1] = -1;
-            //M[1, 0] = -1;
-            //M[1, 1] = 2;
-            //M[1, 2] = -1;
-            //M[2, 1] = -1;
-            //M[2, 2] = 2;
-
-
-            //SparseMatrix L = M.MakeCholesky();
-            //L.ConvertToCRS();
-
-            //SparseMatrix iL = M.MakeIncompleteCholesky();
-
-            //L.ConvertToCRS();
-            //iL.ConvertToCRS();
-
-            //Vector b = new Vector(3);
-            //b[2] = 4;
-
-            //SparseMatrix Minv = M.GetPreconditioningMatrix();
-            //Matrix blaha = Minv.ToMatrix();
-            //Matrix blaha2 = iL.ToMatrix();
-
-            //Matrix fu = (blaha2 * blaha2.Transpose()) * blaha;
+            //  SparseMatrix M = new SparseMatrix(3, 3);
+            //  M[0, 0] = 2;
+            //  M[0, 1] = -1;
+            //  M[1, 0] = -1;
+            //  M[1, 1] = 2;
+            //  M[1, 2] = -1;
+            //  M[2, 1] = -1;
+            //  M[2, 2] = 2;
 
 
-            //Vector x = M.SolveWith_Preconditioned_CG(b);
-            //x = M.SolveWith_CG(b);
-            //Vector y = M.SolveWith_LL(b);
+            //  //SparseMatrix L = M.MakeCholesky();
+            //  //L.ConvertToCRS();
 
-            //Vector v = new Vector(3);
-            //v[0] = 0;
-            //v[1] = 0;
-            //v[2] = 5;
+            //  //SparseMatrix iL = M.MakeIncompleteCholesky();
 
-            //SparseMatrix M = new SparseMatrix(3, 3);
-            //M[0, 0] = 1;
-            //M[0, 1] = 1;
-            //M[0, 2] = 1;
-            //M[1, 0] = 1;
-            //M[1, 1] = 1;
-            //M[1, 2] = 1;
-            //M[2, 0] = 1;
-            //M[2, 1] = 1;
-            //M[2, 2] = 1;
+            //  //L.ConvertToCRS();
+            //  //iL.ConvertToCRS();
+
+            //  Vector b = new Vector(3);
+            //  b[2] = 4;
+
+            //  //SparseMatrix Minv = M.GetPreconditioningMatrix();
+            //  //Matrix blaha = Minv.ToMatrix();
+            //  //Matrix blaha2 = iL.ToMatrix();
+
+            //  //Matrix fu = (blaha2 * blaha2.Transpose()) * blaha;
 
 
-            //Vector a = M * v;
+            //  Vector x = M.SolveWith_Preconditioned_CG(b);
+            //  x = M.SolveWith_CG(b);
+            //  //Vector y = M.SolveWith_LL(b);
 
-            SparseMatrix test = new SparseMatrix(5, 5);
-            test[0, 3] = 1;
-            test[2, 4] = 2;
-            test.ConvertToCRS();
+            //  //Vector v = new Vector(3);
+            //  //v[0] = 0;
+            //  //v[1] = 0;
+            //  //v[2] = 5;
 
-            dgeev.test_run();
+            //  //SparseMatrix M = new SparseMatrix(3, 3);
+            //  //M[0, 0] = 1;
+            //  //M[0, 1] = 1;
+            //  //M[0, 2] = 1;
+            //  //M[1, 0] = 1;
+            //  //M[1, 1] = 1;
+            //  //M[1, 2] = 1;
+            //  //M[2, 0] = 1;
+            //  //M[2, 1] = 1;
+            //  //M[2, 2] = 1;
 
 
-            // Matrix test = StaticFunctions.SolveWith_CG_alglib(C.ToAlglibSparse(), b);
+            //  //Vector a = M * v;
 
-          //  a 
+
+
+            ////  x = test_pardiso.Solve(M, b);
+
+            //  Vector c = M * x;
+
+
+
+
+            //  // Matrix test = StaticFunctions.SolveWith_CG_alglib(C.ToAlglibSparse(), b);
+
+            ////  a 
+
+            Stopwatch sw1 = new Stopwatch();
+            Stopwatch sw2 = new Stopwatch();
+            Stopwatch sw3 = new Stopwatch();
+
+
+            Matrix A = Matrix.RandomMatrix(24, 24, 2);
+            Matrix B = new Matrix(A);
+
+            
+            Matrix C = Matrix.MKLMatrixMultiplication(A, B,sw1);
+
+
+            sw2.Start();
+            C = A * B;
+            sw2.Stop();
+            sw3.Start();
+            C = Matrix.ALGLIBMatrixMultiplication(A, B);
+            sw3.Stop();
         }
 
         private void Form1_Load(object sender, EventArgs e)

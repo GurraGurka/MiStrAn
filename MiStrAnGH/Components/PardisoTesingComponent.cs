@@ -39,7 +39,18 @@ namespace MiStrAnGH.Components
         protected override void SolveInstance(IGH_DataAccess DA)
         {
 
-            dgeev.test_run();
+
+            //    MiStrAnEngine.test_pardiso.loadTest(@"C:\Users\gvgdse\AppData\Roaming\Grasshopper\Libraries\mkl_rt.dll");
+            //      MiStrAnEngine.test_pardiso.loadTest(@"C:\Users\gvgdse\AppData\Roaming\Grasshopper\Libraries\libiomp5md.dll");
+            // MiStrAnEngine.test_pardiso.loadTest(@"C:\Users\gvgdse\AppData\Roaming\Grasshopper\Libraries\mkl_core.dll");
+            //        MiStrAnEngine.test_pardiso.loadTest(@"C:\Users\gvgdse\AppData\Roaming\Grasshopper\Libraries\mkl_def.dll");
+            //    MiStrAnEngine.test_pardiso.loadTest(@"C:\Users\gvgdse\AppData\Roaming\Grasshopper\Libraries\mkl_intel_thread.dll");
+            //  MiStrAnEngine.test_pardiso.loadTest(@"C:\Users\gvgdse\AppData\Roaming\Grasshopper\Libraries\mkl_mc3.dll");
+            //MiStrAnEngine.test_pardiso.loadTest(@"C:\Users\gvgdse\AppData\Roaming\Grasshopper\Libraries\mkl_p4.dll");
+            // MiStrAnEngine.test_pardiso.loadTest(@"C:\Users\gvgdse\AppData\Roaming\Grasshopper\Libraries\mkl_p4m3.dll");
+
+            //StaticFunctions.ForceloadMKLCORE();
+            //MiStrAnEngine.test_pardiso.test_run();
         }
 
         /// <summary>
