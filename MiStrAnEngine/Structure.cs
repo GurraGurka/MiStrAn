@@ -65,7 +65,7 @@ namespace MiStrAnEngine
                 int[] dofs = elements[i].GetElementDofs();
                 Matrix Ke;
                 Vector fe;
-                elements[i].GenerateKefe(out Ke, out fe,sw1,sw2,sw3);
+                elements[i].GenerateKefe(out Ke, out fe);
 
                 K.AddStiffnessContribution(Ke, dofs);
                 f[dofs] = f[dofs] + fe;

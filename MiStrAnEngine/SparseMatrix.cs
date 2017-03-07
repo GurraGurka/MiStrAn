@@ -535,10 +535,7 @@ namespace MiStrAnEngine
         public Vector SolvePARDISO(Vector b)
         {
             SparseMatrix K = this;
-           //   K.CleanLowerTriangle();
 
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
             K.ConvertToCRS();
             /* Matrix data. */
             int n = b.Length;
@@ -673,7 +670,6 @@ namespace MiStrAnEngine
                 ref n, ddum, ia, ja, idum, ref nrhs,
                 iparm, ref msglvl, ddum, ddum, ref error);
 
-            sw.Stop();
             return new Vector(x);
         
     }
