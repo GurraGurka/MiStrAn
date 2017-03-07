@@ -132,7 +132,7 @@ namespace MiStrAnEngine
                     aTrans[j] = a[dofsFull[j]];
 
                 //Transform the local coordinates to global
-                aTrans = elements[i].Te.Invert() * aTrans; //tror inte invert behövs
+                aTrans = elements[i].Te.Invert() * aTrans; 
 
                 //Take the 15 active dofs that should be used from the transformed defrormations 
                 Matrix ed = new Matrix(1, 15);
@@ -141,21 +141,51 @@ namespace MiStrAnEngine
 
 
                 //Stresses (D*B*a)
-                Matrix ss = elements[i].DBe * ed[0, SF.intSrs(0, 14)].Transpose();
-                stresses.Add(ss);
+                //  Matrix ss = elements[i].DBe * ed[0, SF.intSrs(0, 14)].Transpose();
+                // stresses.Add(ss);
 
-                double theta = 0.5 * Math.Atan(2 * ss[2] / (ss[0] - ss[1]));
-                if (ss[0] < ss[1]) theta = theta + Math.PI / 2;
-                PrincipalAngles.Add(theta);
+                double theta = 0;
+                Vector3D vMax = new Vector3D();
+                
+                for( int j=0; j< elements[i].DBe.Count;j++) 
+                {
+                    Matrix ss = new Matrix(6, 1);
+
+                    ed[3] *= elements[i].zs[j];
+                    ed[4] *= elements[i].zs[j];
+                    ed[8] *= elements[i].zs[j];
+                    ed[9] *= elements[i].zs[j];
+                    ed[13] *= elements[i].zs[j];
+                    ed[14] *= elements[i].zs[j];
+                    ss = elements[i].DBe[j] * ed[0, SF.intSrs(0, 14)].Transpose();
+                
+             
+                    //Make sure there is no errors when this is changed
+                  //  theta = 0.5 * Math.Atan(2 * ss[2] / (ss[0] - ss[1]));
+                   // if (ss[0] < ss[1]) theta = theta + Math.PI / 2;
+                    //PrincipalAngles.Add(theta);
                 
 
    
-                //Principle stresses
-                double p1 = (ss[0] + ss[1]) / 2.0 + Math.Sqrt(Math.Pow((ss[0] - ss[1]) / 2, 2) + Math.Pow(ss[2], 2));
-                double p2 = (ss[0] + ss[1]) / 2.0 - Math.Sqrt(Math.Pow((ss[0] - ss[1]) / 2, 2) + Math.Pow(ss[2], 2));
-                PrincipalStresses.Add(new Vector3D(p1, p2, 0));
+                    //Principle stresses
+                    double p1 = (ss[0] + ss[1]) / 2.0 + Math.Sqrt(Math.Pow((ss[0] - ss[1]) / 2, 2) + Math.Pow(ss[2], 2));
+                    double p2 = (ss[0] + ss[1]) / 2.0 - Math.Sqrt(Math.Pow((ss[0] - ss[1]) / 2, 2) + Math.Pow(ss[2], 2));
 
-                vonMises.Add(Math.Sqrt(p1 * p1 - p1 * p2 + p2 * p2));
+                    Vector3D v = new Vector3D(p1, p2, 0);
+                    if (v.Length > vMax.Length)
+                    {
+                        vMax = v;
+                        theta = 0.5 * Math.Atan(2 * ss[2] / (ss[0] - ss[1]));
+                        if (ss[0] < ss[1]) theta = theta + Math.PI / 2;
+                    }
+                         
+                }
+                //  PrincipalStresses.Add(new Vector3D(p1, p2, 0));
+                PrincipalStresses.Add(vMax);
+                // vonMises.Add(Math.Sqrt(p1 * p1 - p1 * p2 + p2 * p2));
+                vonMises.Add(Math.Sqrt(vMax.X * vMax.X - vMax.X * vMax.Y + vMax.Y * vMax.Y));
+                PrincipalAngles.Add(theta);
+
             }
 
         }
