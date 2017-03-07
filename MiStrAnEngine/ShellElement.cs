@@ -52,7 +52,8 @@ namespace MiStrAnEngine
 
         public bool GenerateKefe(out Matrix Ke, out Vector fe, Stopwatch sw1, Stopwatch sw2, Stopwatch sw3)
         {
-            sw1.Start();
+
+
             Ke = new Matrix(18, 18);
             fe = new Vector(18);
             DBe = new Matrix(6, 15);
@@ -92,26 +93,33 @@ namespace MiStrAnEngine
             this.Te = T;
 
             Vector3D q = Getq();
-            sw1.Stop();
 
-            sw2.Start();
+
             for (int i = 0; i < ng; i++)
             {
+                sw1.Start();
                 GetB_N(gp.GetRow(i), xe,out B, out N);
                 Matrix DKe = gw[i]* B.Transpose() * D * B;
-                Ke[activeDofs, activeDofs] = Ke[activeDofs, activeDofs] + elementArea*DKe; 
-                Matrix DMe= gw[i] * N.Transpose() * q.ToMatrix();
-                fe[activeDofs] = fe[activeDofs] + elementArea*DMe.ToVector();
+                Vector DMe = gw[i] * N.Transpose() * q.ToVector();
+                sw1.Stop();
+
+                sw2.Start();
+                Ke[activeDofs, activeDofs] = Ke[activeDofs, activeDofs] + elementArea*DKe;              
+                fe[activeDofs] = fe[activeDofs] + elementArea*DMe;
+                sw2.Stop();
             }
 
-            sw2.Stop();
 
-            sw3.Start();
+
+            
             // Adding small stiffness to rotational dofs
             Ke[passiveDofs, passiveDofs] =  Matrix.Ones(3, 3);
 
+            sw3.Start();
             Ke = T * Ke * T.Transpose();
             sw3.Stop();
+
+
             return true;
         }
 
