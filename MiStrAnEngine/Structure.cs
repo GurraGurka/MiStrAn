@@ -158,14 +158,12 @@ namespace MiStrAnEngine
                     ed[13] *= elements[i].zs[j];
                     ed[14] *= elements[i].zs[j];
                     ss = elements[i].DBe[j] * ed[0, SF.intSrs(0, 14)].Transpose();
-                
-             
-                    //Make sure there is no errors when this is changed
-                  //  theta = 0.5 * Math.Atan(2 * ss[2] / (ss[0] - ss[1]));
-                   // if (ss[0] < ss[1]) theta = theta + Math.PI / 2;
-                    //PrincipalAngles.Add(theta);
-                
 
+
+                    //Make sure there is no errors when this is changed
+                    //  theta = 0.5 * Math.Atan(2 * ss[2] / (ss[0] - ss[1]));
+                    // if (ss[0] < ss[1]) theta = theta + Math.PI / 2;
+                    //PrincipalAngles.Add(theta);
    
                     //Principle stresses
                     double p1 = (ss[0] + ss[1]) / 2.0 + Math.Sqrt(Math.Pow((ss[0] - ss[1]) / 2, 2) + Math.Pow(ss[2], 2));
