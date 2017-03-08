@@ -52,11 +52,12 @@ namespace MiStrAnEngine
 
         }
 
-        public bool GenerateKefe(out Matrix Ke, out Vector fe)
+        public bool GenerateKefe(out Matrix Ke, out Vector fe, out Matrix Me)
         {
 
 
             Ke = new Matrix(18, 18);
+            Me = new Matrix(18, 18);
             fe = new Vector(18);
             DBe = new List<Matrix>();
             //DBe = new Matrix(6, 15);
@@ -109,10 +110,14 @@ namespace MiStrAnEngine
 
                 GetB_N(gp.GetRow(i), xe,out B, out N);
                 Matrix DKe = gw[i]* B.Transpose() * D * B;
-                Vector DMe = gw[i] * N.Transpose() * q.ToVector();
+                Vector DFe = gw[i] * N.Transpose() * q.ToVector();
 
-                Ke[activeDofs, activeDofs] = Ke[activeDofs, activeDofs] + elementArea*DKe;              
-                fe[activeDofs] = fe[activeDofs] + elementArea*DMe;
+                //This only account for one density over the whole element
+                Matrix DMe = this.Section.totalThickness*this.Section.density* gw[i] * N.Transpose() * N;
+
+                Ke[activeDofs, activeDofs] = Ke[activeDofs, activeDofs] + elementArea*DKe;
+                Me[activeDofs, activeDofs] = Me[activeDofs, activeDofs] + elementArea * DMe;
+                fe[activeDofs] = fe[activeDofs] + elementArea*DFe;
             }
 
 
@@ -121,6 +126,7 @@ namespace MiStrAnEngine
             // Adding small stiffness to rotational dofs
             Ke[passiveDofs, passiveDofs] =  Matrix.Ones(3, 3);
             Ke = T * Ke * T.Transpose();
+            Me = T * Me * T.Transpose();
 
             return true;
         }

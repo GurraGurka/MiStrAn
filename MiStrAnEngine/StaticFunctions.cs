@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Diagnostics;
+using SF = MiStrAnEngine.StaticFunctions;
 
 
 namespace MiStrAnEngine
@@ -41,6 +42,32 @@ namespace MiStrAnEngine
                 }
             }
             return param;
+        }
+
+        public static Vector3D InverseIterationMethod(SparseMatrix K, SparseMatrix M, int nbIterations)
+        {
+            //This is from Dynamics assignment4
+
+            //Guess vector 
+            Matrix fi0norm = Matrix.Ones(K.cols, 1);
+            fi0norm = (1 / Math.Sqrt(Convert.ToDouble(K.cols)))*fi0norm;
+
+            SparseMatrix fiNorm = new SparseMatrix(K.cols, nbIterations);
+            int[] numbers = new int[1] { 0 };
+            fiNorm.SetCol(new Vector(K.cols), 0);
+
+            Vector lambdas = new Vector(nbIterations);
+            
+
+            for (int i = 1; i < nbIterations; i++)
+            {
+
+                //foreach
+               // lambdas[i] = fiNorm=fi0norm.s
+
+            }
+
+            return new Vector3D();
         }
 
 

@@ -14,6 +14,7 @@ namespace MiStrAnEngine
         protected List<ShellElement> elements;
         List<Support> supports;
         public SparseMatrix K;
+        public SparseMatrix M;
         public Vector f;
         public Matrix bc;
 
@@ -52,6 +53,7 @@ namespace MiStrAnEngine
 
             int nDofs = nodes.Count * 6;
             K = new SparseMatrix(nDofs, nDofs);
+            M = new SparseMatrix(nDofs, nDofs);
             f = new Vector(nDofs);
 
 
@@ -60,10 +62,12 @@ namespace MiStrAnEngine
             {
                 int[] dofs = elements[i].GetElementDofs();
                 Matrix Ke;
+                Matrix Me;
                 Vector fe;
-                elements[i].GenerateKefe(out Ke, out fe);
+                elements[i].GenerateKefe(out Ke, out fe, out Me);
 
                 K.AddStiffnessContribution(Ke, dofs);
+                M.AddStiffnessContribution(Me, dofs);
                 f[dofs] = f[dofs] + fe;
 
             }
