@@ -16,11 +16,13 @@ namespace MiStrAnEngine
         public Matrix D;
         public Section Section;
         public List<Load> Loads;
-        public Matrix DBe; //D*B for the stresses
+        public List<Matrix> DBe; //D*B for the stresses
         public Matrix Te; // Tranformation matrix for stresses
         public Vector3D qGravity; // Gravity load
         public double MaterialOrientationAngle = 0;
         private Vector3D centroid;
+        public List<Matrix> Qstress;
+        public List<double> zs;
 
 
 
@@ -56,7 +58,8 @@ namespace MiStrAnEngine
 
             Ke = new Matrix(18, 18);
             fe = new Vector(18);
-            DBe = new Matrix(6, 15);
+            DBe = new List<Matrix>();
+            //DBe = new Matrix(6, 15);
             Matrix Be = new Matrix(6, 15);
 
             Matrix B, N, gp, gw, xe, T;
@@ -86,10 +89,16 @@ namespace MiStrAnEngine
             //I DONT KNOW WHY BUT DIVISION OF THICKNESS IS NEEDED
             // DBe =(1/thickness)* D * Be;
 
-              //  GetStiffnessTransMatrix(localT, out G);
-              //  Dtrans = G * D * G.Transpose();
+            //  GetStiffnessTransMatrix(localT, out G);
+            //  Dtrans = G * D * G.Transpose();
 
-            this.DBe = (1 / this.Section.totalThickness) * D * Be;
+            // this.DBe = (1 / this.Section.totalThickness) * D * Be;
+            // this.DBe =  Qstress * Be;
+            foreach(Matrix m in Qstress)
+                this.DBe.Add(m * Be);
+
+
+
             this.Te = T;
 
             Vector3D q = Getq();
@@ -105,10 +114,12 @@ namespace MiStrAnEngine
                 Ke[activeDofs, activeDofs] = Ke[activeDofs, activeDofs] + elementArea*DKe;              
                 fe[activeDofs] = fe[activeDofs] + elementArea*DMe;
             }
+
+
+
             
             // Adding small stiffness to rotational dofs
             Ke[passiveDofs, passiveDofs] =  Matrix.Ones(3, 3);
-
             Ke = T * Ke * T.Transpose();
 
             return true;
@@ -132,30 +143,47 @@ namespace MiStrAnEngine
             return q;
         }
 
+        public Vector3D GetGravityq(ShellElement s)
+        {
+            
+            double gravity = 9.81;
+            double density = s.Section.density;
+            double thickness = s.Section.totalThickness;
+
+            double q = -gravity * density * thickness;
+            return new Vector3D(0, 0, q);
+        }
+
+
 
         public void GenerateD()
         {
             Matrix d,q;
-            Materials.eqModulus(this, out d, out q);
-                this.D = d;
-            this.qGravity = q.ToVector3D();
+            List<Matrix> Qs = new List<Matrix>();
+            List<double> z = new List<double>();
+            //rename
+            Materials.eqModulus(this, out d, out Qs, out z);
+            this.D = d;
+            this.Qstress = Qs;
+            this.zs = z;
+            this.qGravity = GetGravityq(this);
         }
 
-        public void SetSteelSection()
+    /*    public void SetSteelSection()
         {
-            /*    double E = 210e9;
+                double E = 210e9;
                 double v = 0.3;
                 double G = E / (2.0 * (1 + v));
-                double density = 7800; //[kg/m^3] */
-            Matrix d, q;
+                double density = 7800; //[kg/m^3] 
+            Matrix d, q,Q;
             Matrix qLoc = new Matrix(6, 1); 
 
             double[] angle = new double[1] { 0}; // double[] angle = new double[] { 0};
-            Materials.eqModulus(this, out d, out q); //, out qLoc);
+            Materials.eqModulus(this, out d, out q, out new List<Matrix>(),new List<double>()); //, out qLoc);
             this.D = d;
             //this.q = qLoc;
 
-        }
+        } */
 
         private static void GenerateGaussPoints(int n, out Matrix gp, out Matrix gw)
         {
