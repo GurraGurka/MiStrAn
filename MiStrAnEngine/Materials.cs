@@ -10,7 +10,7 @@ namespace MiStrAnEngine
     public class Materials
     {
         //Only verified to MATLAB-cod with configurations: 4 laminas (all 0 degrees), 4 laminas (45,30,30,45) degrees
-        public static void eqModulus(ShellElement shell, out Matrix D, out Matrix q, out List<Matrix> Qtot, out List<double> zValues)
+        public static void eqModulus(ShellElement shell, out Matrix D, out List<Matrix> Qtot, out List<double> zValues)
         {
             //Just used for the shorter name
             List<double> E1s = shell.Section.Exs;
@@ -23,7 +23,7 @@ namespace MiStrAnEngine
             double totThick = shell.Section.totalThickness;
 
             //Used for gravity load
-            double gravity = 9.81;
+            //double gravity = 9.81;
 
             //Global stiffness  matrices for the laminate
             Matrix AA = new Matrix(3, 3); //Extensional or membrane stiffness terms of a laminate
@@ -117,7 +117,7 @@ namespace MiStrAnEngine
             BB = (1.0 / 2.0) * BB;
             DD = (1.0 / 3.0) * DD;
             // II2 = (1.0 / 3.0) * II2;
-            II0 = II0 * density * gravity;
+           // II0 = II0 * density * gravity;
 
             //Step 5 i euroCOMP
             //   Matrix a = AA.Invert();
@@ -144,7 +144,7 @@ namespace MiStrAnEngine
             D[new int[] { 3, 4, 5 }, new int[] { 0, 1, 2 }] = -BB;
 
             //Total Gravity load matrix
-            q = new Matrix(new double[,] { { 0 } , { 0 }, { -II0 } }); //Gravity works in negative direction
+            //q = new Matrix(new double[,] { { 0 } , { 0 }, { -II0 } }); //Gravity works in negative direction
 
             
 
