@@ -14,7 +14,6 @@ namespace MiStrAnEngine
         protected List<Node> nodes;
         protected List<ShellElement> elements;
         List<Support> supports;
-       // List<Load> loads;
         public SparseMatrix K;
         public Vector f;
         public Matrix bc;
@@ -59,6 +58,7 @@ namespace MiStrAnEngine
             Stopwatch sw1 = new Stopwatch();
             Stopwatch sw2 = new Stopwatch();
             Stopwatch sw3 = new Stopwatch();
+
 
             for (int i=0; i<elements.Count; i++)
             {

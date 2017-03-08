@@ -671,8 +671,26 @@ namespace MiStrAnEngine
                 iparm, ref msglvl, ddum, ddum, ref error);
 
             return new Vector(x);
-        
-    }
+
+        }
+
+        public SparseMatrix Inverse()
+        {
+            SparseMatrix Inv = new SparseMatrix(rows, cols);
+
+            for (int i = 0; i < rows; i++)
+            {
+                Vector b = new Vector(rows);
+                b[i] = 1;
+
+                Vector InvCol = SolvePARDISO(b);
+                Inv.SetCol(InvCol, i);
+            }
+
+            return Inv;
+
+        }
+
 
         private static double scalarProduct(double[] a, double[] b)
         {

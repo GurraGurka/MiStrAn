@@ -86,8 +86,8 @@ namespace MiStrAnEngine
             //I DONT KNOW WHY BUT DIVISION OF THICKNESS IS NEEDED
             // DBe =(1/thickness)* D * Be;
 
-          //  GetStiffnessTransMatrix(localT, out G);
-          //  Dtrans = G * D * G.Transpose();
+              //  GetStiffnessTransMatrix(localT, out G);
+              //  Dtrans = G * D * G.Transpose();
 
             this.DBe = (1 / this.Section.totalThickness) * D * Be;
             this.Te = T;
@@ -105,12 +105,10 @@ namespace MiStrAnEngine
                 Ke[activeDofs, activeDofs] = Ke[activeDofs, activeDofs] + elementArea*DKe;              
                 fe[activeDofs] = fe[activeDofs] + elementArea*DMe;
             }
-
-
-
             
             // Adding small stiffness to rotational dofs
             Ke[passiveDofs, passiveDofs] =  Matrix.Ones(3, 3);
+
             Ke = T * Ke * T.Transpose();
 
             return true;
