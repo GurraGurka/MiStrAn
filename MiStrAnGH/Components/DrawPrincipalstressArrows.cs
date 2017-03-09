@@ -14,7 +14,7 @@ namespace MiStrAnGH.Components
         public DrawPrincipalstressArrows()
           : base("DrawPrincipalstressArrows", "DrawPrincArrows",
               "Draws principal stress arrows on elements",
-              "MiStrAn", "Subcategory")
+              "MiStrAn", "Visualise")
         {
         }
 

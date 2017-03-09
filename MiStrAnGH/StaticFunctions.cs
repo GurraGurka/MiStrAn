@@ -87,20 +87,28 @@ namespace MiStrAnGH
                 vLengths.Add(v.Length);
 
             //List sorted by elements with highest principle stress
-            List<double> sortedvLengths = vLengths.OrderByDescending(d => d).ToList();
+            /*    List<double> sortedvLengths = vLengths.OrderByDescending(d => d).ToList();
 
-            //This can certainly be improved
-            for (int i = 0; i < sortedvLengths.Count; i++)
-            {
-                for(int j = 0; j< vLengths.Count;j++)
+                //This can certainly be improved
+                for (int i = 0; i < sortedvLengths.Count; i++)
                 {
-                    if (vLengths [j]== sortedvLengths[i])
+                    for(int j = 0; j< vLengths.Count;j++)
                     {
-                        indexes.Add(j);
-                        break; 
+                        if (vLengths [j]== sortedvLengths[i])
+                        {
+                            indexes.Add(j);
+                            break; 
+                        }
                     }
-                }
-            }
+                } */
+            var sorted = vLengths
+                .Select((x, i) => new KeyValuePair<double, int>(x, i))
+                .OrderBy(x => x.Key)
+                .ToList();
+
+           // List<int> sortedLengths = sorted.Select(x => x.Key).ToList();
+            indexes = sorted.Select(x => x.Value).ToList();
+
 
             indexes = indexes.Take(nbElements).ToList();
 

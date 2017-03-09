@@ -57,6 +57,7 @@
     <Compile Include="Components\DistributedLoadComponent.cs" />
     <Compile Include="Components\DrawPrincipalstressArrows.cs" />
     <Compile Include="Components\DrawElementCoordinateSystem.cs" />
+    <Compile Include="Components\Dynamics.cs" />
     <Compile Include="Components\GetStressedElements.cs" />
     <Compile Include="Components\GravityLoadComponent.cs" />
     <Compile Include="Components\ChangeMaterialAnglesComponent.cs" />

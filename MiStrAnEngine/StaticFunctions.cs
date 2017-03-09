@@ -44,30 +44,60 @@ namespace MiStrAnEngine
             return param;
         }
 
-        public static Vector3D InverseIterationMethod(SparseMatrix K, SparseMatrix M, int nbIterations)
+        //Not used
+        public static double InverseIterationMethod(SparseMatrix K, SparseMatrix M, Matrix bc, int nbIterations)
         {
             //This is from Dynamics assignment4
 
+            //Reduce M and K matrices
+            SparseMatrix reducedK;
+            SparseMatrix reducedM;
+
+            int[] activeDofs = Enumerable.Range(0, K.cols-1).ToArray();
+
+            for (int i = 0; i < bc.rows; i++)
+            {
+                int numToRemove = Convert.ToInt32(bc[i,0]);
+                activeDofs = activeDofs.Where(val => val != numToRemove).ToArray();
+
+            }
+
+            reducedK = K[activeDofs, activeDofs];
+            reducedM = M[activeDofs, activeDofs];
+
+
             //Guess vector 
             Matrix fi0norm = Matrix.Ones(K.cols, 1);
-            fi0norm = (1 / Math.Sqrt(Convert.ToDouble(K.cols)))*fi0norm;
+            fi0norm = (1 / Math.Sqrt(Convert.ToDouble(reducedK.cols)))*fi0norm;
 
-            SparseMatrix fiNorm = new SparseMatrix(K.cols, nbIterations);
+            SparseMatrix fiNorm = new SparseMatrix(reducedK.cols, nbIterations);
             int[] numbers = new int[1] { 0 };
-            fiNorm.SetCol(new Vector(K.cols), 0);
+            fiNorm.SetCol(new Vector(reducedK.cols), 0);
 
             Vector lambdas = new Vector(nbIterations);
             
 
             for (int i = 1; i < nbIterations; i++)
             {
+                SparseMatrix v = reducedK.Inverse() * reducedM * fiNorm[intSrs(0, reducedK.cols - 1), intSrs(i - 1, i - 1)];
+                Vector vec = v.ToMatrix().ToVector();
 
-                //foreach
-               // lambdas[i] = fiNorm=fi0norm.s
+              //  double TempFreq = 0;
 
+                //Take the lamnda value
+                //for(int j =0; j<m.rows; j++)
+                //     TempFreq += Math.Pow(m[j],2);
+
+                //   TempFreq = Math.Sqrt(TempFreq);
+                //lambdas[i] = 1.0 / TempFreq;
+                lambdas[i] = 1.0 / vec.Length;
+
+                //Get the new guess vector
+                vec =(1.0/vec.Length)*vec;
+                fiNorm.SetCol(vec,i);
             }
 
-            return new Vector3D();
+            return Math.Sqrt(lambdas[lambdas.Length - 1]) / (2.0 * Math.PI);
         }
 
 
