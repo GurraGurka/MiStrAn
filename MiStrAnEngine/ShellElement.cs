@@ -63,7 +63,7 @@ namespace MiStrAnEngine
             //DBe = new Matrix(6, 15);
             Matrix Be = new Matrix(6, 15);
 
-            Matrix B, N, gp, gw, xe, T;
+            Matrix B, N, gp, gw, xe, T,Ne;
 
 
             int ng = 4; // Number of gauss points
@@ -86,7 +86,7 @@ namespace MiStrAnEngine
             Matrix unTrans = new Matrix(new double[,] { { Nodes[0].x, Nodes[0].y, Nodes[0].z },
                                                             { Nodes[1].x, Nodes[1].y, Nodes[1].z },
                                                             { Nodes[2].x, Nodes[2].y, Nodes[2].z },});
-            GetB_N(new Matrix(new double[,] { { 0,0,0 } }), xe, out Be, out N);
+            GetB_N(new Matrix(new double[,] { { 0,0,0 } }), xe, out Be, out Ne);
             //I DONT KNOW WHY BUT DIVISION OF THICKNESS IS NEEDED
             // DBe =(1/thickness)* D * Be;
 
@@ -111,13 +111,15 @@ namespace MiStrAnEngine
                 GetB_N(gp.GetRow(i), xe,out B, out N);
                 Matrix DKe = gw[i]* B.Transpose() * D * B;
                 Vector DFe = gw[i] * N.Transpose() * q.ToVector();
+                
 
                 //This only account for one density over the whole element
                 Matrix DMe = this.Section.totalThickness*this.Section.density* gw[i] * N.Transpose() * N;
 
-                Ke[activeDofs, activeDofs] = Ke[activeDofs, activeDofs] + elementArea*DKe;
+                
+                Ke[activeDofs, activeDofs] = Ke[activeDofs, activeDofs] + elementArea * DKe;
                 Me[activeDofs, activeDofs] = Me[activeDofs, activeDofs] + elementArea * DMe;
-                fe[activeDofs] = fe[activeDofs] + elementArea*DFe;
+                fe[activeDofs] = fe[activeDofs] + elementArea * DFe;
             }
 
 
