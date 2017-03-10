@@ -218,24 +218,53 @@ namespace Sandbox
 
             ////  a 
 
-            Stopwatch sw1 = new Stopwatch();
-            Stopwatch sw2 = new Stopwatch();
-            Stopwatch sw3 = new Stopwatch();
+            //Stopwatch sw1 = new Stopwatch();
+            //Stopwatch sw2 = new Stopwatch();
+            //Stopwatch sw3 = new Stopwatch();
 
 
-            Matrix A = Matrix.RandomMatrix(24, 24, 2);
-            Matrix B = new Matrix(A);
+            //Matrix A = Matrix.RandomMatrix(24, 24, 2);
+            //Matrix B = new Matrix(A);
+
+
+            //Matrix C = Matrix.MKLMatrixMultiplication(A, B,sw1);
+
+
+            //sw2.Start();
+            //C = A * B;
+            //sw2.Stop();
+            //sw3.Start();
+            //C = Matrix.ALGLIBMatrixMultiplication(A, B);
+            //sw3.Stop();
+
+            SparseMatrix A = new SparseMatrix(3, 3);
+            SparseMatrix B = Matrix.IdentityMatrix(3, 3).ToSparse();
+
+            A[0, 0] = 1;
+            A[0, 1] = 1;
+            A[0, 2] = 1;
+            A[1, 0] = 1;
+            A[1, 1] = 3;
+            A[1, 2] = 2;
+            A[2, 0] = 1;
+            A[2, 1] = 2;
+            A[2, 2] = 3;
+
+
+            double[] eigenVals;
+            Vector[] eigenVecs;
+
+            SparseMatrix.GeneralizedEigen(A, B, 0, 10, 3, out eigenVecs, out eigenVals);
+
+            Matrix Amat = A.ToMatrix();
+            Matrix Bmat = B.ToMatrix();
+
+
+
+            Vector test1 = Amat * eigenVecs[0];
+            Vector test2 = eigenVals[0] * eigenVecs[0];
 
             
-            Matrix C = Matrix.MKLMatrixMultiplication(A, B,sw1);
-
-
-            sw2.Start();
-            C = A * B;
-            sw2.Stop();
-            sw3.Start();
-            C = Matrix.ALGLIBMatrixMultiplication(A, B);
-            sw3.Stop();
         }
 
         private void Form1_Load(object sender, EventArgs e)

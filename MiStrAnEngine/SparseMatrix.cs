@@ -540,23 +540,9 @@ namespace MiStrAnEngine
             /* Matrix data. */
             int n = b.Length;
 
-            int[] ia/*[9]*/ = new int[K.mat.innerobj.ridx.Length];//new int[] { 1, 5, 8, 10, 12, 15, 17, 18, 19 };
-            int[] ja/*[18]*/ = new int[K.mat.innerobj.idx.Length];//new int[] { 1, 3, 6, 7,
-                                                                  //                             2, 3, 5,
-                                                                  //                             3, 8,
-                                                                  //                             4, 7,
-                                                                  //                             5, 6, 7,
-                                                                  //                             6, 8,
-                                                                  //                             7,
-                                                                  //                             8 };
-            double[] a = new double[K.mat.innerobj.vals.Length];//a/*[18]*/ = new double[] { 7.0, 1.0, 2.0, 7.0,
-            //                                      -4.0, 8.0, 2.0,
-            //                                      1.0, 5.0,
-            //                                      7.0, 9.0,
-            //                                      5.0, 1.0, 5.0,
-            //                                      -1.0, 5.0,
-            //                                      11.0,
-            //                                      5.0 };
+            int[] ia/*[9]*/ = new int[K.mat.innerobj.ridx.Length];
+            int[] ja/*[18]*/ = new int[K.mat.innerobj.idx.Length];
+            double[] a = new double[K.mat.innerobj.vals.Length];
             double[] b_ = new double[n];
             K.mat.innerobj.ridx.CopyTo(ia, 0);
             K.mat.innerobj.idx.CopyTo(ja, 0);
@@ -673,6 +659,97 @@ namespace MiStrAnEngine
             return new Vector(x);
 
         }
+
+
+
+
+        /// <summary>
+        ///  https://software.intel.com/en-us/node/521750?language=es
+        ///  See link for info
+        ///  ASSUMES SYMMETRIC MATRIX
+        /// The routine compute all the eigenvalues and eigenvectors for generalized eigenvalue problems, Ax = λBx, within a given search interval.
+        /// </summary>
+        /// <param name="A">Matrix A</param>
+        /// <param name="B">Matrix B</param>
+        /// <param name="emin">start of search interval</param>
+        /// <param name="emax">end of search interval</param>
+        /// <param name="m0">number of expected eigenvalues in interval</param>
+        /// <param name="eigenVectors"></param>
+        /// <param name="eigenValues"></param>
+        public static void GeneralizedEigen(SparseMatrix A, SparseMatrix B, double emin, double emax, int m0, out Vector[] eigenVectors, out double[] eigenValues)
+        {
+            if (A.rows != A.cols || B.rows != B.cols || A.rows != B.rows)
+                throw new MException("Eigenvalue; Matrix size mismatch or not square");
+
+            A.ConvertToCRS();
+            B.ConvertToCRS();
+
+
+
+            // INPUT VALUES
+            char uplo = 'F'; //Store full matrices
+            int n = A.rows;
+            double[] a = new double[A.mat.innerobj.vals.Length];
+            int[] ia/*[9]*/ = new int[A.mat.innerobj.ridx.Length];
+            int[] ja/*[18]*/ = new int[A.mat.innerobj.idx.Length];
+            A.mat.innerobj.ridx.CopyTo(ia, 0);
+            A.mat.innerobj.idx.CopyTo(ja, 0);
+            A.mat.innerobj.vals.CopyTo(a, 0);
+            double[] b = new double[B.mat.innerobj.vals.Length];
+            int[] ib/*[9]*/ = new int[B.mat.innerobj.ridx.Length];
+            int[] jb/*[18]*/ = new int[B.mat.innerobj.idx.Length];
+            B.mat.innerobj.ridx.CopyTo(ib, 0);
+            B.mat.innerobj.idx.CopyTo(jb, 0);
+            B.mat.innerobj.vals.CopyTo(b, 0);
+
+            int[] fpm = new int[128];
+            fpm[0] = 0; //do not print runtime status
+            fpm[1] = 8; //number of contour points.. ???
+            fpm[2] = 12; //Error trace double precision stopping criteria ε (ε = 10-fpm[2]) .
+            fpm[3] = 20;  // Maximum number of Extended Eigensolver refinement loops allowed. If no convergence is reached within fpm[3] refinement loops, Extended Eigensolver routines return info=2.
+            fpm[4] = 0; //Solver generates initial subspace
+            fpm[5] = 0; //Stopping test..?
+            fpm[6] = 5; // Error trace single precision stopping criteria (10 - fpm[6]).
+            fpm[13] = 0;
+            fpm[26] = 0; // Check input matrices
+
+            //OUTPUT VALUES
+            double[] x = new double[n * m0];
+            double epsout = 0;
+            int loops = 0;
+            double[] e = new double[m0];
+            int m = 0;
+            double[] res = new double[m0];
+            int info = 1;
+
+            // Convert to one-based THIS COULD CERTAINLY BE OPTIMIZED
+            for (int i = 0; i < ia.Length; i++)
+                ia[i] = ia[i] + 1;
+            for (int i = 0; i < ja.Length; i++)
+                ja[i] = ja[i] + 1;
+            for (int i = 0; i < ib.Length; i++)
+                ib[i] = ib[i] + 1;
+            for (int i = 0; i < jb.Length; i++)
+                jb[i] = jb[i] + 1;
+
+
+            MKL.GeneralizedEigenSolver(ref uplo, ref n, a, ia, ja, b, ib, jb, fpm, ref epsout, ref loops, ref emin, ref emax, ref m0, e, x, ref m, res, ref info);
+
+            eigenValues = e;
+            eigenVectors = new Vector[m];
+
+            for (int i = 0; i < m; i++)
+            {
+                Vector v = new Vector(n);
+                for (int j = 0; j < n; j++)
+                {
+                    v[j] = x[(i * n) + j];
+                }
+                eigenVectors[i] = v;
+            }
+
+        }
+
 
         public SparseMatrix Inverse()
         {
