@@ -34,7 +34,6 @@ namespace MiStrAnGH.Components
         {
             pManager.AddMeshParameter("Deformed mesh", "Def", "Deformed mesh, scaled by input scale", GH_ParamAccess.item);
             pManager.AddMeshParameter("von Mises stress plot", "vonMisMesh", "Stressplot using von Mises yield stress theory", GH_ParamAccess.item);
-            pManager.AddNumberParameter("von Mises stresses", "vonMis", "Stresses using von Mises yield stress theory", GH_ParamAccess.list);
 
         }
 
@@ -53,11 +52,8 @@ namespace MiStrAnGH.Components
             Mesh def = s.GenereateDeformedMesh(s.a.ToList(), t);
             Mesh vonM = s.GenerateStressMesh(s.a.ToList(), s.PrincipalStresses);
 
-            List<double> vonMStresses = s.vonMises;
-
             DA.SetData(0, def);
             DA.SetData(1, vonM);
-            DA.SetDataList(2, vonMStresses);
 
         }
 
