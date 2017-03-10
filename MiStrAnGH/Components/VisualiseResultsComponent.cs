@@ -25,6 +25,8 @@ namespace MiStrAnGH.Components
         {
             pManager.AddParameter(new StructureParameter(), "Structure", "Structure", "MiStrAn analysed structure", GH_ParamAccess.item);
             pManager.AddNumberParameter("Scale deformation", "Scale", "Number to scale the deformation with", GH_ParamAccess.item, 100);
+            pManager.AddNumberParameter("Bottom limiter", "lim0", "Number to scale the deformation with", GH_ParamAccess.item, 0);
+            pManager.AddNumberParameter("Top limiter", "lim1", "Number to scale the deformation with", GH_ParamAccess.item, 1);
         }
 
         /// <summary>
@@ -45,12 +47,16 @@ namespace MiStrAnGH.Components
         {
             StructureType s = new StructureType();
             double t = 0;
+            double lim0 = 0;
+            double lim1 = 1;
 
             if (!DA.GetData(0, ref s)) return;
             DA.GetData(1, ref t);
+            DA.GetData(2, ref lim0);
+            DA.GetData(3, ref lim1);
 
             Mesh def = s.GenereateDeformedMesh(s.a.ToList(), t);
-            Mesh vonM = s.GenerateStressMesh(s.a.ToList(), s.PrincipalStresses);
+            Mesh vonM = s.GenerateStressMesh(s.a.ToList(), s.PrincipalStresses, lim0, lim1);
 
             DA.SetData(0, def);
             DA.SetData(1, vonM);

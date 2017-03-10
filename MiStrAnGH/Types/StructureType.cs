@@ -164,7 +164,7 @@ namespace MiStrAnGH
 
         }
 
-        public Mesh GenerateStressMesh(List<double> a, List<Vector3D> prinicpalStress)
+        public Mesh GenerateStressMesh(List<double> a, List<Vector3D> prinicpalStress, double lim0, double lim1)
         {
             Mesh mesh = new Mesh();
             
@@ -172,7 +172,7 @@ namespace MiStrAnGH
             foreach (Node node in nodes)
                 mesh.Vertices.Add(node.x, node.y, node.z); 
 
-            Grasshopper.GUI.Gradient.GH_Gradient grad = StaticFunctions.GetStandardGradient();
+            Grasshopper.GUI.Gradient.GH_Gradient grad = StaticFunctions.GetStandardGradient(lim0, lim1);
 
             double max = vonMises.Max();
 

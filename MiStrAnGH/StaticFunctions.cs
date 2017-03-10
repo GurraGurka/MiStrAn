@@ -65,11 +65,24 @@ namespace MiStrAnGH
         public static Grasshopper.GUI.Gradient.GH_Gradient GetStandardGradient()
         {
 
+            return GetStandardGradient(0, 1);
+        }
+
+        public static Grasshopper.GUI.Gradient.GH_Gradient GetStandardGradient(double lim0, double lim1)
+        {
+            double span = lim1 - lim0;
+
+            if (lim1 <= lim0)
+                throw new Exception("Bad limiters");
+
+
             Grasshopper.GUI.Gradient.GH_Gradient grad = new Grasshopper.GUI.Gradient.GH_Gradient();
             grad.AddGrip(0, System.Drawing.Color.Blue);
-            grad.AddGrip(0.25, System.Drawing.Color.Cyan);
-            grad.AddGrip(0.5, System.Drawing.Color.LimeGreen);
-            grad.AddGrip(0.75, System.Drawing.Color.Yellow);
+            grad.AddGrip(lim0, System.Drawing.Color.Blue);
+            grad.AddGrip(lim0 + span * 0.25, System.Drawing.Color.Cyan);
+            grad.AddGrip(lim0 + span * 0.5, System.Drawing.Color.LimeGreen);
+            grad.AddGrip(lim0 + span * 0.75, System.Drawing.Color.Yellow);
+            grad.AddGrip(lim1, System.Drawing.Color.Red);
             grad.AddGrip(1, System.Drawing.Color.Red);
 
 
@@ -137,6 +150,14 @@ namespace MiStrAnGH
 
         }
 
+        public static Mesh CullMesh(Mesh input)
+        {
+            Mesh output = new Mesh();
+            HashSet<Point3d> culledPts = new HashSet<Point3d>();
+
+          //  culledPts.Add()
+            return output;
+        }
         
 
     }
