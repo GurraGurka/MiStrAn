@@ -102,7 +102,31 @@ namespace MiStrAnEngine
 
 
 
+        public static void GetEigenFreqs(Structure s, double maxFreq, out double [] freqs, out Vector[] outEigenVec)
+        {
+            int nd = s.K.cols;
+            int[] fdof = intSrs(0, nd - 1);
+            int[] pdof = new int[s.bc.rows];
 
+            for (int i = 0; i < s.bc.rows; i++)
+                pdof[i] = Convert.ToInt32(s.bc[i, 0]);
+
+            fdof = fdof.Except(pdof).ToArray();
+
+            SparseMatrix Kff = s.K.ExtractLargeSubMatrix(fdof, fdof);
+            SparseMatrix Mff = s.M.ExtractLargeSubMatrix(fdof, fdof);
+
+            //Guess value how many eigenfrequencies we will find in the intervall
+            int nbEigenfreqs = 10;
+
+            freqs = new double[] { };
+            outEigenVec = new Vector[] { };
+
+            SparseMatrix.GeneralizedEigen(Kff, Mff, -maxFreq, maxFreq, nbEigenfreqs, out outEigenVec, out freqs);
+
+            freqs = freqs.Select(x => Math.Sqrt(x) / (2 * Math.PI)).ToArray();
+            freqs = freqs.Where(val => val != 0).ToArray();
+        }
 
         // Direct copy of CALFEM's solveq
         // FÄRDIG OCH TESTAD 2017-02-02 .hmmm...

@@ -705,8 +705,8 @@ namespace MiStrAnEngine
             int[] fpm = new int[128];
             fpm[0] = 0; //do not print runtime status
             fpm[1] = 8; //number of contour points.. ???
-            fpm[2] = 12; //Error trace double precision stopping criteria ε (ε = 10-fpm[2]) .
-            fpm[3] = 20;  // Maximum number of Extended Eigensolver refinement loops allowed. If no convergence is reached within fpm[3] refinement loops, Extended Eigensolver routines return info=2.
+            fpm[2] = 8; //Error trace double precision stopping criteria ε (ε = 10-fpm[2]) .
+            fpm[3] = 10;  // Maximum number of Extended Eigensolver refinement loops allowed. If no convergence is reached within fpm[3] refinement loops, Extended Eigensolver routines return info=2.
             fpm[4] = 0; //Solver generates initial subspace
             fpm[5] = 0; //Stopping test..?
             fpm[6] = 5; // Error trace single precision stopping criteria (10 - fpm[6]).
