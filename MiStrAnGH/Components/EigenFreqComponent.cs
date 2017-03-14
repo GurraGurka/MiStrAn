@@ -6,12 +6,12 @@ using Rhino.Geometry;
 
 namespace MiStrAnGH.Components
 {
-    public class Dynamics : GH_Component
+    public class EigenFreqComponent : GH_Component
     {
         /// <summary>
         /// Initializes a new instance of the Dynamics class.
         /// </summary>
-        public Dynamics()
+        public EigenFreqComponent()
           : base("Eigenfrequencies", "Eigenfreq",
               "Eigenfrequency analysis",
               "MiStrAn", "Model")
@@ -24,7 +24,12 @@ namespace MiStrAnGH.Components
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {
             pManager.AddParameter(new StructureParameter(), "Stucture", "Structure", "MiStrAn structure", GH_ParamAccess.item);
-            pManager.AddNumberParameter( "MaximumEigenFrequency value", "maxEigenFreq", "Highest eignefreq value to look for", GH_ParamAccess.item);
+            pManager.AddNumberParameter( "Range to search within", "Range", "Highest eignefreq value to look for", GH_ParamAccess.item,10);
+            pManager.AddIntegerParameter("Number of eigenfrequencies", "nbFreq", "Number of eigenfrequencies to obtain", GH_ParamAccess.item, 1);
+
+            pManager[1].Optional = true;
+            pManager[2].Optional = true;
+            
         }
 
         /// <summary>
@@ -32,7 +37,8 @@ namespace MiStrAnGH.Components
         /// </summary>
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
         {
-            pManager.AddNumberParameter("Lowest eigenfrequency", "EigenFreq", "Lowest eigenfrequiences of the structure within the span", GH_ParamAccess.item);
+            pManager.AddNumberParameter("Lowest eigenfrequency", "EigenFreq", "Lowest eigenfrequiences of the structure within the span", GH_ParamAccess.list);
+            pManager.AddParameter(new StructureParameter(), "Stucture", "Structure", "MiStrAn structure", GH_ParamAccess.item);
         }
 
         /// <summary>
@@ -43,19 +49,34 @@ namespace MiStrAnGH.Components
         {
             StructureType structure = new StructureType();
             double maxFreq = new double() ;
+            int nbFreq = new int();
 
             if (!DA.GetData(0, ref structure)) return;
             if (!DA.GetData(1, ref maxFreq)) return;
+            if (!DA.GetData(2, ref nbFreq)) return;
 
             //MiStrAnEngine.StaticFunctions.InverseIterationMethod(structure.K, structure.M, structure.bc, iterations);
             double[] freqs = new double[] { };
             MiStrAnEngine.Vector[] eigenVecs = new MiStrAnEngine.Vector[] { };
 
-            MiStrAnEngine.StaticFunctions.GetEigenFreqs(structure, maxFreq, out freqs, out eigenVecs);
+            if (structure.K == null)
+            {
+                StaticFunctions.ForceloadMKLCORE();
+                structure.AssembleKfbc();
+            }
+                
+            MiStrAnEngine.StaticFunctions.GetEigenFreqs(structure, maxFreq,nbFreq, out freqs, out eigenVecs);
 
-           double lowestFreq = freqs[0];
+            structure.eigenVecs = eigenVecs;
 
-            DA.SetData(0, lowestFreq);
+            foreach(double d in freqs)
+            {
+                if (Double.IsNaN(d))
+                    AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "Choose a smaller range");
+            }
+            
+            DA.SetDataList(0, freqs);
+            DA.SetData(1, structure);
 
         }
 

@@ -24,6 +24,7 @@ namespace MiStrAnEngine
         public List<Matrix> stresses;
         public List<double> PrincipalAngles;
         public List<double> vonMises;
+        public Vector[] eigenVecs;
 
 
 

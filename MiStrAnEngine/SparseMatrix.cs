@@ -704,9 +704,9 @@ namespace MiStrAnEngine
 
             int[] fpm = new int[128];
             fpm[0] = 0; //do not print runtime status
-            fpm[1] = 8; //number of contour points.. ???
-            fpm[2] = 8; //Error trace double precision stopping criteria ε (ε = 10-fpm[2]) .
-            fpm[3] = 10;  // Maximum number of Extended Eigensolver refinement loops allowed. If no convergence is reached within fpm[3] refinement loops, Extended Eigensolver routines return info=2.
+            fpm[1] = 4; //number of contour points.. ???
+            fpm[2] = 4; //Error trace double precision stopping criteria ε (ε = 10-fpm[2]) .
+            fpm[3] = 5;  // Maximum number of Extended Eigensolver refinement loops allowed. If no convergence is reached within fpm[3] refinement loops, Extended Eigensolver routines return info=2.
             fpm[4] = 0; //Solver generates initial subspace
             fpm[5] = 0; //Stopping test..?
             fpm[6] = 5; // Error trace single precision stopping criteria (10 - fpm[6]).
@@ -736,9 +736,9 @@ namespace MiStrAnEngine
             MKL.GeneralizedEigenSolver(ref uplo, ref n, a, ia, ja, b, ib, jb, fpm, ref epsout, ref loops, ref emin, ref emax, ref m0, e, x, ref m, res, ref info);
 
             eigenValues = e;
-            eigenVectors = new Vector[m];
+            eigenVectors = new Vector[x.Count()/n];
 
-            for (int i = 0; i < m; i++)
+            for (int i = 0; i < x.Count() / n; i++)
             {
                 Vector v = new Vector(n);
                 for (int j = 0; j < n; j++)

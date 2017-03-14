@@ -102,7 +102,7 @@ namespace MiStrAnEngine
 
 
 
-        public static void GetEigenFreqs(Structure s, double maxFreq, out double [] freqs, out Vector[] outEigenVec)
+        public static void GetEigenFreqs(Structure s, double maxFreq, int nbFreq, out double [] freqs, out Vector[] outEigenVec)
         {
             int nd = s.K.cols;
             int[] fdof = intSrs(0, nd - 1);
@@ -116,13 +116,10 @@ namespace MiStrAnEngine
             SparseMatrix Kff = s.K.ExtractLargeSubMatrix(fdof, fdof);
             SparseMatrix Mff = s.M.ExtractLargeSubMatrix(fdof, fdof);
 
-            //Guess value how many eigenfrequencies we will find in the intervall
-            int nbEigenfreqs = 10;
-
             freqs = new double[] { };
             outEigenVec = new Vector[] { };
 
-            SparseMatrix.GeneralizedEigen(Kff, Mff, -maxFreq, maxFreq, nbEigenfreqs, out outEigenVec, out freqs);
+            SparseMatrix.GeneralizedEigen(Kff, Mff, -maxFreq, maxFreq, nbFreq, out outEigenVec, out freqs);
 
             freqs = freqs.Select(x => Math.Sqrt(x) / (2 * Math.PI)).ToArray();
             freqs = freqs.Where(val => val != 0).ToArray();

@@ -206,6 +206,48 @@ namespace MiStrAnGH
 
         }
 
+        public Mesh GenerateEigenMode(Vector eigenvec, double t)
+        {
+            List<double> fullEigenVec = new List<double>();
+            Mesh mesh = new Mesh();
+
+            int[] pdof = new int[this.bc.rows];
+
+            for (int i = 0; i < this.bc.rows; i++)
+                pdof[i] = Convert.ToInt32(this.bc[i, 0]);
+
+            //Temp
+            int j = 0;
+            for (int i = 0; i < K.cols; i++)
+            {
+                if (pdof.Contains(i))
+                    fullEigenVec.Add(0);
+                else
+                {
+                    fullEigenVec.Add(eigenvec[j]);
+                    j++;
+                }
+                   
+            }
+
+            foreach (Node node in nodes)
+            {
+                Vector3D dispVec = new Vector3D(fullEigenVec[node.dofX], fullEigenVec[node.dofY], fullEigenVec[node.dofZ]);
+                dispVec = dispVec * t;
+                mesh.Vertices.Add(node.x + dispVec.X, node.y + dispVec.Y, node.z + dispVec.Z);
+            }
+
+            
+
+            foreach (ShellElement elem in this.elements)
+            {
+                MeshFace face = new MeshFace(elem.Nodes[0].Id, elem.Nodes[1].Id, elem.Nodes[2].Id);
+                mesh.Faces.AddFace(face);
+            }
+
+            return mesh;
+        }
+
         public void GenerateElementAxisLines()
         {
             XAxisLines = new List<Line>();
