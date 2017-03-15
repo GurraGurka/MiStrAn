@@ -89,7 +89,7 @@ namespace MiStrAnGH
             return grad;
         }
 
-        public static void GetStressesElemPoints(Mesh mesh, List<Vector3d> prinStresses, int nbElements, out List<Point3d> high, out List<Point3d> low)
+        public static void GetStressesElemPoints(Mesh mesh, List<Vector3d> prinStresses, int nbElements, out List<Point3d> high, out List<Point3d> low, out double area)
         {
             List<double> vLengths = new List<double>();
             List<int> indexes = new List<int>();
@@ -99,21 +99,7 @@ namespace MiStrAnGH
             foreach (Vector3d v in prinStresses)
                 vLengths.Add(v.Length);
 
-            //List sorted by elements with highest principle stress
-            /*    List<double> sortedvLengths = vLengths.OrderByDescending(d => d).ToList();
-
-                //This can certainly be improved
-                for (int i = 0; i < sortedvLengths.Count; i++)
-                {
-                    for(int j = 0; j< vLengths.Count;j++)
-                    {
-                        if (vLengths [j]== sortedvLengths[i])
-                        {
-                            indexes.Add(j);
-                            break; 
-                        }
-                    }
-                } */
+            
             var sorted = vLengths
                 .Select((x, i) => new KeyValuePair<double, int>(x, i))
                 .OrderBy(x => x.Key)
@@ -126,20 +112,29 @@ namespace MiStrAnGH
             indexes = indexes.Take(nbElements).ToList();
 
             MeshFaceList faceList = mesh.Faces;
+            //area for the high stressed element
+            area = 0;
 
 
             for (int i = 0; i < faceList.Count; i++)
             {
                 if (indexes.Contains(i))
+                {
                     high.Add(faceList.GetFaceCenter(i));
+
+                    //Get the area of the face
+                    Point3f pt1, pt2, pt3, pt4;
+                    faceList.GetFaceVertices(i, out pt1, out pt2, out pt3, out pt4);
+                    double a = pt1.DistanceTo(pt2);
+                    double b = pt2.DistanceTo(pt3);
+                    double c = pt3.DistanceTo(pt1);
+                    double s = (a + b + c) / 2;
+                    area += Math.Sqrt(s * (s - a) * (s - b) * (s - c));
+                }
+
                 else
                     low.Add(faceList.GetFaceCenter(i));
-
             }
-
-
-
-
         }
 
         public static void ForceloadMKLCORE()
