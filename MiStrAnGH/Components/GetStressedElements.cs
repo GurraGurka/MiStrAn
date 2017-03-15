@@ -35,6 +35,7 @@ namespace MiStrAnGH.Components
         {
             pManager.AddPointParameter("Nb elements with highest stresses", "HighStressElems", "Input Nb of elements with highest stresses ", GH_ParamAccess.list);
             pManager.AddPointParameter( "The rest of the stresses", "LowStressElems", "The rest of the elements with the lowest stresses ", GH_ParamAccess.list);
+            pManager.AddNumberParameter("Area of high stressed elements", "HighStressArea", "Total area for the high stressed elements ", GH_ParamAccess.item);
         }
 
         /// <summary>
@@ -53,10 +54,13 @@ namespace MiStrAnGH.Components
             if (!DA.GetDataList(1, prinStresses)) {} 
             if (!DA.GetData(2, ref nbElements)) {}
 
-            StaticFunctions.GetStressesElemPoints(mesh, prinStresses,nbElements, out highElemStress, out lowElemStress);
+            double area = new double();
+
+            StaticFunctions.GetStressesElemPoints(mesh, prinStresses,nbElements, out highElemStress, out lowElemStress, out area);
 
             DA.SetDataList(0, highElemStress);
             DA.SetDataList(1, lowElemStress);
+            DA.SetData(2, area);
         }
 
         /// <summary>
