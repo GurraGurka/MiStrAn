@@ -15,39 +15,39 @@ namespace MiStrAnGH
     public static class StaticFunctions
     {
 
-        
+
 
         public static List<double> CorrectUnits(List<double> inputList, double corrValue)
         {
             List<double> outputDoubles = new List<double>();
             foreach (double val in inputList)
                 outputDoubles.Add(val * corrValue);
-            
+
             return outputDoubles;
         }
 
-        public static void GetDefMesh(Mesh undefMesh,List<double> defs, double scalFac, out Mesh defMesh )
+        public static void GetDefMesh(Mesh undefMesh, List<double> defs, double scalFac, out Mesh defMesh)
         {
-            
 
-            
+
+
             Mesh deformableMesh = undefMesh.DuplicateMesh();
             List<Point3d> defPts = new List<Point3d>();
 
             int meshPtCount = 0;
-            for (int i = 0; i < defs.Count; i+=6)
+            for (int i = 0; i < defs.Count; i += 6)
             {
                 Transform xPt = Transform.Translation(new Vector3d(scalFac * defs[i], scalFac * defs[i + 1], scalFac * defs[i + 2]));
 
                 Point3f pt3f = undefMesh.Vertices[meshPtCount];
                 Point3d pt3d = new Point3d(pt3f.X, pt3f.Y, pt3f.Z);
                 pt3d.Transform(xPt);
-                deformableMesh.Vertices[meshPtCount] = new Point3f((float)pt3d.X,(float)pt3d.Y,(float)pt3d.Z);
+                deformableMesh.Vertices[meshPtCount] = new Point3f((float)pt3d.X, (float)pt3d.Y, (float)pt3d.Z);
                 meshPtCount += 1;
             }
 
             defMesh = deformableMesh;
-           
+
         }
 
         public static void GetDefRotVector(List<double> aDefs, out List<Vector3d> defs, out List<Vector3d> rots)
@@ -57,9 +57,9 @@ namespace MiStrAnGH
             for (int i = 0; i < aDefs.Count; i += 6)
             {
                 defs.Add(new Vector3d(aDefs[i], aDefs[i + 1], aDefs[i + 2]));
-                rots.Add(new Vector3d(aDefs[i+3], aDefs[i + 4], aDefs[i + 5]));
+                rots.Add(new Vector3d(aDefs[i + 3], aDefs[i + 4], aDefs[i + 5]));
             }
-            
+
         }
 
         public static Grasshopper.GUI.Gradient.GH_Gradient GetStandardGradient()
@@ -119,24 +119,24 @@ namespace MiStrAnGH
                 .OrderBy(x => x.Key)
                 .ToList();
 
-           // List<int> sortedLengths = sorted.Select(x => x.Key).ToList();
+            // List<int> sortedLengths = sorted.Select(x => x.Key).ToList();
             indexes = sorted.Select(x => x.Value).ToList();
 
 
             indexes = indexes.Take(nbElements).ToList();
 
             MeshFaceList faceList = mesh.Faces;
-            
+
 
             for (int i = 0; i < faceList.Count; i++)
             {
                 if (indexes.Contains(i))
-                   high.Add(faceList.GetFaceCenter(i));
+                    high.Add(faceList.GetFaceCenter(i));
                 else
                     low.Add(faceList.GetFaceCenter(i));
 
             }
-                
+
 
 
 
@@ -150,15 +150,121 @@ namespace MiStrAnGH
 
         }
 
-        public static Mesh CullMesh(Mesh input)
+        public static Mesh CullMesh(Mesh input, double tol,out int[] culledFaces)
         {
-            Mesh output = new Mesh();
-            HashSet<Point3d> culledPts = new HashSet<Point3d>();
 
-          //  culledPts.Add()
+            if (tol == 0) return CullMeshExact(input, out culledFaces);
+
+            Mesh output = new Mesh();
+            List<Point3d> culledPts = new List<Point3d>();
+            int[] indexMap = new int[input.Vertices.Count];
+            List<int> _culledFaces = new List<int>();
+
+            for (int i = 0; i < input.Vertices.Count; i++)
+            {
+                Point3d inputPt = input.Vertices[i];
+                int index = -1;
+                for (int j = 0; j < culledPts.Count; j++)
+                {
+                    if (inputPt.DistanceTo(culledPts[j]) < tol)
+                    {
+                        index = j;
+                        break;
+                    }
+                }
+
+                if (index != -1)
+                    indexMap[i] = index;
+                else
+                {
+                    culledPts.Add(inputPt);
+                    indexMap[i] = culledPts.Count - 1;
+                }
+            }
+
+
+            output.Vertices.AddVertices(culledPts);
+
+            for (int i = 0; i < input.Faces.Count; i++)
+            {
+
+                MeshFace face = new MeshFace();
+                face.A = indexMap[input.Faces[i].A];
+                face.B = indexMap[input.Faces[i].B];
+                face.C = indexMap[input.Faces[i].C];
+                face.D = indexMap[input.Faces[i].D];
+
+                double area = GetFaceArea(output, face);
+
+                if (area > 1e-6)
+                    output.Faces.AddFace(face);
+                else
+                    _culledFaces.Add(i);
+            }
+
+            culledFaces = _culledFaces.ToArray();
             return output;
         }
-        
+
+
+        public static Mesh CullMeshExact(Mesh input, out int[] culledFaces)
+        {
+            Mesh output = new Mesh();
+            List<Point3d> culledPts = new List<Point3d>();
+            int[] indexMap = new int[input.Vertices.Count];
+            List<int> _culledFaces = new List<int>();
+
+
+            for (int i = 0; i < input.Vertices.Count; i++)
+                culledPts.Add(input.Vertices[i]);
+
+            culledPts = culledPts.Distinct().ToList();
+
+            for (int i = 0; i < input.Vertices.Count; i++)
+            {
+                Point3d pt = input.Vertices[i];
+                indexMap[i] = culledPts.FindIndex(x => x == pt);
+            }
+
+            output.Vertices.AddVertices(culledPts);
+
+            for (int i = 0; i < input.Faces.Count; i++)
+            {
+
+                MeshFace face = new MeshFace();
+                face.A = indexMap[input.Faces[i].A];
+                face.B = indexMap[input.Faces[i].B];
+                face.C = indexMap[input.Faces[i].C];
+                face.D = indexMap[input.Faces[i].D];
+
+                double area = GetFaceArea(output, face);
+
+                if (area > 1e-6)
+                    output.Faces.AddFace(face);
+                else
+                    _culledFaces.Add(i);
+            }
+
+            culledFaces = _culledFaces.ToArray();
+            return output;
+        }
+
+        public static double GetFaceArea(Mesh M, MeshFace face)
+        {
+
+            Point3d A = M.Vertices[face.A];
+            Point3d B = M.Vertices[face.B];
+            Point3d C = M.Vertices[face.C];
+
+            Vector3d vec1 = new Vector3d(B - A);
+            Vector3d vec2 = new Vector3d(C - A);
+            Vector3d vec3 = Vector3d.CrossProduct(vec1, vec2);
+            double area = vec3.Length;
+
+            if (face.IsTriangle) area = area / 2;
+
+            return area;
+        }
 
     }
-    }
+}

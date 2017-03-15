@@ -62,7 +62,7 @@
     <Compile Include="Components\GetStressedElements.cs" />
     <Compile Include="Components\GravityLoadComponent.cs" />
     <Compile Include="Components\ChangeMaterialAnglesComponent.cs" />
-    <Compile Include="Components\CullMeshVerticesComponent.cs" />
+    <Compile Include="Components\CleanMeshComponent.cs" />
     <Compile Include="Components\PointLoadComponent.cs" />
     <Compile Include="Components\SectionComponent.cs" />
     <Compile Include="Components\VisualiseResultsComponent.cs" />

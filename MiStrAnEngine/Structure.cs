@@ -203,7 +203,7 @@ namespace MiStrAnEngine
 
         public void AddSupport(Support support)
         {
-            Node node = GetOrAddNode(support.node.Pos);
+            Node node = GetNode(support.node.Pos);
             support.node = node;
             supports.Add(support);
         }

@@ -362,6 +362,7 @@ namespace MiStrAnGH
 
             for (int i = 0; i < NumberOfElements; i++)
             {
+
                 ShellElement ele = elements[i];
                 ele.GetLocalCoordinateSystem(out e1, out e2, out e3);
                 C = ele.Centroid;
@@ -369,7 +370,7 @@ namespace MiStrAnGH
                 Plane P = new Plane(C.ToRhinoPoint3d(), e3.ToRhinoVector3d());
                 double alpha = Vector3d.VectorAngle(e1.ToRhinoVector3d(), Vector3d.XAxis, P);
 
-                if(Double.IsNaN(alpha))
+                if(Double.IsNaN(alpha)|| Double.IsInfinity(alpha) || Math.Abs(alpha) > Math.PI*2 )
                     alpha = Vector3d.VectorAngle(e1.ToRhinoVector3d(), Vector3d.YAxis, P);
 
                 ele.MaterialOrientationAngle = (alpha / (2 * Math.PI)) * 360;
