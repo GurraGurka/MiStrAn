@@ -111,10 +111,10 @@ namespace MiStrAnEngine
                 GetB_N(gp.GetRow(i), xe,out B, out N);
                 Matrix DKe = gw[i]* B.Transpose() * D * B;
                 Vector DFe = gw[i] * N.Transpose() * q.ToVector();
-                
 
-                //This only account for one density over the whole element
-                Matrix DMe = this.Section.totalThickness*this.Section.density* gw[i] * N.Transpose() * N;
+
+                double gravityWeight = GetSectionWeight(this.Section.thickness, this.Section.densitys);
+                Matrix DMe = gravityWeight * gw[i] * N.Transpose() * N;
 
                 
                 Ke[activeDofs, activeDofs] = Ke[activeDofs, activeDofs] + elementArea * DKe;
@@ -155,11 +155,41 @@ namespace MiStrAnEngine
         {
             
             double gravity = 9.81;
-            double density = s.Section.density;
-            double thickness = s.Section.totalThickness;
+          //  double density = s.Section.density;
+           // double thickness = s.Section.totalThickness;
 
-            double q = -gravity * density * thickness;
+            double sectionWeight = s.GetSectionWeight(s.Section.thickness, s.Section.densitys);
+
+            double q = -gravity * sectionWeight;
             return new Vector3D(0, 0, q);
+        }
+
+        public double GetSectionWeight(List<double> thicknesses, List<double> densities)
+        {
+            double gravityWeight = 0;
+            //This accounts for different densities and thicknesses in section
+            double listLength = Math.Max(this.Section.thickness.Count, this.Section.densitys.Count);
+            for (int j = 0; j < listLength; j++)
+            {
+                double density = new double(); ;
+                double thick = new double(); ;
+
+                //Inte så oeffektivt men kan skrivas om lite snyggare
+                if (this.Section.thickness.Count == 1)
+                    thick = this.Section.thickness[0];
+                else
+                    thick = this.Section.thickness[j];
+
+                if (this.Section.densitys.Count == 1)
+                    density = this.Section.densitys[0];
+                else
+                    density = this.Section.densitys[j];
+
+
+                gravityWeight += thick * density;
+
+            }
+            return gravityWeight;
         }
 
 

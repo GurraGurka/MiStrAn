@@ -31,7 +31,7 @@ namespace MiStrAnGH
             pManager.AddNumberParameter("Poissons Ratio", "v", "Define one for all or for each ply", GH_ParamAccess.list,0.3);
             pManager.AddNumberParameter("Lamina Thickness [mm]", "Thickness", "Define one for all or for each ply", GH_ParamAccess.list,10);
             pManager.AddNumberParameter("Angles [degree]", "Angles", " Define one for all or for each ply", GH_ParamAccess.list,0);
-            pManager.AddNumberParameter("Density [kg/m^3]", "Density", " Density of the meshfaces", GH_ParamAccess.item,7800);
+            pManager.AddNumberParameter("Density [kg/m^3]", "Density", " Density of the meshfaces", GH_ParamAccess.list,7800);
 
             pManager[0].Optional = true;
             pManager[1].Optional = true;
@@ -69,7 +69,7 @@ namespace MiStrAnGH
             List<double> thickness = new List<double>();
             List<double> angles = new List<double>();
             List<double> vs = new List<double>();
-            double density = new double();
+            List<double> densitys = new List<double>();
 
 
             bool applyToAll = false;
@@ -82,13 +82,13 @@ namespace MiStrAnGH
             if (!DA.GetDataList(5, vs)) { } // vs = vsDef;
             if (!DA.GetDataList(6, thickness)) { } //thickness = thicknessDef;
             if (!DA.GetDataList(7, angles)) { } //angles = anglesDef;
-            if (!DA.GetData(8, ref density)) { } //density = densityDef;
+            if (!DA.GetDataList(8, densitys)) { } //density = densityDef;
 
             
  
 
 
-            int[] lenghts = { Exs.Count, Eys.Count, Gxys.Count, thickness.Count, angles.Count, vs.Count };
+            int[] lenghts = { Exs.Count, Eys.Count, Gxys.Count, thickness.Count, angles.Count, vs.Count, densitys.Count };
             int listlength = lenghts.Max();
 
             //Check list length and that the layers are symmetrical
@@ -98,6 +98,7 @@ namespace MiStrAnGH
             checkListLength(thickness, listlength);
             checkListLength(angles, listlength);
             checkListLength(vs, listlength);
+            checkListLength(densitys, listlength);
 
 
             //Correct units
@@ -123,13 +124,13 @@ namespace MiStrAnGH
             if (!applyToAll)
             {              
                 if(useId && elementId < 0) throw new Exception(" Point not set, invalid ID");
-                section = new SectionType(thickness, angles, Exs, Eys, Gxys, vs, new MiStrAnEngine.Vector3D(centerPt.X, centerPt.Y, centerPt.Z), density, totalThick);
+                section = new SectionType(thickness, angles, Exs, Eys, Gxys, vs, new MiStrAnEngine.Vector3D(centerPt.X, centerPt.Y, centerPt.Z), densitys, totalThick);
                 section.ParentIndex = elementId;
             }
                 
             else
             {
-                section= new SectionType(thickness, angles, Exs, Eys, Gxys, vs, new MiStrAnEngine.Vector3D(0,0,0), density, totalThick);
+                section= new SectionType(thickness, angles, Exs, Eys, Gxys, vs, new MiStrAnEngine.Vector3D(0,0,0), densitys, totalThick);
                 section.applyToAll = true;
             }
 

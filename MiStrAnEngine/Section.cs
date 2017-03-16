@@ -18,13 +18,13 @@ namespace MiStrAnEngine
         public List<double> vs;
         public Vector3D faceCenterPt;
         public int ParentIndex = -1;
-        public double density;
+        public List<double> densitys;
         public double totalThickness;
         public bool applyToAll = false;
 
 
         //Constructor
-        public Section(List<double> _thickness, List<double> _angles, List<double> _Exs, List<double> _Eys, List<double> _Gxys, List<double> _vs, Vector3D _faceCenterPt, double _density, double _totalThickness )
+        public Section(List<double> _thickness, List<double> _angles, List<double> _Exs, List<double> _Eys, List<double> _Gxys, List<double> _vs, Vector3D _faceCenterPt, List<double> _densitys, double _totalThickness )
         {
             thickness = _thickness;
             angles = _angles;
@@ -33,7 +33,7 @@ namespace MiStrAnEngine
             Gxys = _Gxys;
             vs = _vs;
             faceCenterPt = _faceCenterPt;
-            density = _density;
+            densitys = _densitys;
             totalThickness = _totalThickness;
         }
 

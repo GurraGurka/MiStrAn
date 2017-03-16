@@ -19,7 +19,7 @@ namespace MiStrAnEngine
             List<double> thickness = shell.Section.thickness;
             List<double> v12s = shell.Section.vs;
             List<double> Gxys = shell.Section.Gxys;
-            double density = shell.Section.density;
+            List<double> densitys = shell.Section.densitys;
             double totThick = shell.Section.totalThickness;
 
             //Used for gravity load
