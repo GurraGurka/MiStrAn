@@ -17,6 +17,7 @@ namespace MiStrAnEngine
         public List<double> Gxys;
         public List<double> vs;
         public Vector3D faceCenterPt;
+        public int ParentIndex = -1;
         public double density;
         public double totalThickness;
         public bool applyToAll = false;

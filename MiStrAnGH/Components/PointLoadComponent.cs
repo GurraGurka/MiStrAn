@@ -24,7 +24,11 @@ namespace MiStrAnGH
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {
             pManager.AddPointParameter("Point", "Pt", "Point where load is applied", GH_ParamAccess.item);
+            pManager.AddIntegerParameter("Node Id", "nID", "Optional node ID where to apply load. Will override point", GH_ParamAccess.item);
             pManager.AddVectorParameter("Force Vector [kN]", "V", "Force vector in kN to be applied at point", GH_ParamAccess.item);
+
+            pManager[0].Optional = true;
+            pManager[1].Optional = true;
         }
 
         /// <summary>
@@ -43,15 +47,21 @@ namespace MiStrAnGH
         {
             Point3d pt = new Point3d();
             Vector3d vec = new Vector3d();
+            int nodeId = -1;
+            bool useId = false;
 
-            if (!DA.GetData(0, ref pt)) return;
-            if (!DA.GetData(1, ref vec)) return;
+            if (!DA.GetData(0, ref pt)) useId = true;
+            DA.GetData(1, ref nodeId);
+            if (!DA.GetData(2, ref vec)) return;
+
+            if (useId && nodeId < 0)
+                throw new Exception(" Point not set, invalid ID");
 
             //Account for unit (kN)
             vec *= 1000;
 
             LoadType load = new LoadType(new MiStrAnEngine.Vector3D(pt.X, pt.Y, pt.Z), new MiStrAnEngine.Vector3D(vec.X, vec.Y, vec.Z), MiStrAnEngine.TypeOfLoad.PointLoad);
-
+            load.ParentIndex = nodeId;
             DA.SetData(0, load);
 
         }

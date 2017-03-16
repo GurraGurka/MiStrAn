@@ -24,7 +24,11 @@ namespace MiStrAnGH
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {
             pManager.AddPointParameter("Center Point", "CenPt", "Point close to centroid of mesh face", GH_ParamAccess.item);
+            pManager.AddIntegerParameter("Element Id", "eID", "Optional element ID. Will override point", GH_ParamAccess.item);
             pManager.AddVectorParameter("Force Vector [kN]", "q", "Force vector in kN to be applied to element", GH_ParamAccess.item);
+
+            pManager[0].Optional = true;
+            pManager[1].Optional = true;
         }
 
         /// <summary>
@@ -43,14 +47,20 @@ namespace MiStrAnGH
         {
             Point3d pt = new Point3d();
             Vector3d vec = new Vector3d();
+            int elementId = -1;
+            bool useId = false;
 
-            if (!DA.GetData(0, ref pt)) return;
-            if (!DA.GetData(1, ref vec)) return;
+            if (!DA.GetData(0, ref pt)) useId = true;
+            DA.GetData(1, ref elementId);
+            if (!DA.GetData(2, ref vec)) return;
+
+            if(useId && elementId < 0) throw new Exception(" Point not set, invalid ID");
 
             //account for unit (kN)
             vec *= 1000;
 
             LoadType load = new LoadType(new MiStrAnEngine.Vector3D(pt.X, pt.Y, pt.Z), new MiStrAnEngine.Vector3D(vec.X, vec.Y, vec.Z), MiStrAnEngine.TypeOfLoad.DistributedLoad);
+            load.ParentIndex = elementId;
 
             DA.SetData(0, load);
 

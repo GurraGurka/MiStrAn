@@ -203,7 +203,11 @@ namespace MiStrAnEngine
 
         public void AddSupport(Support support)
         {
-            Node node = GetNode(support.node.Pos);
+            Node node;
+            if (support.NodeIndex == -1)
+                node = GetNodeByPt(support.node.Pos);
+            else
+                node = nodes[support.NodeIndex];
             support.node = node;
             supports.Add(support);
         }
@@ -225,7 +229,7 @@ namespace MiStrAnEngine
             return newNode;
         }
 
-        public Node GetNode(Vector3D pos)
+        public Node GetNodeByPt(Vector3D pos)
         {
             double tol = 0.0001;
 
@@ -256,16 +260,24 @@ namespace MiStrAnEngine
 
         public void AddLoad(Load load)
         {
+            Node node;
+            ShellElement element;
+
             if (load.Type == TypeOfLoad.PointLoad)
             {
-                Node node = GetNode(load.Pos);
+                if (load.ParentIndex == -1)
+                    node = GetNodeByPt(load.Pos);
+                else
+                    node = nodes[load.ParentIndex];
                 node.Loads.Add(load);
             }
 
             else if (load.Type == TypeOfLoad.DistributedLoad)
             {
-
-                ShellElement element = GetElementByCentroid(load.Pos);
+                if (load.ParentIndex == -1)
+                    element = GetElementByCentroid(load.Pos);
+                else
+                    element = elements[load.ParentIndex];
                 element.Loads.Add(load);
             }
 
@@ -273,7 +285,10 @@ namespace MiStrAnEngine
             {
                 if (!load.ApplyToAllElements)
                 {
-                    ShellElement element = GetElementByCentroid(load.Pos);
+                    if (load.ParentIndex == -1)
+                        element = GetElementByCentroid(load.Pos);
+                    else
+                        element = elements[load.ParentIndex];
                     element.Loads.Add(load);
                 }
                 else
@@ -287,37 +302,35 @@ namespace MiStrAnEngine
             }
         }
 
-        //Denna bör nog fixas till lite sen 
         public void SetSections(List<Section> sections)
         {
-            //Set a section for each shell
             foreach(Section s in sections)
             {
-                if(!s.applyToAll)
+                if (!s.applyToAll)
                 {
-                    //DEtta är för testing just nu!!
-                  //  foreach (Vector3D vec in s.faceIndexes)
-                 //   {
-                        ShellElement element = GetElementByCentroid(s.faceCenterPt);
-                        element.Section = s;
-                        element.GenerateD();
-                 //   }
+                    ShellElement element;
+
+                    if (s.ParentIndex == -1)
+                        element = GetElementByCentroid(s.faceCenterPt);
+                    else
+                        element = elements[s.ParentIndex];
+
+                    element.Section = s;
+                    element.GenerateD();
                 }
 
                 else
                 {
-                    //Detta blir ju då lite konstigt om man inte fyller i några värden och har 2 sektioner
-                    //men det ska man inte göra, kanske sätta någon varning
                     foreach (ShellElement element in elements)
                     {
-                        element.Section = s;
-                        element.GenerateD();
+                        if (element.Section == null)
+                        {
+                            element.Section = s;
+                            element.GenerateD();
+                        }
                     }
 
                 }
-
-
-
             }
         }
 

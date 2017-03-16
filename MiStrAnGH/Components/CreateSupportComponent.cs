@@ -24,12 +24,16 @@ namespace MiStrAnGH
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {
             pManager.AddPointParameter("Point", "Pt", "Point close to node where support is to be added", GH_ParamAccess.item);
+            pManager.AddIntegerParameter("Node ID", "nID", "Optional node ID. If set, support will be assigned to node with this ID, and ignore point", GH_ParamAccess.item);
             pManager.AddBooleanParameter("Support in X-direction?", "X", "Make true if you wish to add support for translations in X-direction", GH_ParamAccess.item, true);
             pManager.AddBooleanParameter("Support in Y-direction?", "Y", "Make true if you wish to add support for translations in Y-direction", GH_ParamAccess.item, true);
             pManager.AddBooleanParameter("Support in Z-direction?", "Z", "Make true if you wish to add support for translations in Z-direction", GH_ParamAccess.item, true);
             pManager.AddBooleanParameter("Support in XX-direction?", "RX", "Make true if you wish to add support for rotations around X-axis", GH_ParamAccess.item, true);
             pManager.AddBooleanParameter("Support in YY-direction?", "RY", "Make true if you wish to add support for rotations around Y-axis", GH_ParamAccess.item, true);
             pManager.AddBooleanParameter("Support in ZZ-direction?", "RZ", "Make true if you wish to add support for rotations around Z-axis", GH_ParamAccess.item, true);
+
+            pManager[0].Optional = true;
+            pManager[1].Optional = true;
         }
 
         /// <summary>
@@ -37,7 +41,7 @@ namespace MiStrAnGH
         /// </summary>
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
         {
-            pManager.AddParameter(new SupportParameter(), "MiStrAn Support", "Support", "A MiStrAn support", GH_ParamAccess.item);
+            pManager.RegisterParam(new SupportParameter(), GH_ParamAccess.item);
         }
 
         /// <summary>
@@ -48,16 +52,24 @@ namespace MiStrAnGH
         {
             bool X = true, Y = true, Z = true, RX = true, RY = true, RZ = true;
             Point3d Pt = new Point3d();
+            bool useId = false;
+            int nodeId = -1;
 
-            if (!DA.GetData(0, ref Pt)) return;
-            DA.GetData(1, ref X);
-            DA.GetData(2, ref Y);
-            DA.GetData(3, ref Z);
-            DA.GetData(4, ref RX);
-            DA.GetData(5, ref RY);
-            DA.GetData(6, ref RZ);
+            if (!DA.GetData(0, ref Pt)) useId = true;
+            DA.GetData(1, ref nodeId);
+            DA.GetData(2, ref X);
+            DA.GetData(3, ref Y);
+            DA.GetData(4, ref Z);
+            DA.GetData(5, ref RX);
+            DA.GetData(6, ref RY);
+            DA.GetData(7, ref RZ);
+
+            if (useId && nodeId < 0)
+                throw new Exception(" Point not set, invalid ID");
+
 
             SupportType sup = new SupportType(new MiStrAnEngine.Node(Pt.X, Pt.Y, Pt.Z));
+            sup.NodeIndex = nodeId;
             sup.X = X;
             sup.Y = Y;
             sup.Z = Z;
@@ -66,8 +78,6 @@ namespace MiStrAnGH
             sup.RZ = RZ;
 
             DA.SetData(0, sup);
-
-
         }
 
         /// <summary>

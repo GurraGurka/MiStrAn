@@ -10,7 +10,7 @@ namespace MiStrAnEngine
     {
         public Vector3D LoadVec;
         public Vector3D Pos;
-        public int ParentIndex; 
+        public int ParentIndex = -1; 
         public TypeOfLoad Type;
         public bool ApplyToAllElements = false;
 

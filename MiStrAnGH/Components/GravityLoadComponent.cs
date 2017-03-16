@@ -24,8 +24,9 @@ namespace MiStrAnGH
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {
             pManager.AddPointParameter("Center Point", "CenPt", "Point close to centroid of mesh face", GH_ParamAccess.item);
-
+            pManager.AddIntegerParameter("Element ID", "eID", "Element ID for load. Will override point. Leave both blank to apply to all", GH_ParamAccess.item);
             pManager[0].Optional = true;
+            pManager[1].Optional = true;
         }
 
         /// <summary>
@@ -43,15 +44,20 @@ namespace MiStrAnGH
         protected override void SolveInstance(IGH_DataAccess DA)
         {
             Point3d pt = new Point3d();
-
+            int elementId = -1;
             bool applyToAll = false;
+            bool useId = false;
 
-            if (!DA.GetData(0, ref pt)) applyToAll = true;
+            if (!DA.GetData(0, ref pt)) useId = true;
+            if (!DA.GetData(1, ref elementId) && useId) applyToAll = true;
 
             LoadType load;
 
             if (!applyToAll)
+            {
+                if(useId && elementId < 0) throw new Exception(" Point not set, invalid ID");
                 load = new LoadType(new MiStrAnEngine.Vector3D(pt.X, pt.Y, pt.Z), MiStrAnEngine.Vector3D.ZeroVector, MiStrAnEngine.TypeOfLoad.GravityLoad);
+            }
             else
             {
                 load = new LoadType(MiStrAnEngine.Vector3D.ZeroVector, MiStrAnEngine.Vector3D.ZeroVector, MiStrAnEngine.TypeOfLoad.GravityLoad);

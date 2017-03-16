@@ -13,7 +13,7 @@ namespace MiStrAnGH
         /// </summary>
         public SectionComponent()
           : base("Section", "Section",
-              "Materializing...",
+              "Create a anisotropic MiStrAn shell section",
               "MiStrAn", "Model")
         {
         }
@@ -24,6 +24,7 @@ namespace MiStrAnGH
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {
             pManager.AddPointParameter("Face center points", "FaceCentPt", "Select face-center points to give section", GH_ParamAccess.item);
+            pManager.AddIntegerParameter("Element Id", "eId", "Optional element id for assignment. If set will override point", GH_ParamAccess.item);
             pManager.AddNumberParameter("E modulus in longitudinal direction [GPa]", "Ex", "Define one for all or for each ply", GH_ParamAccess.list, 210);
             pManager.AddNumberParameter("E modulus in transverse direction [GPA]", "Ey", "Define one for all or for each ply", GH_ParamAccess.list,210);
             pManager.AddNumberParameter("Longitudinal shear modulus [GPA]", "Gxy", " Define one for all or for each ply", GH_ParamAccess.list,79.3);
@@ -40,7 +41,8 @@ namespace MiStrAnGH
             pManager[5].Optional = true;
             pManager[6].Optional = true;
             pManager[7].Optional = true;
-            
+            pManager[8].Optional = true;
+
         }
 
         /// <summary>
@@ -59,6 +61,8 @@ namespace MiStrAnGH
         {
             //   List<Point3d> faceIndexes = new List<Point3d>();
             Point3d centerPt = new Point3d();
+            int elementId = -1;
+            bool useId = false;
             List<double> Exs = new List<double>();
             List<double> Eys = new List<double>();
             List<double> Gxys = new List<double>();
@@ -67,16 +71,18 @@ namespace MiStrAnGH
             List<double> vs = new List<double>();
             double density = new double();
 
+
             bool applyToAll = false;
             
-            if (!DA.GetData(0,ref centerPt)) applyToAll = true;
-            if (!DA.GetDataList(1, Exs)) {} //Exs = ExsDef;
-            if (!DA.GetDataList(2, Eys)) { } //Eys = EysDef;
-            if (!DA.GetDataList(3, Gxys)) { } // Gxys = GxysDef; 
-            if (!DA.GetDataList(4, vs)) { } // vs = vsDef;
-            if (!DA.GetDataList(5, thickness)) { } //thickness = thicknessDef;
-            if (!DA.GetDataList(6, angles)) { } //angles = anglesDef;
-            if (!DA.GetData(7, ref density)) { } //density = densityDef;
+            if (!DA.GetData(0, ref centerPt)) useId = true;
+            if (!DA.GetData(1, ref elementId) && useId) applyToAll = true;
+            if (!DA.GetDataList(2, Exs)) {} //Exs = ExsDef;
+            if (!DA.GetDataList(3, Eys)) { } //Eys = EysDef;
+            if (!DA.GetDataList(4, Gxys)) { } // Gxys = GxysDef; 
+            if (!DA.GetDataList(5, vs)) { } // vs = vsDef;
+            if (!DA.GetDataList(6, thickness)) { } //thickness = thicknessDef;
+            if (!DA.GetDataList(7, angles)) { } //angles = anglesDef;
+            if (!DA.GetData(8, ref density)) { } //density = densityDef;
 
             
  
@@ -115,13 +121,10 @@ namespace MiStrAnGH
             SectionType section = new SectionType();
             //Fixa detta senare
             if (!applyToAll)
-            {
-               // List<MiStrAnEngine.Vector3D> vecs = new List<MiStrAnEngine.Vector3D>();
-               // foreach (Point3d pt in faceIndexes)
-                  //  vecs.Add(new MiStrAnEngine.Vector3D(pt.X, pt.Y, pt.Z));
-                
-
+            {              
+                if(useId && elementId < 0) throw new Exception(" Point not set, invalid ID");
                 section = new SectionType(thickness, angles, Exs, Eys, Gxys, vs, new MiStrAnEngine.Vector3D(centerPt.X, centerPt.Y, centerPt.Z), density, totalThick);
+                section.ParentIndex = elementId;
             }
                 
             else

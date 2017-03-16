@@ -9,6 +9,7 @@ namespace MiStrAnEngine
     public class Support
     {
         public Node node;
+        public int NodeIndex = -1;
         public bool X;
         public bool Y;
         public bool Z;
