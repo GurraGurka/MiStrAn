@@ -195,7 +195,9 @@ namespace MiStrAnGH
 
                 double mean = sum / connectedFaces.Length;
 
+                
                 double normVal = mean / max;
+                if (max == 0) normVal = 0;
 
                 System.Drawing.Color color = grad.ColourAt(normVal);
                 mesh.VertexColors.Add(color.R, color.G, color.B);

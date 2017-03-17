@@ -158,8 +158,7 @@ namespace MiStrAnEngine
 
         private static SparseMatrix ScalarMultiplication(double k, SparseMatrix A)
         {
-            SparseMatrix B = new SparseMatrix(A);
-
+            SparseMatrix B = new SparseMatrix(A.rows, A.cols);
             int t0 = 0, t1 = 0;
             for (int i = 0; i < A.nnz; i++)
             {
@@ -225,7 +224,7 @@ namespace MiStrAnEngine
             A.ConvertToCRS();
 
             alglib.sparsemv(A.mat, v.values, ref ret.values);
-
+            
             return ret;
 
         }
@@ -676,7 +675,7 @@ namespace MiStrAnEngine
         /// <param name="m0">number of expected eigenvalues in interval</param>
         /// <param name="eigenVectors"></param>
         /// <param name="eigenValues"></param>
-        public static void GeneralizedEigen(SparseMatrix A, SparseMatrix B, double emin, double emax, int m0, out Vector[] eigenVectors, out double[] eigenValues)
+        public static void GeneralizedEigen(SparseMatrix A, SparseMatrix B, double emin, double emax, int m0, out Vector[] eigenVectors, out double[] eigenValues, out double[] residuals, out string infoString)
         {
             if (A.rows != A.cols || B.rows != B.cols || A.rows != B.rows)
                 throw new MException("Eigenvalue; Matrix size mismatch or not square");
@@ -748,6 +747,106 @@ namespace MiStrAnEngine
                 eigenVectors[i] = v;
             }
 
+            residuals = res;
+
+            switch (info)
+            {
+                case 2:
+                    infoString = "No convergence";
+                    break;
+
+                case 1:
+                    infoString = "No eigenvalue found in the search interval.In some extreme cases the return value info=1 may indicate that the Extended Eigensolver routine has failed to find the eigenvalues in the search interval. This situation could arise if a very large search interval is used to locate a small and isolated cluster of eigenvalues (i.e. the dimension of the search interval is many orders of magnitude larger than the number of contour points. It is then either recommended to increase the number of contour points fpm[1] or simply rescale more appropriately the search interval. ";
+                    break;
+                case 0:
+                    infoString = "Successful";
+                    break;
+                default:
+                    infoString = "Undocumented error. Do not trust results";
+                    break;
+            }
+
+
+
+        }
+
+        public static void GeneralizedEigenTesting(SparseMatrix A, SparseMatrix B, double emin, double emax, int m0, out Vector[] eigenVectors, out double[] eigenValues)
+        {
+            if (A.rows != A.cols || B.rows != B.cols || A.rows != B.rows)
+                throw new MException("Eigenvalue; Matrix size mismatch or not square");
+
+            A.ConvertToCRS();
+            B.ConvertToCRS();
+
+
+
+            // INPUT VALUES
+            char uplo = 'F'; //Store full matrices
+            int n = A.rows;
+            double[] a = new double[A.mat.innerobj.vals.Length];
+            int[] ia/*[9]*/ = new int[A.mat.innerobj.ridx.Length];
+            int[] ja/*[18]*/ = new int[A.mat.innerobj.idx.Length];
+            A.mat.innerobj.ridx.CopyTo(ia, 0);
+            A.mat.innerobj.idx.CopyTo(ja, 0);
+            A.mat.innerobj.vals.CopyTo(a, 0);
+            double[] b = new double[B.mat.innerobj.vals.Length];
+            int[] ib/*[9]*/ = new int[B.mat.innerobj.ridx.Length];
+            int[] jb/*[18]*/ = new int[B.mat.innerobj.idx.Length];
+            B.mat.innerobj.ridx.CopyTo(ib, 0);
+            B.mat.innerobj.idx.CopyTo(jb, 0);
+            B.mat.innerobj.vals.CopyTo(b, 0);
+
+            int[] fpm = new int[128];
+            fpm[0] = 0; //do not print runtime status
+            fpm[1] = 32; //number of contour points.. ???
+            fpm[2] = 4; //Error trace double precision stopping criteria ε (ε = 10-fpm[2]) .
+            fpm[3] = 5;  // Maximum number of Extended Eigensolver refinement loops allowed. If no convergence is reached within fpm[3] refinement loops, Extended Eigensolver routines return info=2.
+            fpm[4] = 0; //Solver generates initial subspace
+            fpm[5] = 0; //Stopping test..?
+            fpm[6] = 5; // Error trace single precision stopping criteria (10 - fpm[6]).
+            fpm[13] = 0;
+            fpm[26] = 0; // Check input matrices
+
+            //OUTPUT VALUES
+            double[] x = new double[n * m0];
+            double epsout = 0;
+            int loops = 0;
+            double[] e = new double[m0];
+            int m = 0;
+            double[] res = new double[m0];
+            int info = 1;
+
+            // Convert to one-based THIS COULD CERTAINLY BE OPTIMIZED
+            for (int i = 0; i < ia.Length; i++)
+                ia[i] = ia[i] + 1;
+            for (int i = 0; i < ja.Length; i++)
+                ja[i] = ja[i] + 1;
+            for (int i = 0; i < ib.Length; i++)
+                ib[i] = ib[i] + 1;
+            for (int i = 0; i < jb.Length; i++)
+                jb[i] = jb[i] + 1;
+
+
+            double k = a.Max();
+            double[] aScaled = scale(1.0/k, a);
+            emin = 0;
+            MKL.GeneralizedEigenSolver(ref uplo, ref n, aScaled, ia, ja, b, ib, jb, fpm, ref epsout, ref loops, ref emin, ref emax, ref m0, e, x, ref m, res, ref info);
+
+            eigenValues = scale(k,e);
+            eigenVectors = new Vector[x.Count() / n];
+
+            for (int i = 0; i < x.Count() / n; i++)
+            {
+                Vector v = new Vector(n);
+                for (int j = 0; j < n; j++)
+                {
+                    v[j] = x[(i * n) + j];
+                }
+                eigenVectors[i] = v;
+            }
+
+            Vector res1 = A * eigenVectors[0] - B * eigenValues[0] * eigenVectors[0];
+
         }
 
 
@@ -768,6 +867,17 @@ namespace MiStrAnEngine
 
         }
 
+        private static double[] scale(double a, double[] b)
+        {
+            double[] ret = new double[b.Length];
+            for (int i = 0; i < b.Length; i++)
+            {
+                ret[i] = a * b[i];
+            }
+
+
+            return ret;
+        }
 
         private static double scalarProduct(double[] a, double[] b)
         {

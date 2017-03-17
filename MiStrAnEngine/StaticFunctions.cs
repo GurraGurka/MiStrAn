@@ -102,7 +102,7 @@ namespace MiStrAnEngine
 
 
 
-        public static void GetEigenFreqs(Structure s, double maxFreq, int nbFreq, out double [] freqs, out Vector[] outEigenVec)
+        public static void GetEigenFreqs(Structure s, double maxFreq, int nbFreq, out double[] freqs, out Vector[] outEigenVec, out double[] residual, out string infoString)
         {
             int nd = s.K.cols;
             int[] fdof = intSrs(0, nd - 1);
@@ -119,7 +119,8 @@ namespace MiStrAnEngine
             freqs = new double[] { };
             outEigenVec = new Vector[] { };
 
-            SparseMatrix.GeneralizedEigen(Kff, Mff, -maxFreq, maxFreq, nbFreq, out outEigenVec, out freqs);
+
+            SparseMatrix.GeneralizedEigen(Kff, Mff, -maxFreq, maxFreq, nbFreq, out outEigenVec, out freqs, out residual, out infoString);
 
             freqs = freqs.Select(x => Math.Sqrt(x) / (2 * Math.PI)).ToArray();
             freqs = freqs.Where(val => val != 0).ToArray();

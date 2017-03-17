@@ -82,19 +82,9 @@ namespace MiStrAnEngine
             double c2 = xe[0, 0] - xe[2, 0];
             double elementArea = 0.5 * (b1 * c2 - b2 * c1);
 
-            //Get a D*Be adn Te for calulating stresses, gauss points = 0
-            Matrix unTrans = new Matrix(new double[,] { { Nodes[0].x, Nodes[0].y, Nodes[0].z },
-                                                            { Nodes[1].x, Nodes[1].y, Nodes[1].z },
-                                                            { Nodes[2].x, Nodes[2].y, Nodes[2].z },});
+
             GetB_N(new Matrix(new double[,] { { 0,0,0 } }), xe, out Be, out Ne);
-            //I DONT KNOW WHY BUT DIVISION OF THICKNESS IS NEEDED
-            // DBe =(1/thickness)* D * Be;
 
-            //  GetStiffnessTransMatrix(localT, out G);
-            //  Dtrans = G * D * G.Transpose();
-
-            // this.DBe = (1 / this.Section.totalThickness) * D * Be;
-            // this.DBe =  Qstress * Be;
             foreach(Matrix m in Qstress)
                 this.DBe.Add(m * Be);
 
@@ -102,7 +92,18 @@ namespace MiStrAnEngine
 
             this.Te = T;
 
+            Vector3D e1_, e2_, e3_;
+            Vector3D e1 = Vector3D.e1, e2 = Vector3D.e2, e3 = Vector3D.e3;
+            GetLocalCoordinateSystem(out e1_, out e2_, out e3_);
+
+            // Tranformation matrix, Global -> local
+            Matrix Tl = new Matrix(new double[,] { 
+                { e1_ * e1, e1_ * e2, e1_ * e3 }, 
+                { e2_ * e1, e2_ * e2, e2_ * e3 }, 
+                { e3_ * e1, e3_ * e2, e3_ * e3 } });
+
             Vector3D q = Getq();
+            Vector qLocal = Tl * q.ToVector();
 
 
             for (int i = 0; i < ng; i++)
@@ -110,7 +111,7 @@ namespace MiStrAnEngine
 
                 GetB_N(gp.GetRow(i), xe,out B, out N);
                 Matrix DKe = gw[i]* B.Transpose() * D * B;
-                Vector DFe = gw[i] * N.Transpose() * q.ToVector();
+                Vector Dfe = gw[i] * N.Transpose() * qLocal;
                 
 
                 //This only account for one density over the whole element
@@ -119,16 +120,15 @@ namespace MiStrAnEngine
                 
                 Ke[activeDofs, activeDofs] = Ke[activeDofs, activeDofs] + elementArea * DKe;
                 Me[activeDofs, activeDofs] = Me[activeDofs, activeDofs] + elementArea * DMe;
-                fe[activeDofs] = fe[activeDofs] + elementArea * DFe;
+                fe[activeDofs] = fe[activeDofs] + elementArea * Dfe;
             }
 
-
-
-            
+           
             // Adding small stiffness to rotational dofs
             Ke[passiveDofs, passiveDofs] =  Matrix.Ones(3, 3);
             Ke = T * Ke * T.Transpose();
             Me = T * Me * T.Transpose();
+            fe = T * fe;
 
             return true;
         }
