@@ -6,14 +6,14 @@ using Rhino.Geometry;
 
 namespace MiStrAnGH.Components
 {
-    public class DrawElementCoordinateSystem : GH_Component
+    public class DrawMaterialAxisComponent : GH_Component
     {
         /// <summary>
         /// Initializes a new instance of the DrawElementCoordinateSystem class.
         /// </summary>
-        public DrawElementCoordinateSystem()
-          : base("DrawElementCoordinateSystem", "DrawCoordSys",
-              "Draws a strucutres elements coordinate systems",
+        public DrawMaterialAxisComponent()
+          : base("Draw material axis", "DrawMatAxis",
+              "Draws the material axis for each element",
               "MiStrAn", "Visualise")
         {
         }
@@ -66,15 +66,12 @@ namespace MiStrAnGH.Components
         /// </summary>
         public override Guid ComponentGuid
         {
-            get { return new Guid("{3c64cbb3-d3d4-40ae-9d9a-bb65833be0e3}"); }
+            get { return new Guid("{86033ed9-a0f9-4b0f-a5fd-446355cdae21}"); }
         }
 
         public override void DrawViewportWires(IGH_PreviewArgs args)
         {
-            args.Display.DrawLines(structure.XAxisLines.ToArray(), System.Drawing.Color.Blue);
-            args.Display.DrawLines(structure.YAxisLines.ToArray(), System.Drawing.Color.Red);
-            args.Display.DrawLines(structure.ZAxisLines.ToArray(), System.Drawing.Color.Green);
-
+            args.Display.DrawLines(structure.MaterialAxisLines.ToArray(), System.Drawing.Color.Cyan);
         }
 
         public override BoundingBox ClippingBox
