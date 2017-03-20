@@ -251,18 +251,18 @@ namespace Sandbox
             A[2, 2] = 3;
 
 
-            double[] eigenVals;
-            Vector[] eigenVecs;
+           // double[] eigenVals;
+           // Vector[] eigenVecs;
 
-            SparseMatrix.GeneralizedEigen(A, B, 0, 10, 3, out eigenVecs, out eigenVals);
+           //// SparseMatrix.GeneralizedEigen(A, B, 0, 10, 3, out eigenVecs, out eigenVals);
 
-            Matrix Amat = A.ToMatrix();
-            Matrix Bmat = B.ToMatrix();
+           // Matrix Amat = A.ToMatrix();
+           // Matrix Bmat = B.ToMatrix();
 
 
 
-            Vector test1 = Amat * eigenVecs[0];
-            Vector test2 = eigenVals[0] * eigenVecs[0];
+           // Vector test1 = Amat * eigenVecs[0];
+           // Vector test2 = eigenVals[0] * eigenVecs[0];
 
             
         }

@@ -82,28 +82,32 @@ namespace MiStrAnEngine
             double c2 = xe[0, 0] - xe[2, 0];
             double elementArea = 0.5 * (b1 * c2 - b2 * c1);
 
-
+            //Get a D*Be adn Te for calulating stresses, gauss points = 0
+            Matrix unTrans = new Matrix(new double[,] { { Nodes[0].x, Nodes[0].y, Nodes[0].z },
+                                                            { Nodes[1].x, Nodes[1].y, Nodes[1].z },
+                                                            { Nodes[2].x, Nodes[2].y, Nodes[2].z },});
             GetB_N(new Matrix(new double[,] { { 0,0,0 } }), xe, out Be, out Ne);
+
 
             foreach(Matrix m in Qstress)
                 this.DBe.Add(m * Be);
-
-
-
-            this.Te = T;
 
             Vector3D e1_, e2_, e3_;
             Vector3D e1 = Vector3D.e1, e2 = Vector3D.e2, e3 = Vector3D.e3;
             GetLocalCoordinateSystem(out e1_, out e2_, out e3_);
 
             // Tranformation matrix, Global -> local
-            Matrix Tl = new Matrix(new double[,] { 
-                { e1_ * e1, e1_ * e2, e1_ * e3 }, 
-                { e2_ * e1, e2_ * e2, e2_ * e3 }, 
+            Matrix Tl = new Matrix(new double[,] {
+                { e1_ * e1, e1_ * e2, e1_ * e3 },
+                { e2_ * e1, e2_ * e2, e2_ * e3 },
                 { e3_ * e1, e3_ * e2, e3_ * e3 } });
 
             Vector3D q = Getq();
             Vector qLocal = Tl * q.ToVector();
+
+
+            this.Te = T;
+
 
 
             for (int i = 0; i < ng; i++)
@@ -112,10 +116,10 @@ namespace MiStrAnEngine
                 GetB_N(gp.GetRow(i), xe,out B, out N);
                 Matrix DKe = gw[i]* B.Transpose() * D * B;
                 Vector Dfe = gw[i] * N.Transpose() * qLocal;
-                
 
-                //This only account for one density over the whole element
-                Matrix DMe = this.Section.totalThickness*this.Section.density* gw[i] * N.Transpose() * N;
+
+                double gravityWeight = GetSectionWeight(this.Section.thickness, this.Section.densitys);
+                Matrix DMe = gravityWeight * gw[i] * N.Transpose() * N;
 
                 
                 Ke[activeDofs, activeDofs] = Ke[activeDofs, activeDofs] + elementArea * DKe;
@@ -123,9 +127,11 @@ namespace MiStrAnEngine
                 fe[activeDofs] = fe[activeDofs] + elementArea * Dfe;
             }
 
-           
+
+
+
             // Adding small stiffness to rotational dofs
-            Ke[passiveDofs, passiveDofs] =  Matrix.Ones(3, 3);
+            Ke[passiveDofs, passiveDofs] = Matrix.Ones(3, 3);
             Ke = T * Ke * T.Transpose();
             Me = T * Me * T.Transpose();
             fe = T * fe;
@@ -155,11 +161,41 @@ namespace MiStrAnEngine
         {
             
             double gravity = 9.81;
-            double density = s.Section.density;
-            double thickness = s.Section.totalThickness;
+          //  double density = s.Section.density;
+           // double thickness = s.Section.totalThickness;
 
-            double q = -gravity * density * thickness;
+            double sectionWeight = s.GetSectionWeight(s.Section.thickness, s.Section.densitys);
+
+            double q = -gravity * sectionWeight;
             return new Vector3D(0, 0, q);
+        }
+
+        public double GetSectionWeight(List<double> thicknesses, List<double> densities)
+        {
+            double gravityWeight = 0;
+            //This accounts for different densities and thicknesses in section
+            double listLength = Math.Max(this.Section.thickness.Count, this.Section.densitys.Count);
+            for (int j = 0; j < listLength; j++)
+            {
+                double density = new double(); ;
+                double thick = new double(); ;
+
+                //Inte så oeffektivt men kan skrivas om lite snyggare
+                if (this.Section.thickness.Count == 1)
+                    thick = this.Section.thickness[0];
+                else
+                    thick = this.Section.thickness[j];
+
+                if (this.Section.densitys.Count == 1)
+                    density = this.Section.densitys[0];
+                else
+                    density = this.Section.densitys[j];
+
+
+                gravityWeight += thick * density;
+
+            }
+            return gravityWeight;
         }
 
 
@@ -177,21 +213,6 @@ namespace MiStrAnEngine
             this.qGravity = GetGravityq(this);
         }
 
-    /*    public void SetSteelSection()
-        {
-                double E = 210e9;
-                double v = 0.3;
-                double G = E / (2.0 * (1 + v));
-                double density = 7800; //[kg/m^3] 
-            Matrix d, q,Q;
-            Matrix qLoc = new Matrix(6, 1); 
-
-            double[] angle = new double[1] { 0}; // double[] angle = new double[] { 0};
-            Materials.eqModulus(this, out d, out q, out new List<Matrix>(),new List<double>()); //, out qLoc);
-            this.D = d;
-            //this.q = qLoc;
-
-        } */
 
         private static void GenerateGaussPoints(int n, out Matrix gp, out Matrix gw)
         {
@@ -316,15 +337,6 @@ namespace MiStrAnEngine
 
         }
 
-        public void GetStiffnessTransMatrix(Matrix T, out Matrix G)
-        {
-            G = new Matrix(new double[,] { { Math.Pow(T[0,0],2),Math.Pow(T[1,0],2),Math.Pow(T[2,0],2),2*T[1,0]*T[0,0],2*T[2,0]*T[0,0],2*T[1,0]*T[2,0]},
-                                           { Math.Pow(T[0,1],2),Math.Pow(T[1,1],2),Math.Pow(T[2,1],2),2*T[1,1]*T[0,1],2*T[0,1]*T[2,1],2*T[2,1]*T[1,1]},
-                                           { Math.Pow(T[0,2],2),Math.Pow(T[1,2],2),Math.Pow(T[2,2],2),2*T[1,2]*T[0,2],2*T[0,2]*T[2,2],2*T[2,1]*T[2,2]},
-                                           {T[0,1]*T[0,0],T[1,0]*T[1,1],T[2,0]*T[2,1],T[0,0]*T[1,1]+T[1,0]*T[0,1],T[2,0]*T[0,1]+T[0,0]*T[2,1],T[2,0]*T[1,1]+T[1,0]*T[2,1]},
-                                           {T[0,0]*T[0,2],T[1,0]*T[1,2],T[2,0]*T[2,2],T[0,2]*T[1,0]+T[1,2]*T[0,0],T[0,0]*T[2,2]+T[2,0]*T[0,2],T[2,2]*T[1,0]+T[1,2]*T[2,0]},
-                                           {T[0,2]*T[0,1],T[1,2]*T[1,1],T[2,2]*T[2,1],T[0,2]*T[1,1]+T[1,2]*T[0,1],T[0,1]*T[2,2]+T[0,2]*T[2,1],T[2,2]*T[1,1]+T[1,2]*T[2,1]} }); 
-        }
 
         //Temp public for testing
         public void GetB_N(Matrix L, Matrix xe, out Matrix B, out Matrix N)
