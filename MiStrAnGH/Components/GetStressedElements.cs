@@ -33,8 +33,9 @@ namespace MiStrAnGH.Components
         /// </summary>
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
         {
-            pManager.AddPointParameter("Nb elements with highest stresses", "HighStressElems", "Input Nb of elements with highest stresses ", GH_ParamAccess.list);
-            pManager.AddPointParameter( "The rest of the stresses", "LowStressElems", "The rest of the elements with the lowest stresses ", GH_ParamAccess.list);
+            pManager.AddPointParameter("Nb elements with highest stresses [Pts]", "HighStressPts", "Input Nb of elements with highest stresses ", GH_ParamAccess.list);
+            pManager.AddIntegerParameter("Nb elements with highest stresses[Index]", "HighStressIndex", "Input Nb of elements with highest stresses ", GH_ParamAccess.list);
+            pManager.AddPointParameter( "The rest of the stresses", "LowStressPts", "The rest of the elements with the lowest stresses ", GH_ParamAccess.list);
             pManager.AddNumberParameter("Area of high stressed elements", "HighStressArea", "Total area for the high stressed elements ", GH_ParamAccess.item);
         }
 
@@ -49,6 +50,7 @@ namespace MiStrAnGH.Components
             Mesh mesh = new Mesh();
             List<Point3d> highElemStress = new List<Point3d>();
             List<Point3d> lowElemStress = new List<Point3d>();
+            List<int> highIndex = new List<int>();
 
             if (!DA.GetData(0, ref mesh)) { return; }
             if (!DA.GetDataList(1, prinStresses)) {} 
@@ -56,11 +58,12 @@ namespace MiStrAnGH.Components
 
             double area = new double();
 
-            StaticFunctions.GetStressesElemPoints(mesh, prinStresses,nbElements, out highElemStress, out lowElemStress, out area);
+            StaticFunctions.GetStressesElemPoints(mesh, prinStresses,nbElements, out highElemStress, out highIndex ,out lowElemStress, out area);
 
             DA.SetDataList(0, highElemStress);
-            DA.SetDataList(1, lowElemStress);
-            DA.SetData(2, area);
+            DA.SetDataList(1, highIndex);
+            DA.SetDataList(2, lowElemStress);
+            DA.SetData(3, area);
         }
 
         /// <summary>

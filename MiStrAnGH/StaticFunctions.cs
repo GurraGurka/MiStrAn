@@ -89,12 +89,13 @@ namespace MiStrAnGH
             return grad;
         }
 
-        public static void GetStressesElemPoints(Mesh mesh, List<Vector3d> prinStresses, int nbElements, out List<Point3d> high, out List<Point3d> low, out double area)
+        public static void GetStressesElemPoints(Mesh mesh, List<Vector3d> prinStresses, int nbElements, out List<Point3d> high, out List<int> highIndex, out List<Point3d> low, out double area)
         {
             List<double> vLengths = new List<double>();
             List<int> indexes = new List<int>();
             high = new List<Point3d>();
             low = new List<Point3d>();
+            highIndex = new List<int>();
 
             foreach (Vector3d v in prinStresses)
                 vLengths.Add(v.Length);
@@ -121,6 +122,7 @@ namespace MiStrAnGH
                 if (indexes.Contains(i))
                 {
                     high.Add(faceList.GetFaceCenter(i));
+                    highIndex.Add(i);
 
                     //Get the area of the face
                     Point3f pt1, pt2, pt3, pt4;
