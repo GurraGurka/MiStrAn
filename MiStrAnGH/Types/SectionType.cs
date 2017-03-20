@@ -14,7 +14,7 @@ namespace MiStrAnGH
         public SectionType() : base()
         { }
 
-        public SectionType(List<double> _thickness, List<double> _angles, List<double> _Exs,List<double> _Eys, List<double> _Gxys, List<double> _vs, Vector3D _faceCenterPt, double _density, double _totalThickness)
+        public SectionType(List<double> _thickness, List<double> _angles, List<double> _Exs,List<double> _Eys, List<double> _Gxys, List<double> _vs, Vector3D _faceCenterPt, List<double> _density, double _totalThickness)
             : base(_thickness, _angles, _Exs, _Eys,_Gxys, _vs, _faceCenterPt, _density, _totalThickness)
         {
 

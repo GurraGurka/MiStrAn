@@ -102,7 +102,7 @@ namespace MiStrAnGH
             
             var sorted = vLengths
                 .Select((x, i) => new KeyValuePair<double, int>(x, i))
-                .OrderBy(x => x.Key)
+                .OrderByDescending(x => x.Key)
                 .ToList();
 
             // List<int> sortedLengths = sorted.Select(x => x.Key).ToList();
