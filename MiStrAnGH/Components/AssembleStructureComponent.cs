@@ -73,6 +73,8 @@ namespace MiStrAnGH
                 S.AddLoad(lt);
             }
 
+            if(S.dupSection)
+                AddRuntimeMessage(GH_RuntimeMessageLevel.Warning, "Some elements have duplicate sections");
 
             DA.SetData(0, S);
         }

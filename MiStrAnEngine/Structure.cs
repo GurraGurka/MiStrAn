@@ -25,6 +25,7 @@ namespace MiStrAnEngine
         public List<double> PrincipalAngles;
         public List<double> vonMises;
         public Vector[] eigenVecs;
+        public bool dupSection;
 
 
 
@@ -304,19 +305,23 @@ namespace MiStrAnEngine
 
         public void SetSections(List<Section> sections)
         {
+            List<int> checkDups = new List<int>();
+            dupSection = false;
+
             foreach(Section s in sections)
             {
                 if (!s.applyToAll)
                 {
                     ShellElement element;
-
+                    
                     if (s.ParentIndex == -1)
                         element = GetElementByCentroid(s.faceCenterPt);
                     else
                         element = elements[s.ParentIndex];
-
+                    
                     element.Section = s;
                     element.GenerateD();
+                    checkDups.Add(element.Id);
                 }
 
                 else
@@ -332,6 +337,9 @@ namespace MiStrAnEngine
 
                 }
             }
+
+            if (checkDups.Count != checkDups.Distinct().Count())
+                dupSection = true;
         }
 
         public Vector3D[] GetElementCentroids()
