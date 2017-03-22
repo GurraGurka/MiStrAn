@@ -114,7 +114,10 @@ namespace MiStrAnGH.Components
         {
             get
             {
-                return structure.boundingBox;
+                if (structure == null)
+                    return new BoundingBox();
+                else
+                    return structure.boundingBox;
             }
         }
 

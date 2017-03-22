@@ -26,6 +26,7 @@ namespace MiStrAnEngine
         public List<double> vonMises;
         public Vector[] eigenVecs;
         public bool dupSection;
+        public List<int> sectionDups;
 
 
 
@@ -305,6 +306,8 @@ namespace MiStrAnEngine
         public void SetSections(List<Section> sections)
         {
             List<int> checkDups = new List<int>();
+            sectionDups = new List<int>();
+            
             dupSection = false;
 
             foreach(Section s in sections)
@@ -339,6 +342,15 @@ namespace MiStrAnEngine
 
             if (checkDups.Count != checkDups.Distinct().Count())
                 dupSection = true;
+
+            sectionDups = checkDups
+                  .GroupBy(x => x)
+                  .Where(g => g.Count() > 1)
+                  .Select(y => y.Key)
+                  .ToList();
+
+
+
         }
 
         public Vector3D[] GetElementCentroids()

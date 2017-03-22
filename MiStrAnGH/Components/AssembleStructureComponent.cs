@@ -40,6 +40,7 @@ namespace MiStrAnGH
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
         {
             pManager.AddParameter(new StructureParameter(), "Assembled Structure", "Structure", "Assembled Structure with loads, elements, bc's etc", GH_ParamAccess.item);
+            pManager.AddIntegerParameter("Duplicate sections", "dupSections", "Elements with multiple sections", GH_ParamAccess.list);
         }
 
         /// <summary>
@@ -77,6 +78,7 @@ namespace MiStrAnGH
                 AddRuntimeMessage(GH_RuntimeMessageLevel.Warning, "Some elements have duplicate sections");
 
             DA.SetData(0, S);
+            DA.SetDataList(1, S.sectionDups);
         }
 
         /// <summary>
