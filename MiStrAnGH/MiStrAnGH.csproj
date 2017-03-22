@@ -51,10 +51,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Components\AlignMaterialAxisWithCurvesComponent.cs" />
     <Compile Include="Components\AssembleStructureComponent.cs" />
     <Compile Include="Components\AnalyseStructureComponent.cs" />
     <Compile Include="Components\CreateSupportComponent.cs" />
     <Compile Include="Components\DistributedLoadComponent.cs" />
+    <Compile Include="Components\DrawPrincipalStressContoursComponent.cs" />
     <Compile Include="Components\DrawMaterialAxisComponent.cs" />
     <Compile Include="Components\DrawPrincipalstressArrows.cs" />
     <Compile Include="Components\DrawElementCoordinateSystem.cs" />

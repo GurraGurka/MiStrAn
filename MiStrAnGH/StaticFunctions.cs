@@ -14,9 +14,7 @@ namespace MiStrAnGH
 {
     public static class StaticFunctions
     {
-
-
-
+        
         public static List<double> CorrectUnits(List<double> inputList, double corrValue)
         {
             List<double> outputDoubles = new List<double>();
@@ -261,6 +259,92 @@ namespace MiStrAnGH
             if (face.IsTriangle) area = area / 2;
 
             return area;
+        }
+
+
+        public static Curve[] CreatePrincipalStressContours(StructureType S, Line[] seeds, double stepLength)
+        {
+            Mesh M = S.M;
+            Curve[] ret = new Curve[seeds.Length];
+
+            for (int i = 0; i < seeds.Length; i++)
+            {
+
+
+                List<Point3d> curvePts = new List<Point3d>();
+
+                double maxDist = stepLength;
+                int maxIter = 500;
+
+                MeshPoint mPt = M.ClosestMeshPoint(seeds[i].From, maxDist);
+                int face = mPt.FaceIndex;
+                Vector3d entryVec = new Vector3d(seeds[i].To - seeds[i].From);
+                Vector3d dirVec = GetFaceDirectionVector(S, face, entryVec);
+
+                Point3d lastPoint = mPt.Point;
+                curvePts.Add(lastPoint);
+
+                for (int j = 0; j < maxIter; j++)
+                {
+                    Point3d nextPoint = lastPoint + stepLength * dirVec;
+                    mPt = M.ClosestMeshPoint(nextPoint, maxDist);
+                    nextPoint = mPt.Point;
+                    if (mPt == null)
+                        break;
+                    face = mPt.FaceIndex;
+                    dirVec = GetFaceDirectionVector(S, face, dirVec);
+                    if (dirVec == Vector3d.Zero)
+                        break;
+                    lastPoint = new Point3d(nextPoint);
+
+                    curvePts.Add(lastPoint);
+                }
+
+                // ret[i] = Curve.CreateInterpolatedCurve(curvePts, 3);
+                ret[i] = new PolylineCurve(curvePts);
+            }
+
+
+            return ret;
+        }
+   
+        
+
+        
+
+        private static Vector3d GetFaceDirectionVector(StructureType S, int faceIndex, Vector3d entryVec)
+        {
+            Vector3D e1_, e2_, e3_,C_;
+            S.GetElementCoordinateSystem(out e1_, out e2_, out e3_, faceIndex);
+            C_ = S.GetElementCentroid(faceIndex);
+            Vector3d e1 = e1_.ToRhinoVector3d(), e2 = e2_.ToRhinoVector3d(), e3 = e3_.ToRhinoVector3d();
+
+            Plane P = new Plane(C_.ToRhinoPoint3d(), e1, e2);
+
+            e1.Rotate(S.PrincipalAngles[faceIndex], e3);
+            e2.Rotate(S.PrincipalAngles[faceIndex], e3);
+
+            Vector3D principalStress = S.PrincipalStresses[faceIndex];
+
+            bool useX = Math.Abs(principalStress.X) >= Math.Abs(principalStress.Y);
+
+            if (useX)
+            {
+
+                if (Vector3d.VectorAngle(entryVec, e1) < Vector3d.VectorAngle(entryVec, -e1))
+                    return e1;
+                else
+                    return -e1;
+            }
+            else //compression
+            {
+                if (Vector3d.VectorAngle(entryVec, e2) < Vector3d.VectorAngle(entryVec, -e2))
+                    return e2;
+                else
+                    return -e2;
+
+            }
+
         }
 
     }

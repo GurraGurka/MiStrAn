@@ -53,6 +53,7 @@ namespace MiStrAnGH.Components
             }
 
             s.K = null; // Sparse matrix is not serializable
+            s.M = null;
             s = s.DeepClone();
 
             if (angles.Count > 1)

@@ -19,7 +19,8 @@ namespace MiStrAnGH
         public BoundingBox boundingBox;
         public List<Line> PrincipalStressLinesX;
         public List<Line> PrincipalStressLinesY;
-        
+        private Mesh mesh;
+
 
 
         public StructureType() : base()
@@ -27,6 +28,21 @@ namespace MiStrAnGH
 
         public StructureType(List<Node> _nodes, List<ShellElement> _elements) : base(_nodes, _elements)
         { }
+
+        public Mesh M
+        {
+            get
+            {
+                if (mesh == null)
+                    mesh = GenerateMesh();
+                return mesh;
+            }
+
+            set
+            {
+                mesh = value;
+            }
+        }
 
         public bool IsValid
         {
@@ -125,8 +141,22 @@ namespace MiStrAnGH
                 elements.Add(element);
             }
             
+            StructureType S = new StructureType(nodes, elements);
+            S.mesh = mesh;
+            return S;
+        }
 
-            return new StructureType(nodes, elements);
+        public Mesh GenerateMesh()
+        {
+            Mesh mesh = new Mesh();
+
+            foreach (Node n in nodes)
+                mesh.Vertices.Add(n.x, n.y, n.z);
+
+            foreach (ShellElement e in elements)
+                mesh.Faces.AddFace(e.Nodes[0].Id, e.Nodes[1].Id, e.Nodes[2].Id);
+
+            return mesh;
         }
 
         public Mesh GenereateDeformedMesh(List<double> a, double t)
@@ -358,26 +388,84 @@ namespace MiStrAnGH
 
         }
 
+        public void AlignMaterialAxisWithCurves(Curve[] dirCurves)
+        {
+            for (int i = 0; i < elements.Count; i++)
+            {
+                ShellElement elem = elements[i];
+                Point3d centroid = elem.Centroid.ToRhinoPoint3d();
+                double t;
+                Curve dirCurve = FindClosestCurve(dirCurves, centroid, out t);
+
+                Vector3d dirVec = dirCurve.TangentAt(t);
+
+                Vector3D e1_, e2_, e3_,C_;
+                elem.GetLocalCoordinateSystem(out e1_, out e2_, out e3_);
+                Vector3d e1 = e1_.ToRhinoVector3d(), e2 = e2_.ToRhinoVector3d(), e3 = e3_.ToRhinoVector3d();
+                Plane P = new Plane(centroid, e3);
+
+                double alpha = Vector3d.VectorAngle(e1, dirVec, P);
+
+                if (Double.IsNaN(alpha) || Double.IsInfinity(alpha) || Math.Abs(alpha) > Math.PI * 2)
+                    SetDefaultMaterialOrientationAngle(i);
+
+                else
+                    elem.MaterialOrientationAngle = (alpha / (2 * Math.PI)) * 360;
+
+                if (i == 187)
+                    elem = elem; // test
+
+            }
+
+        }
+
+        private static Curve FindClosestCurve(Curve[] crvs, Point3d pt, out double t)
+        {
+            double minDist = 1e10; //large distance
+            int index = -1;
+            t = 0;
+
+            for (int i = 0; i < crvs.Length; i++)
+            {
+                double t_;
+                crvs[i].ClosestPoint(pt, out t_);
+
+                double d = pt.DistanceTo(crvs[i].PointAt(t_));
+                if (d < minDist)
+                {
+                    index = i;
+                    minDist = d;
+                    t = t_;
+                }
+
+            }
+
+            return crvs[index];
+        }
+
         public void SetDefaultMaterialOrientationAngles()
+        {
+            for (int i = 0; i < NumberOfElements; i++)
+                SetDefaultMaterialOrientationAngle(i);
+            
+        }
+
+        public void SetDefaultMaterialOrientationAngle(int elementIndex)
         {
             Vector3D e1, e2, e3, C;
 
-            for (int i = 0; i < NumberOfElements; i++)
-            {
+            ShellElement ele = elements[elementIndex];
+            ele.GetLocalCoordinateSystem(out e1, out e2, out e3);
+            C = ele.Centroid;
 
-                ShellElement ele = elements[i];
-                ele.GetLocalCoordinateSystem(out e1, out e2, out e3);
-                C = ele.Centroid;
+            Plane P = new Plane(C.ToRhinoPoint3d(), e3.ToRhinoVector3d());
+            double alpha = Vector3d.VectorAngle(e1.ToRhinoVector3d(), Vector3d.XAxis, P);
 
-                Plane P = new Plane(C.ToRhinoPoint3d(), e3.ToRhinoVector3d());
-                double alpha = Vector3d.VectorAngle(e1.ToRhinoVector3d(), Vector3d.XAxis, P);
+            if (Double.IsNaN(alpha) || Double.IsInfinity(alpha) || Math.Abs(alpha) > Math.PI * 2)
+                alpha = Vector3d.VectorAngle(e1.ToRhinoVector3d(), Vector3d.YAxis, P);
 
-                if(Double.IsNaN(alpha)|| Double.IsInfinity(alpha) || Math.Abs(alpha) > Math.PI*2 )
-                    alpha = Vector3d.VectorAngle(e1.ToRhinoVector3d(), Vector3d.YAxis, P);
+            ele.MaterialOrientationAngle = (alpha / (2 * Math.PI)) * 360;
 
-                ele.MaterialOrientationAngle = (alpha / (2 * Math.PI)) * 360;
-            }
-            
         }
     }
 }

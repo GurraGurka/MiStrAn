@@ -34,7 +34,8 @@ namespace MiStrAnGH.Components
         /// </summary>
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
         {
-            pManager.AddNumberParameter("bla", "bla", "bla", GH_ParamAccess.list);
+            pManager.AddCurveParameter("Stress lines", "lines", "Lines indicating directions of the biggest principal stress in each element", GH_ParamAccess.list);
+            pManager[0].ExpirePreview(false);
         }
 
         /// <summary>
@@ -48,7 +49,19 @@ namespace MiStrAnGH.Components
             if (!DA.GetData(0, ref structure)) return;
 
             structure.GeneratePrincipalStressLines();
-            DA.SetDataList(0, structure.PrincipalAngles);
+            List<Curve> mainStresses = new List<Curve>();
+
+            for (int i = 0; i < structure.NumberOfElements; i++)
+            {              
+                if (Math.Abs(structure.PrincipalStresses[i].X) < Math.Abs(structure.PrincipalStresses[i].Y))
+                    mainStresses.Add(structure.PrincipalStressLinesY[i].ToNurbsCurve());
+                else
+                    mainStresses.Add(structure.PrincipalStressLinesX[i].ToNurbsCurve());
+            }
+
+
+
+            DA.SetDataList(0, mainStresses);
         }
 
         /// <summary>
@@ -82,8 +95,18 @@ namespace MiStrAnGH.Components
                 //System.Drawing.Color X = structure.PrincipalStresses[i].X <= 0 ? System.Drawing.Color.Red : System.Drawing.Color.Red;
                 //System.Drawing.Color Y = structure.PrincipalStresses[i].Y <= 0 ? System.Drawing.Color.Blue : System.Drawing.Color.Blue;
 
-                args.Display.DrawLine(structure.PrincipalStressLinesX[i], X);
-                args.Display.DrawLine(structure.PrincipalStressLinesY[i], Y);
+
+                if (Math.Abs(structure.PrincipalStresses[i].X) < Math.Abs(structure.PrincipalStresses[i].Y))
+                {
+                    args.Display.DrawLine(structure.PrincipalStressLinesX[i], X);
+                    args.Display.DrawLine(structure.PrincipalStressLinesY[i], Y,2);
+                }
+                else
+                {
+                    args.Display.DrawLine(structure.PrincipalStressLinesX[i], X,2);
+                    args.Display.DrawLine(structure.PrincipalStressLinesY[i], Y);
+
+                }
             }
         }
 

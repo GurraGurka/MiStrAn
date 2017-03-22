@@ -22,7 +22,7 @@ namespace MiStrAnEngine
         public Vector r;
         public List<Vector3D> PrincipalStresses;
         public List<Matrix> stresses;
-        public List<double> PrincipalAngles;
+        public List<double> PrincipalAngles; // radians
         public List<double> vonMises;
         public Vector[] eigenVecs;
 
@@ -46,7 +46,6 @@ namespace MiStrAnEngine
             nodes = new List<Node>();
             elements = new List<ShellElement>();
             supports = new List<Support>();
-          //  loads = new List<Load>();
         }
 
         public void AssembleKfbc()
@@ -340,11 +339,16 @@ namespace MiStrAnEngine
 
             for (int i = 0; i < elements.Count; i++)
             {
-                Vector3D cen = elements[i].Centroid;
-                centroids[i] = cen;
+                centroids[i] = GetElementCentroid(i);
             }
 
             return centroids;
+        }
+
+        public Vector3D GetElementCentroid(int i)
+        {
+            Vector3D centroid = elements[i].Centroid;
+            return centroid;
         }
 
         public void GetElementCoordinateSystems(out Vector3D[] e1, out Vector3D[] e2, out Vector3D[] e3)
@@ -356,13 +360,13 @@ namespace MiStrAnEngine
 
             for (int i = 0; i < n; i++)
             {
-                Vector3D e1_, e2_, e3_;
-
-                elements[i].GetLocalCoordinateSystem(out e1_, out e2_, out e3_);
-                e1[i] = e1_;
-                e2[i] = e2_;
-                e3[i] = e3_;
+                GetElementCoordinateSystem(out e1[i], out e2[i], out e3[i], i);
             }
+        }
+
+        public void GetElementCoordinateSystem(out Vector3D e1, out Vector3D e2, out Vector3D e3, int index)
+        {
+            elements[index].GetLocalCoordinateSystem(out e1, out e2, out e3);
         }
 
         public void SetMaterialOrientationAngles(double alpha)
