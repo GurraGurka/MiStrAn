@@ -27,6 +27,7 @@ namespace MiStrAnGH.Components
             pManager.AddNumberParameter("Scale deformation", "Scale", "Number to scale the deformation with", GH_ParamAccess.item, 100);
             pManager.AddNumberParameter("Bottom limiter", "lim0", "Number to scale the deformation with", GH_ParamAccess.item, 0);
             pManager.AddNumberParameter("Top limiter", "lim1", "Number to scale the deformation with", GH_ParamAccess.item, 1);
+            pManager.AddIntegerParameter("Stress mesh type", "sType", "0 for smeared, 1 for pixelated", GH_ParamAccess.item, 0);
         }
 
         /// <summary>
@@ -49,14 +50,21 @@ namespace MiStrAnGH.Components
             double t = 0;
             double lim0 = 0;
             double lim1 = 1;
+            int sType = 0;
 
             if (!DA.GetData(0, ref s)) return;
             DA.GetData(1, ref t);
             DA.GetData(2, ref lim0);
             DA.GetData(3, ref lim1);
+            DA.GetData(4, ref sType);
 
-            Mesh def = s.GenereateDeformedMesh(s.a.ToList(), t);
-            Mesh vonM = s.GenerateStressMesh(s.a.ToList(), s.PrincipalStresses, lim0, lim1);
+            Mesh def = s.GenereateDeformedMesh(t);
+            Mesh vonM;
+
+            if (sType == 1)
+                vonM = s.GenerateStressMeshv2(lim0, lim1);
+            else
+                vonM = s.GenerateStressMeshv1(lim0, lim1);
 
             DA.SetData(0, def);
             DA.SetData(1, vonM);

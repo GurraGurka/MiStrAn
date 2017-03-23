@@ -48,6 +48,7 @@ namespace MiStrAnGH.Components
             if (!DA.GetDataList(1, dirCurves)) return;
 
             s.AlignMaterialAxisWithCurves(dirCurves.ToArray());
+            s.RegenerateDMatrices();
 
             DA.SetData(0, s);
         }

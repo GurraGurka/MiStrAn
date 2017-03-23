@@ -264,7 +264,7 @@ namespace MiStrAnGH
 
         public static Curve[] CreatePrincipalStressContours(StructureType S, Line[] seeds, double stepLength)
         {
-            Mesh M = S.M;
+            Mesh M = S.uMesh;
             Curve[] ret = new Curve[seeds.Length];
 
             for (int i = 0; i < seeds.Length; i++)
@@ -300,7 +300,6 @@ namespace MiStrAnGH
                     curvePts.Add(lastPoint);
                 }
 
-                // ret[i] = Curve.CreateInterpolatedCurve(curvePts, 3);
                 ret[i] = new PolylineCurve(curvePts);
             }
 

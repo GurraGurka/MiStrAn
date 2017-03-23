@@ -29,7 +29,7 @@ namespace MiStrAnGH
         public StructureType(List<Node> _nodes, List<ShellElement> _elements) : base(_nodes, _elements)
         { }
 
-        public Mesh M
+        public Mesh uMesh // undeformed mesh
         {
             get
             {
@@ -159,7 +159,7 @@ namespace MiStrAnGH
             return mesh;
         }
 
-        public Mesh GenereateDeformedMesh(List<double> a, double t)
+        public Mesh GenereateDeformedMesh(double t)
         {
             Mesh mesh = new Mesh();
             List<Vector3D> dispVecs = new List<Vector3D>();
@@ -194,23 +194,46 @@ namespace MiStrAnGH
 
         }
 
-        public Mesh GenerateStressMesh(List<double> a, List<Vector3D> prinicpalStress, double lim0, double lim1)
+        public Mesh GenerateStressMeshv2(double lim0, double lim1)
         {
             Mesh mesh = new Mesh();
-            
-
-            foreach (Node node in nodes)
-                mesh.Vertices.Add(node.x, node.y, node.z); 
-
             Grasshopper.GUI.Gradient.GH_Gradient grad = StaticFunctions.GetStandardGradient(lim0, lim1);
+
 
             double max = vonMises.Max();
 
-            foreach (ShellElement elem in this.elements)
+            for (int i = 0; i < NumberOfElements; i++)
             {
-                MeshFace face = new MeshFace(elem.Nodes[0].Id, elem.Nodes[1].Id, elem.Nodes[2].Id);
-                mesh.Faces.AddFace(face);
+                int A = mesh.Vertices.Add(uMesh.Vertices[uMesh.Faces[i].A]);
+                int B = mesh.Vertices.Add(uMesh.Vertices[uMesh.Faces[i].B]);
+                int C = mesh.Vertices.Add(uMesh.Vertices[uMesh.Faces[i].C]);
+
+                double normVal = vonMises[i] / max;
+                if (max == 0) normVal = 0;
+
+                System.Drawing.Color color = grad.ColourAt(normVal);
+                mesh.VertexColors.Add(color.R, color.G, color.B);
+                mesh.VertexColors.Add(color.R, color.G, color.B);
+                mesh.VertexColors.Add(color.R, color.G, color.B);
+
+                mesh.Faces.AddFace(new MeshFace(A, B, C));
             }
+
+            return mesh;
+
+
+        }
+
+        public Mesh GenerateStressMeshv1(double lim0, double lim1)
+        {
+            Mesh mesh = new Mesh();
+            mesh.CopyFrom(uMesh);
+
+            Grasshopper.GUI.Gradient.GH_Gradient grad = StaticFunctions.GetStandardGradient(lim0, lim1);
+
+
+            double[] meanVals = new double[NumberOfElements];
+
 
             for (int i = 0; i < nodes.Count; i++)
             {
@@ -224,9 +247,14 @@ namespace MiStrAnGH
                 }
 
                 double mean = sum / connectedFaces.Length;
+                meanVals[i] = mean;
+            }
 
-                
-                double normVal = mean / max;
+            double max = meanVals.Max();
+
+            for (int i = 0; i < nodes.Count; i++)
+            {
+                double normVal = meanVals[i] / max;
                 if (max == 0) normVal = 0;
 
                 System.Drawing.Color color = grad.ColourAt(normVal);
@@ -399,7 +427,7 @@ namespace MiStrAnGH
 
                 Vector3d dirVec = dirCurve.TangentAt(t);
 
-                Vector3D e1_, e2_, e3_,C_;
+                Vector3D e1_, e2_, e3_;
                 elem.GetLocalCoordinateSystem(out e1_, out e2_, out e3_);
                 Vector3d e1 = e1_.ToRhinoVector3d(), e2 = e2_.ToRhinoVector3d(), e3 = e3_.ToRhinoVector3d();
                 Plane P = new Plane(centroid, e3);
@@ -411,9 +439,6 @@ namespace MiStrAnGH
 
                 else
                     elem.MaterialOrientationAngle = (alpha / (2 * Math.PI)) * 360;
-
-                if (i == 187)
-                    elem = elem; // test
 
             }
 
