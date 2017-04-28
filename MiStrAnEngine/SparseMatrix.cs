@@ -618,6 +618,7 @@ namespace MiStrAnEngine
             if (error != 0)
             {
                 MessageBox.Show("\nERROR during symbolic factorization: " + error);
+                return new Vector(n);
             }
 
             /* ----------------------------------------------------------------- */
@@ -630,6 +631,7 @@ namespace MiStrAnEngine
             if (error != 0)
             {
                 MessageBox.Show("\nERROR during numerical factorization: " + error);
+                return new Vector(n);
             }
 
             /* ----------------------------------------------------------------- */
@@ -645,6 +647,7 @@ namespace MiStrAnEngine
             if (error != 0)
             {
                 MessageBox.Show("\nERROR during solution: " + error);
+                return new Vector(n);
             }
 
             /* ----------------------------------------------------------------- */

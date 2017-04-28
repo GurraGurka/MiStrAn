@@ -153,6 +153,7 @@ namespace MiStrAnEngine
                 double theta = 0;
                 Vector3D vMax = new Vector3D();
                 
+                //for every layer
                 for( int j=0; j< elements[i].DBe.Count;j++) 
                 {
                     Matrix ss = new Matrix(6, 1);
@@ -414,6 +415,16 @@ namespace MiStrAnEngine
                 elements[i].GenerateD();
             }
 
+        }
+
+        public double GetMass()
+        {
+            double mass = 0;
+
+            for (int i = 0; i < NumberOfElements; i++)
+                mass += elements[i].GetMass();
+
+            return mass;
         }
 
         public override string ToString()

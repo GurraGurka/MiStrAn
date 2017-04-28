@@ -68,6 +68,7 @@
     <Compile Include="Components\CleanMeshComponent.cs" />
     <Compile Include="Components\PointLoadComponent.cs" />
     <Compile Include="Components\SectionComponent.cs" />
+    <Compile Include="Components\StructureMassComponent.cs" />
     <Compile Include="Components\VisualiseResultsComponent.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

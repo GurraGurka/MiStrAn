@@ -157,6 +157,21 @@ namespace MiStrAnEngine
             return q;
         }
 
+        public double GetElementArea()
+        {
+            Matrix xe, T;
+
+            GetLocalNodeCoordinates(out xe, out T);
+
+            double b1 = xe[1, 1] - xe[2, 1];
+            double b2 = xe[2, 1] - xe[0, 1];
+            double c1 = xe[2, 0] - xe[1, 0];
+            double c2 = xe[0, 0] - xe[2, 0];
+            double elementArea = 0.5 * (b1 * c2 - b2 * c1);
+
+            return elementArea;
+        }
+
         public Vector3D GetGravityq(ShellElement s)
         {
             
@@ -198,7 +213,13 @@ namespace MiStrAnEngine
             return gravityWeight;
         }
 
+        public double GetMass()
+        {
+            double Area = GetElementArea();
+            double weight = GetSectionWeight(this.Section.thickness, this.Section.densitys);
 
+            return Area * weight;
+        }
 
         public void GenerateD()
         {

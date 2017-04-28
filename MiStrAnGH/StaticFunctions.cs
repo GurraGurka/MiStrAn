@@ -191,7 +191,7 @@ namespace MiStrAnGH
 
                 double area = GetFaceArea(output, face);
 
-                if (area > 1e-6)
+                if (area > 1e-5)
                     output.Faces.AddFace(face);
                 else
                     _culledFaces.Add(i);
