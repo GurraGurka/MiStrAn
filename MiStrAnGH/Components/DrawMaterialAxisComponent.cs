@@ -33,6 +33,8 @@ namespace MiStrAnGH.Components
         /// </summary>
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
         {
+            pManager.AddCurveParameter("Material lines", "lines", "Lines indicating directions of the material direction in each element", GH_ParamAccess.list);
+            pManager[0].ExpirePreview(false);
         }
 
         /// <summary>
@@ -46,6 +48,8 @@ namespace MiStrAnGH.Components
             if (!DA.GetData(0, ref structure)) return;
 
             structure.GenerateElementAxisLines();
+
+            DA.SetDataList(0, structure.MaterialAxisLines);
         }
 
         /// <summary>
